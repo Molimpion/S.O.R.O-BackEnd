@@ -13,19 +13,46 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String     @id @default(uuid())
+  email     String     @unique
   name      String
   password  String
-  profile   Profile  @default(ANALISTA)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  profile   Profile    @default(ANALISTA)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  logs      AuditLog[] // Adiciona a relação para ver os logs de um usuário
 }
 
 enum Profile {
   ADMIN
   ANALISTA
   CHEFE
+}
+
+// --- Modelos para Auditoria e Logs (W-06) ---
+
+model AuditLog {
+  id        String     @id @default(uuid())
+  action    ActionType // O tipo de ação que foi executada
+  details   String?    @db.Text // Detalhes extras, como "ID do usuário afetado: xyz"
+  ipAddress String?    // O endereço IP de onde partiu a requisição (opcional)
+  timestamp DateTime   @default(now())
+
+  // Relacionamento: Qual usuário realizou a ação?
+  userId    String?
+  user      User?      @relation(fields: [userId], references: [id])
+}
+
+enum ActionType {
+  // Ações de Autenticação
+  USER_LOGIN_SUCCESS
+  USER_LOGIN_FAILURE
+  USER_REGISTERED
+
+  // Ações de Gestão de Usuários (Admin)
+  ADMIN_VIEWED_USERS
+  ADMIN_VIEWED_USER_DETAILS
+  ADMIN_UPDATED_USER
+  ADMIN_DELETED_USER
 }

@@ -1,64 +1,77 @@
-// src/services/authService.ts
+// src/services/authService.ts (ATUALIZADO COM LOGS)
 
 import { PrismaClient, Profile } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { createLog } from './logService'; // <-- 1. IMPORTAMOS O SERVIÇO DE LOG
 
-// Cria uma instância do Prisma Client para interagir com o banco
 const prisma = new PrismaClient();
-
-// Esta é a "chave secreta" para assinar nossos tokens.
-// IMPORTANTE: Em um projeto real, isso deve estar no arquivo .env!
 const JWT_SECRET = 'SEGREDO_SUPER_SECRETO_PARA_PROJETO_BOMBEIROS';
 
 // --- SERVIÇO DE CADASTRO ---
 export const registerUser = async (data: any) => {
-  // 1. Criptografa a senha recebida antes de salvar
   const hashedPassword = await bcrypt.hash(data.password, 10);
 
-  // 2. Cria o novo usuário no banco de dados com a senha criptografada
   const user = await prisma.user.create({
     data: {
       email: data.email,
       name: data.name,
       password: hashedPassword,
-      profile: data.profile as Profile // Garante que o perfil seja do tipo correto
+      profile: data.profile as Profile,
     },
   });
 
-  // 3. Retorna o usuário criado (sem a senha)
+  // ++ REGISTRA O LOG DE NOVO USUÁRIO ++
+  await createLog({
+    action: 'USER_REGISTERED',
+    userId: user.id,
+    details: `Novo usuário '${user.name}' (${user.email}) criado.`,
+  });
+
   const { password, ...userWithoutPassword } = user;
   return userWithoutPassword;
 };
 
 // --- SERVIÇO DE LOGIN ---
 export const loginUser = async (data: any) => {
-  // 1. Procura o usuário no banco pelo e-mail
   const user = await prisma.user.findUnique({
     where: { email: data.email },
   });
 
-  // 2. Se o usuário não for encontrado, lança um erro
   if (!user) {
+    // ++ REGISTRA A TENTATIVA DE LOGIN FALHA (USUÁRIO INEXISTENTE) ++
+    await createLog({
+      action: 'USER_LOGIN_FAILURE',
+      details: `Tentativa de login falhou para o email: ${data.email}. Motivo: Usuário não encontrado.`,
+    });
     throw new Error('Email ou senha inválidos');
   }
 
-  // 3. Compara a senha enviada com a senha criptografada no banco
   const isPasswordValid = await bcrypt.compare(data.password, user.password);
 
-  // 4. Se a senha não for válida, lança um erro
   if (!isPasswordValid) {
+    // ++ REGISTRA A TENTATIVA DE LOGIN FALHA (SENHA INCORRETA) ++
+    await createLog({
+      action: 'USER_LOGIN_FAILURE',
+      userId: user.id,
+      details: `Tentativa de login falhou para o usuário '${user.name}' (${user.email}). Motivo: Senha incorreta.`,
+    });
     throw new Error('Email ou senha inválidos');
   }
 
-  // 5. Se tudo estiver correto, gera um Token JWT
+  // ++ REGISTRA O LOGIN BEM-SUCEDIDO ++
+  await createLog({
+    action: 'USER_LOGIN_SUCCESS',
+    userId: user.id,
+    details: `Usuário '${user.name}' (${user.email}) logou com sucesso.`,
+  });
+
   const token = jwt.sign(
-    { userId: user.id, profile: user.profile }, // Informações que guardamos no token
+    { userId: user.id, profile: user.profile },
     JWT_SECRET,
-    { expiresIn: '8h' } // Define a validade do token (ex: 8 horas)
+    { expiresIn: '8h' }
   );
 
-  // 6. Retorna as informações do usuário (sem a senha) e o token
   const { password, ...userWithoutPassword } = user;
   return { user: userWithoutPassword, token };
 };
