@@ -1,20 +1,14 @@
-// src/routes/authRoutes.ts
+// src/routes/authRoutes.ts (AJUSTADO)
 
 import { Router } from 'express';
 import * as authController from '../controllers/authController';
+import { registerSchema, loginSchema } from '../validators/authValidator'; // Importa os dois schemas
+import { validate } from '../middleware/validate';
 
-// Cria uma instância do Roteador do Express
 const router = Router();
 
-// Define a rota para o cadastro de usuários.
-// Quando uma requisição POST chegar em '/register',
-// a função 'register' do nosso authController será executada.
-router.post('/register', authController.register);
+router.post('/register', validate(registerSchema), authController.register);
 
-// Define a rota para o login de usuários.
-// Quando uma requisição POST chegar em '/login',
-// a função 'login' do nosso authController será executada.
-router.post('/login', authController.login);
+router.post('/login', validate(loginSchema), authController.login); // Adiciona a validação aqui também
 
-// Exporta o roteador com as rotas definidas
 export default router;

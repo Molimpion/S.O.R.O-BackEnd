@@ -1,8 +1,9 @@
 // src/index.ts
 
 import express from 'express';
-// 1. IMPORTA as rotas de autenticação que acabamos de criar
 import authRoutes from './routes/authRoutes';
+import ocorrenciaRoutes from './routes/ocorrenciaRoutes';
+import userRoutes from './routes/userRoutes'; 
 
 const app = express();
 const PORT = 3000;
@@ -14,11 +15,15 @@ app.get('/', (req, res) => {
   res.send('API está funcionando!');
 });
 
-// 2. USA as rotas de autenticação
-// O Express vai direcionar qualquer requisição que comece com '/api/auth'
-// para o nosso arquivo authRoutes.
+// Rotas de Autenticação (Públicas)
 app.use('/api/auth', authRoutes);
 
+// Rotas de Ocorrências (Protegidas, mas ainda esqueleto)
+app.use('/api/ocorrencias', ocorrenciaRoutes);
+
+// Rotas de Gestão de Usuários (Protegidas para Admins)
+app.use('/api/users', userRoutes);
+
 app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT} `);
+  console.log(`Servidor rodando na porta ${PORT}`); 
 });
