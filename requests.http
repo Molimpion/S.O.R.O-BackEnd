@@ -18,3 +18,7 @@ Content-Type: application/json
   "email": "rest@email.com",
   "password": "senha123"
 }
+
+### 3. Listar todos os usuários (rota de admin)
+GET http://localhost:3000/api/users
+Authorization: Bearer COLE_SEU_TOKEN_AQUI

@@ -1,3 +1,5 @@
+// src/validators/authValidator.ts (Versão Correta e Completa)
+
 import { z } from 'zod';
 
 export const registerSchema = z.object({
@@ -19,7 +21,6 @@ export const registerSchema = z.object({
   }),
 });
 
-// Vamos aproveitar e já criar o schema de login também
 export const loginSchema = z.object({
   email: z.string({
     required_error: 'O email é obrigatório.',
