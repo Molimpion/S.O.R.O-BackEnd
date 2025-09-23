@@ -1,7 +1,7 @@
 // src/services/userService.ts (ATUALIZADO COM LOGS)
 
 import { PrismaClient } from '@prisma/client';
-import { createLog } from './logService'; // <-- 1. IMPORTAMOS O SERVIÇO DE LOG
+import { createLog } from './log.Service'; // <-- 1. IMPORTAMOS O SERVIÇO DE LOG
 
 const prisma = new PrismaClient();
 

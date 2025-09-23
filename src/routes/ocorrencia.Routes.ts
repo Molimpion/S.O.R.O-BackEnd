@@ -1,7 +1,7 @@
 // src/routes/ocorrenciaRoutes.ts
 import { Router } from 'express';
-import * as ocorrenciaController from '../controllers/ocorrenciaController';
-import { authenticateToken } from '../middleware/authMiddleware';
+import * as ocorrenciaController from '../controllers/ocorrencia.Controller';
+import { authenticateToken } from '../middleware/auth.Middleware';
 
 const router = Router();
 

@@ -3,7 +3,7 @@
 import { PrismaClient, Profile } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { createLog } from './logService'; // <-- 1. IMPORTAMOS O SERVIÇO DE LOG
+import { createLog } from './log.Service'; // <-- 1. IMPORTAMOS O SERVIÇO DE LOG
 
 const prisma = new PrismaClient();
 const JWT_SECRET = 'SEGREDO_SUPER_SECRETO_PARA_PROJETO_BOMBEIROS';

@@ -1,7 +1,7 @@
 // src/controllers/userController.ts (AJUSTE FINAL)
 
 import { Request, Response } from 'express';
-import * as userService from '../services/userService';
+import * as userService from '../services/user.Service';
 
 // Interface para garantir que req.user exista e tenha os dados do token
 interface AuthRequest extends Request {

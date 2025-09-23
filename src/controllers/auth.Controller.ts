@@ -2,7 +2,7 @@
 
 import { Request, Response } from 'express';
 // Importa todos os exports do nosso serviço de autenticação
-import * as authService from '../services/authService';
+import * as authService from '../services/auth.Service';
 
 // --- CONTROLADOR DE CADASTRO ---
 export const register = async (req: Request, res: Response) => {

@@ -3,9 +3,9 @@ import dotenv from 'dotenv';
 dotenv.config();  
 
 import express from 'express';
-import authRoutes from './routes/authRoutes';
-import ocorrenciaRoutes from './routes/ocorrenciaRoutes';
-import userRoutes from './routes/userRoutes'; 
+import authRoutes from './routes/auth.Routes';
+import ocorrenciaRoutes from './routes/ocorrencia.Routes';
+import userRoutes from './routes/user.Routes'; 
 
 const app = express();
 const PORT = 3000;

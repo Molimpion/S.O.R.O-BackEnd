@@ -1,8 +1,8 @@
 // src/routes/userRoutes.ts
 
 import { Router } from 'express';
-import { authenticateToken, checkAdmin } from '../middleware/authMiddleware';
-import * as userController from '../controllers/userController';
+import { authenticateToken, checkAdmin } from '../middleware/auth.Middleware';
+import * as userController from '../controllers/user.Controller';
 
 const router = Router();
 
