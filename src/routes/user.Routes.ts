@@ -1,22 +1,19 @@
-// src/routes/userRoutes.ts
+// src/routes/userRoutes.ts (REFATORADO)
 
 import { Router } from 'express';
-import { authenticateToken, checkAdmin } from '../middleware/auth.Middleware';
+// O 'authenticateToken' foi removido daqui, pois será global
+import { checkAdmin } from '../middleware/auth.Middleware';
 import * as userController from '../controllers/user.Controller';
 
 const router = Router();
 
-// APLICA OS MIDDLEWARES A TODAS AS ROTAS DESTE ARQUIVO
-// 1. Primeiro, 'authenticateToken' verifica se o usuário está logado.
-// 2. Se estiver, 'checkAdmin' verifica se o usuário tem o perfil de ADMIN.
-// Se qualquer um falhar, a requisição é barrada e não chega no controlador.
-router.use(authenticateToken);
+// APLICA APENAS O MIDDLEWARE ESPECÍFICO DE ADMIN A TODAS AS ROTAS
 router.use(checkAdmin);
 
-// Define as rotas de CRUD para /users
-router.get('/', userController.getAll);          // GET /api/users
-router.get('/:id', userController.getById);      // GET /api/users/uuid-do-usuario
-router.put('/:id', userController.update);       // PUT /api/users/uuid-do-usuario
-router.delete('/:id', userController.remove);    // DELETE /api/users/uuid-do-usuario
+// As rotas continuam as mesmas
+router.get('/', userController.getAll);
+router.get('/:id', userController.getById);
+router.put('/:id', userController.update);
+router.delete('/:id', userController.remove);
 
 export default router;

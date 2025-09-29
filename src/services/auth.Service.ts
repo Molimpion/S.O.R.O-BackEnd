@@ -1,12 +1,12 @@
-// src/services/authService.ts (ATUALIZADO COM LOGS)
+// src/services/authService.ts (REFATORADO)
 
 import { PrismaClient, Profile } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { createLog } from './log.Service'; // <-- 1. IMPORTAMOS O SERVIÇO DE LOG
+import { createLog } from './log.Service';
+import { UnauthorizedError } from '../errors/api.errors'; // <-- NOVO IMPORT
 
 const prisma = new PrismaClient();
-const JWT_SECRET = 'SEGREDO_SUPER_SECRETO_PARA_PROJETO_BOMBEIROS';
 
 // --- SERVIÇO DE CADASTRO ---
 export const registerUser = async (data: any) => {
@@ -21,7 +21,6 @@ export const registerUser = async (data: any) => {
     },
   });
 
-  // ++ REGISTRA O LOG DE NOVO USUÁRIO ++
   await createLog({
     action: 'USER_REGISTERED',
     userId: user.id,
@@ -39,27 +38,26 @@ export const loginUser = async (data: any) => {
   });
 
   if (!user) {
-    // ++ REGISTRA A TENTATIVA DE LOGIN FALHA (USUÁRIO INEXISTENTE) ++
     await createLog({
       action: 'USER_LOGIN_FAILURE',
       details: `Tentativa de login falhou para o email: ${data.email}. Motivo: Usuário não encontrado.`,
     });
-    throw new Error('Email ou senha inválidos');
+    // ALTERAÇÃO: Usando nosso erro customizado
+    throw new UnauthorizedError('Email ou senha inválidos');
   }
 
   const isPasswordValid = await bcrypt.compare(data.password, user.password);
 
   if (!isPasswordValid) {
-    // ++ REGISTRA A TENTATIVA DE LOGIN FALHA (SENHA INCORRETA) ++
     await createLog({
       action: 'USER_LOGIN_FAILURE',
       userId: user.id,
       details: `Tentativa de login falhou para o usuário '${user.name}' (${user.email}). Motivo: Senha incorreta.`,
     });
-    throw new Error('Email ou senha inválidos');
+    // ALTERAÇÃO: Usando nosso erro customizado
+    throw new UnauthorizedError('Email ou senha inválidos');
   }
 
-  // ++ REGISTRA O LOGIN BEM-SUCEDIDO ++
   await createLog({
     action: 'USER_LOGIN_SUCCESS',
     userId: user.id,
@@ -68,7 +66,7 @@ export const loginUser = async (data: any) => {
 
   const token = jwt.sign(
     { userId: user.id, profile: user.profile },
-    JWT_SECRET,
+    process.env.JWT_SECRET as string,
     { expiresIn: '8h' }
   );
 

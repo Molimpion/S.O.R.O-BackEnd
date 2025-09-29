@@ -1,15 +1,13 @@
-// src/services/userService.ts (ATUALIZADO COM LOGS)
+// src/services/userService.ts (REFATORADO)
 
 import { PrismaClient } from '@prisma/client';
-import { createLog } from './log.Service'; // <-- 1. IMPORTAMOS O SERVIÇO DE LOG
+import { createLog } from './log.Service';
+import { NotFoundError } from '../errors/api.errors'; // <-- NOVO IMPORT
 
 const prisma = new PrismaClient();
 
 // Serviço para listar todos os usuários
 export const getAllUsers = async () => {
-  // Nota: Não vamos logar a listagem de todos os usuários por padrão
-  // para evitar poluir o log, mas poderíamos adicionar aqui se necessário.
-  // Ex: createLog({ action: 'ADMIN_VIEWED_USERS', ... })
   const users = await prisma.user.findMany({
     select: {
       id: true,
@@ -36,7 +34,8 @@ export const getUserById = async (id: string) => {
   });
 
   if (!user) {
-    throw new Error('Usuário não encontrado');
+    // ALTERAÇÃO: Usando nosso erro customizado
+    throw new NotFoundError('Usuário não encontrado');
   }
   return user;
 };
@@ -58,10 +57,9 @@ export const updateUser = async (id: string, data: any, adminUserId: string) => 
     },
   });
 
-  // ++ REGISTRA O LOG DE ATUALIZAÇÃO ++
   await createLog({
     action: 'ADMIN_UPDATED_USER',
-    userId: adminUserId, // Registra QUEM fez a ação
+    userId: adminUserId,
     details: `Admin (ID: ${adminUserId}) atualizou o usuário '${updatedUser.name}' (ID: ${updatedUser.id}).`,
   });
 
@@ -70,21 +68,20 @@ export const updateUser = async (id: string, data: any, adminUserId: string) => 
 
 // Serviço para deletar um usuário
 export const deleteUser = async (id: string, adminUserId: string) => {
-  // Primeiro, buscamos os dados do usuário para usar no log
   const userToDelete = await prisma.user.findUnique({ where: { id } });
   
   if (!userToDelete) {
-    throw new Error('Usuário a ser deletado não encontrado.');
+    // ALTERAÇÃO: Usando nosso erro customizado
+    throw new NotFoundError('Usuário a ser deletado não encontrado');
   }
 
   await prisma.user.delete({
     where: { id },
   });
 
-  // ++ REGISTRA O LOG DE EXCLUSÃO ++
   await createLog({
     action: 'ADMIN_DELETED_USER',
-    userId: adminUserId, // Registra QUEM fez a ação
+    userId: adminUserId,
     details: `Admin (ID: ${adminUserId}) deletou o usuário '${userToDelete.name}' (ID: ${userToDelete.id}).`,
   });
 };
