@@ -3,8 +3,8 @@
 import { PrismaClient, Profile } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { createLog } from './log.Service';
-import { UnauthorizedError } from '../errors/api.errors'; // <-- NOVO IMPORT
+import { createLog } from './logService';
+import { UnauthorizedError } from '../errors/api-errors'; // <-- NOVO IMPORT
 
 const prisma = new PrismaClient();
 

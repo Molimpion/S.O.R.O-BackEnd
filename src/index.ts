@@ -1,6 +1,4 @@
-// src/index.ts (REFATORADO)
-
-import 'express-async-errors'; // Garante que o middleware de erro funcione com async
+import 'express-async-errors';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -9,44 +7,33 @@ if (!process.env.JWT_SECRET) {
 }
 
 import express from 'express';
-import { errorMiddleware } from './middleware/error.Middleware';
-import { authenticateToken } from './middleware/auth.Middleware'; // 1. IMPORTAMOS O AUTHENTICATE
+import bodyParser from 'body-parser';
+import { errorMiddleware } from './middleware/errorMiddleware';
+import { authenticateToken } from './middleware/authMiddleware';
 
-// Importa todas as rotas
-import authRoutes from './routes/auth.Routes';
-import ocorrenciaRoutes from './routes/ocorrencia.Routes';
-import userRoutes from './routes/user.Routes';
+import authRoutes from './routes/authRoutes';
+import ocorrenciaRoutes from './routes/ocorrenciaRoutes';
+import userRoutes from './routes/userRoutes';
 
 const app = express();
 const PORT = 3000;
 
-app.use(express.json());
+app.use(bodyParser.json());
 
 // --- ROTAS PÚBLICAS ---
-// Estas rotas não precisam de token, então vêm ANTES do middleware de autenticação.
-app.get('/', (req, res) => {
-  res.send('API está funcionando!');
-});
+app.get('/', (req, res) => { res.send('API está funcionando!') });
 app.use('/api/auth', authRoutes);
 
-
 // --- PONTO DE CONTROLE DE AUTENTICAÇÃO ---
-// 2. APLICAMOS O MIDDLEWARE GLOBALMENTE
-// Qualquer rota declarada ABAIXO desta linha, precisará de um token válido.
 app.use(authenticateToken);
 
-
 // --- ROTAS PROTEGIDAS ---
-// Estas rotas agora estão automaticamente protegidas pelo 'authenticateToken'.
 app.use('/api/ocorrencias', ocorrenciaRoutes);
 app.use('/api/users', userRoutes);
 
-
 // --- MIDDLEWARE DE ERRO ---
-// Deve ser o último middleware.
 app.use(errorMiddleware);
 
-
 app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT} `);
+  console.log(`Servidor rodando na porta ${PORT}`);
 });

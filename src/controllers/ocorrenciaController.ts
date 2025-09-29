@@ -1,6 +1,6 @@
 // src/controllers/ocorrenciaController.ts
 import { Request, Response } from 'express';
-import * as ocorrenciaService from '../services/ocorrencia.Service';
+import * as ocorrenciaService from '../services/ocorrenciaService';
 
 export const listarTodas = async (req: Request, res: Response) => {
   try {

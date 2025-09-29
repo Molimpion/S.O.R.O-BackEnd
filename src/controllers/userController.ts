@@ -2,7 +2,7 @@
 
 import 'express-async-errors';
 import { Request, Response } from 'express';
-import * as userService from '../services/user.Service';
+import * as userService from '../services/userService';
 
 interface AuthRequest extends Request {
   user?: { userId: string; profile: string };

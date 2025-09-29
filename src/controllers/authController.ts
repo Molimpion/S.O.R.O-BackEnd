@@ -2,7 +2,7 @@
 
 import 'express-async-errors' // Importante: importa o pacote para lidar com erros em async
 import { Request, Response } from 'express';
-import * as authService from '../services/auth.Service';
+import * as authService from '../services/authService';
 
 export const register = async (req: Request, res: Response) => {
   const userData = req.body;

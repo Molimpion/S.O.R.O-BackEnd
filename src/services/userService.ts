@@ -1,8 +1,8 @@
 // src/services/userService.ts (REFATORADO)
 
 import { PrismaClient } from '@prisma/client';
-import { createLog } from './log.Service';
-import { NotFoundError } from '../errors/api.errors'; // <-- NOVO IMPORT
+import { createLog } from './logService';
+import { NotFoundError } from '../errors/api-errors'; // <-- NOVO IMPORT
 
 const prisma = new PrismaClient();
 

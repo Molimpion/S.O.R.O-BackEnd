@@ -21,4 +21,4 @@ Content-Type: application/json
 
 ### 3. Listar todos os usuários (rota de admin)
 GET http://localhost:3000/api/users
-Authorization: Bearer COLE_SEU_TOKEN_AQUI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyOTdiNTVmOS0zOGQ2LTRiZjctODkxYi0xY2IzMDQzN2Q3NjYiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NTkxNTY4NzIsImV4cCI6MTc1OTE4NTY3Mn0.X7OSD1ttQYCxMO3Wq3F6IZFx_coVm_rotkvjHjjzveQ
