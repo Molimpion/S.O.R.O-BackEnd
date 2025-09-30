@@ -5,7 +5,7 @@
 ---
 
 *Projeto Integrador da Turma 44 da Faculdade Senac Pernambuco.*
-*Professores Responsáveis: Danilo Farias, Geraldo Gomes e Marcos Tenorio.*
+*Professores Responsáveis: Danilo Farias, Geraldo Gomes, Marcos Tenorio e Sonia Gomes.*
 
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
