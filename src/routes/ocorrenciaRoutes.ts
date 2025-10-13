@@ -1,22 +1,19 @@
-// src/routes/ocorrenciaRoutes.ts (ATUALIZADO)
-
 import { Router } from 'express';
 import * as ocorrenciaController from '../controllers/ocorrenciaController';
 import { authenticateToken } from '../middleware/authMiddleware';
 import { validate } from '../middleware/validate';
-import { createOcorrenciaSchema } from '../validators/ocorrenciaValidator';
+// Adiciona o novo schema de validação
+import { createOcorrenciaSchema, listOcorrenciaSchema } from '../validators/ocorrenciaValidator';
 
 const router = Router();
 
 router.use(authenticateToken);
 
-// Rota para listar todas as ocorrências
-router.get('/', ocorrenciaController.listarTodas);
+// Aplica a validação de filtros à rota de listagem
+router.get('/', validate(listOcorrenciaSchema), ocorrenciaController.listarTodas);
 
-// Rota para buscar uma ocorrência específica por ID
 router.get('/:id', ocorrenciaController.getById);
 
-// Rota para criar uma nova ocorrência
 router.post(
   '/',
   validate(createOcorrenciaSchema),

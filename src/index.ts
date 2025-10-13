@@ -25,6 +25,8 @@ import formaAcervoRoutes from './routes/formaAcervoRoutes';
 import grupamentoRoutes from './routes/grupamentoRoutes';
 import unidadeOperacionalRoutes from './routes/unidadeOperacionalRoutes';
 import viaturaRoutes from './routes/viaturaRoutes';
+import relatorioRoutes from './routes/relatorioRoutes';
+import dashboardRoutes from './routes/dashboardRoutes';
 
 const app = express();
 const PORT = 3000;
@@ -42,6 +44,8 @@ app.use(authenticateToken);
 
 // --- ROTAS PROTEGIDAS ---
 // (Rotas que exigem autenticação)
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/relatorios', relatorioRoutes);
 app.use('/api/ocorrencias', ocorrenciaRoutes);
 app.use('/api/users', userRoutes);
 // Rotas de Classificação/Lookup (Administrativas)

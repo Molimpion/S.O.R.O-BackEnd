@@ -1,7 +1,7 @@
-// src/services/ocorrenciaService.ts (ATUALIZADO)
-
-import { PrismaClient } from '@prisma/client';
-// Adicionamos o NotFoundError para usar na nova função
+// src/services/ocorrenciaService.ts
+import PDFDocument from 'pdfkit';
+import { stringify } from 'csv-stringify/sync';
+import { PrismaClient, Status } from '@prisma/client';
 import { BadRequestError, NotFoundError } from '../errors/api-errors';
 
 const prisma = new PrismaClient();
@@ -15,14 +15,10 @@ interface CreateOcorrenciaData {
   nr_aviso?: string;
 }
 
-/**
- * Cria uma nova ocorrência no banco de dados.
- */
 export const createOcorrencia = async (data: CreateOcorrenciaData, userId: string) => {
   if (!data.id_subgrupo_fk || !data.id_municipio_fk || !data.id_forma_acervo_fk) {
     throw new BadRequestError('Faltam IDs de relacionamento obrigatórios para criar a ocorrência.');
   }
-
   const novaOcorrencia = await prisma.ocorrencia.create({
     data: {
       ...data,
@@ -31,79 +27,205 @@ export const createOcorrencia = async (data: CreateOcorrenciaData, userId: strin
       id_usuario_abertura_fk: userId,
     },
   });
-
   return novaOcorrencia;
 };
 
+interface OcorrenciaFilters {
+  dataInicio?: string;
+  dataFim?: string;
+  status?: Status;
+  municipioId?: string;
+  subgrupoId?: string;
+  page?: number;
+  limit?: number;
+}
+
+export const getAllOcorrencias = async (filters: OcorrenciaFilters) => {
+  const { page = 1, limit = 10, dataInicio, dataFim, ...otherFilters } = filters;
+  const where: any = {};
+  if (dataInicio) {
+    where.carimbo_data_hora_abertura = { ...where.carimbo_data_hora_abertura, gte: new Date(dataInicio) };
+  }
+  if (dataFim) {
+    where.carimbo_data_hora_abertura = { ...where.carimbo_data_hora_abertura, lte: new Date(dataFim) };
+  }
+  if (otherFilters.status) {
+    where.status_situacao = otherFilters.status;
+  }
+  if (otherFilters.municipioId) {
+    where.id_municipio_fk = otherFilters.municipioId;
+  }
+  if (otherFilters.subgrupoId) {
+    where.id_subgrupo_fk = otherFilters.subgrupoId;
+  }
+  const [ocorrencias, total] = await prisma.$transaction([
+    prisma.ocorrencia.findMany({
+      where,
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: { carimbo_data_hora_abertura: 'desc' },
+      include: {
+        subgrupo: true,
+        municipio: true,
+        usuario_abertura: { select: { id: true, nome: true, nome_guerra: true } },
+      },
+    }),
+    prisma.ocorrencia.count({ where }),
+  ]);
+  return {
+    data: ocorrencias,
+    total,
+    page,
+    totalPages: Math.ceil(total / limit),
+  };
+};
+
+export const getOcorrenciaById = async (id: string) => {
+  const ocorrencia = await prisma.ocorrencia.findUnique({
+    where: { id_ocorrencia: id },
+    include: {
+      subgrupo: true,
+      municipio: true,
+      forma_acervo: true,
+      usuario_abertura: { select: { id: true, nome: true, nome_guerra: true, posto_grad: true } },
+      localizacao: true,
+      vitimas: true,
+      midias: true,
+      viaturas_usadas: { include: { viatura: true } },
+      equipe_ocorrencia: { include: { usuario: { select: { id: true, nome: true, nome_guerra: true, posto_grad: true } } } },
+    },
+  });
+  if (!ocorrencia) {
+    throw new NotFoundError('Ocorrência não encontrada');
+  }
+  return ocorrencia;
+};
 /**
- * Lista todas as ocorrências existentes.
+ * Busca ocorrências com base em filtros e exporta o resultado como uma string CSV.
+ * @param filters - Os mesmos filtros usados na listagem.
  */
-export const getAllOcorrencias = async () => {
+export const exportOcorrenciasToCSV = async (filters: OcorrenciaFilters) => {
+  // A lógica de construção do 'where' é a mesma da função 'getAllOcorrencias'
+  const { dataInicio, dataFim, ...otherFilters } = filters;
+  const where: any = {};
+  if (dataInicio) {
+    where.carimbo_data_hora_abertura = { ...where.carimbo_data_hora_abertura, gte: new Date(dataInicio) };
+  }
+  if (dataFim) {
+    where.carimbo_data_hora_abertura = { ...where.carimbo_data_hora_abertura, lte: new Date(dataFim) };
+  }
+  if (otherFilters.status) {
+    where.status_situacao = otherFilters.status;
+  }
+  if (otherFilters.municipioId) {
+    where.id_municipio_fk = otherFilters.municipioId;
+  }
+  if (otherFilters.subgrupoId) {
+    where.id_subgrupo_fk = otherFilters.subgrupoId;
+  }
+
+  // Buscamos os dados no banco, sem paginação, pois o relatório é completo
   const ocorrencias = await prisma.ocorrencia.findMany({
+    where,
     orderBy: {
       carimbo_data_hora_abertura: 'desc',
     },
     include: {
       subgrupo: true,
       municipio: true,
-      usuario_abertura: {
-        select: {
-          id: true,
-          nome: true,
-          nome_guerra: true,
-        },
-      },
+      usuario_abertura: true,
     },
   });
 
-  return ocorrencias;
+  // Define as colunas e os cabeçalhos do nosso arquivo CSV
+  const columns = [
+    { key: 'nr_aviso', header: 'Nº Aviso' },
+    { key: 'status_situacao', header: 'Status' },
+    { key: 'data_acionamento', header: 'Data Acionamento' },
+    { key: 'municipio.nome_municipio', header: 'Município' },
+    { key: 'subgrupo.descricao_subgrupo', header: 'Subgrupo' },
+    { key: 'usuario_abertura.nome', header: 'Usuário Abertura' },
+  ];
+  
+  // Usa a biblioteca para converter o array de objetos JSON em uma string CSV
+  const csvString = stringify(ocorrencias, {
+    header: true,
+    columns: columns,
+    // Formata os dados aninhados (ex: municipio.nome_municipio)
+    cast: {
+      object: (value) => value?.nome_municipio || value?.descricao_subgrupo || value?.nome || '',
+    }
+  });
+
+  return csvString;
 };
 
 
-// =============================================================
-// ============ NOVA FUNÇÃO ADICIONADA ABAIXO ==================
-// =============================================================
-
 /**
- * Busca uma ocorrência específica pelo seu ID, incluindo todos os dados relacionados.
- * @param id - O ID da ocorrência a ser buscada.
+ * Busca ocorrências com base em filtros e retorna o resultado como um Buffer de PDF.
+ * @param filters - Os mesmos filtros usados na listagem.
  */
-export const getOcorrenciaById = async (id: string) => {
-  const ocorrencia = await prisma.ocorrencia.findUnique({
-    where: {
-      // O nome do campo de ID no nosso model Ocorrencia é 'id_ocorrencia'
-      id_ocorrencia: id,
-    },
-    // O 'include' busca os dados das tabelas relacionadas, enriquecendo o resultado
-    include: {
-      subgrupo: true,
-      municipio: true,
-      forma_acervo: true,
-      usuario_abertura: {
-        select: { id: true, nome: true, nome_guerra: true, posto_grad: true },
-      },
-      localizacao: true,
-      vitimas: true,
-      midias: true,
-      viaturas_usadas: {
-        include: {
-          viatura: true, // Traz os detalhes da viatura (tipo, número)
-        },
-      },
-      equipe_ocorrencia: {
-        include: {
-          usuario: { // Traz os detalhes do bombeiro na equipe
-            select: { id: true, nome: true, nome_guerra: true, posto_grad: true },
-          },
-        },
-      },
-    },
+export const exportOcorrenciasToPDF = async (filters: OcorrenciaFilters): Promise<Buffer> => {
+  // A lógica de busca de dados é a mesma da exportação CSV
+  const { dataInicio, dataFim, ...otherFilters } = filters;
+  const where: any = {};
+  if (dataInicio) { where.carimbo_data_hora_abertura = { ...where.carimbo_data_hora_abertura, gte: new Date(dataInicio) } }
+  if (dataFim) { where.carimbo_data_hora_abertura = { ...where.carimbo_data_hora_abertura, lte: new Date(dataFim) } }
+  if (otherFilters.status) { where.status_situacao = otherFilters.status }
+  if (otherFilters.municipioId) { where.id_municipio_fk = otherFilters.municipioId }
+  if (otherFilters.subgrupoId) { where.id_subgrupo_fk = otherFilters.subgrupoId }
+
+  const ocorrencias = await prisma.ocorrencia.findMany({
+    where,
+    orderBy: { carimbo_data_hora_abertura: 'desc' },
+    include: { subgrupo: true, municipio: true, usuario_abertura: true },
   });
 
-  // Se a ocorrência não for encontrada, lançamos nosso erro customizado
-  if (!ocorrencia) {
-    throw new NotFoundError('Ocorrência não encontrada');
-  }
+  // A partir daqui, começa a criação do PDF
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({ margin: 30, size: 'A4' });
+    const buffers: Buffer[] = [];
 
-  return ocorrencia;
+    doc.on('data', buffers.push.bind(buffers));
+    doc.on('end', () => {
+      const pdfBuffer = Buffer.concat(buffers);
+      resolve(pdfBuffer);
+    });
+    doc.on('error', reject);
+
+    // ---- Conteúdo do PDF ----
+    // Cabeçalho
+    doc.fontSize(18).text('Relatório de Ocorrências', { align: 'center' });
+    doc.moveDown();
+
+    // Tabela de Dados
+    const tableTop = 100;
+    const rowHeight = 25;
+    const headers = ['Data', 'Status', 'Município', 'Subgrupo', 'Nº Aviso'];
+
+    // Desenha o cabeçalho da tabela
+    doc.fontSize(10).font('Helvetica-Bold');
+    headers.forEach((header, i) => {
+      doc.text(header, 30 + i * 110, tableTop, { width: 100, align: 'left' });
+    });
+
+    // Desenha as linhas da tabela
+    doc.fontSize(8).font('Helvetica');
+    ocorrencias.forEach((ocorrencia, rowIndex) => {
+      const y = tableTop + (rowIndex + 1) * rowHeight;
+      const row = [
+        new Date(ocorrencia.data_acionamento).toLocaleDateString(),
+        ocorrencia.status_situacao,
+        ocorrencia.municipio.nome_municipio,
+        ocorrencia.subgrupo.descricao_subgrupo,
+        ocorrencia.nr_aviso || '-',
+      ];
+      row.forEach((cell, i) => {
+        doc.text(cell, 30 + i * 110, y, { width: 100, align: 'left' });
+      });
+    });
+    // ---- Fim do Conteúdo do PDF ----
+
+    doc.end();
+  });
 };
