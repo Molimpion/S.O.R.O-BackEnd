@@ -1,21 +1,11 @@
-/*
-  Warnings:
+-- CreateEnum
+CREATE TYPE "Profile" AS ENUM ('ADMIN', 'ANALISTA', 'CHEFE');
 
-  - You are about to drop the `AuditLog` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
-
-*/
 -- CreateEnum
 CREATE TYPE "Status" AS ENUM ('ABERTA', 'EM_ANDAMENTO', 'CONCLUIDA');
 
--- DropForeignKey
-ALTER TABLE "AuditLog" DROP CONSTRAINT "AuditLog_userId_fkey";
-
--- DropTable
-DROP TABLE "AuditLog";
-
--- DropTable
-DROP TABLE "User";
+-- CreateEnum
+CREATE TYPE "ActionType" AS ENUM ('USER_LOGIN_SUCCESS', 'USER_LOGIN_FAILURE', 'USER_REGISTERED', 'ADMIN_VIEWED_USERS', 'ADMIN_VIEWED_USER_DETAILS', 'ADMIN_UPDATED_USER', 'ADMIN_DELETED_USER');
 
 -- CreateTable
 CREATE TABLE "ocorrencias" (
@@ -45,6 +35,8 @@ CREATE TABLE "usuarios" (
     "email" TEXT NOT NULL,
     "senha_hash" TEXT NOT NULL,
     "tipo_perfil" "Profile" NOT NULL DEFAULT 'ANALISTA',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "id_unidade_operacional_fk" TEXT NOT NULL,
 
     CONSTRAINT "usuarios_pkey" PRIMARY KEY ("id")

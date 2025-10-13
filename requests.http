@@ -1,25 +1,115 @@
 # ===================================================================
-# SUÍTE DE TESTES COMPLETA - API PROJETO BOMBEIROS
-# Execute as requisições na ordem para um fluxo de teste completo.
+# SUÍTE DE TESTES COMPLETA E ORDENADA - API PROJETO BOMBEIROS
 # ===================================================================
 
 # --- VARIÁVEIS GLOBAIS ---
 @hostname = http://localhost:3000
-
-# Tokens (serão preenchidos durante os testes)
-@adminToken = 
-@analistaToken = 
-
-# IDs (serão preenchidos durante os testes)
-@userId = 
-@ocorrenciaId = 
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiYTRlZDgyNS00ZjE0LTQxNzYtODUwYi04ZTNhMTM0YzQ1YWYiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjAzNzY2MzksImV4cCI6MTc2MDQwNTQzOX0.n1BgozsD3Y_26jD1nbwVV4w4g3vYwsmHK0ld_9x6dPE
+@userId =
+@ocorrenciaId =
 
 
 # ===================================================================
-# 1. AUTENTICAÇÃO E USUÁRIOS (W-01 & W-05)
+# FASE 1: CRIAÇÃO DO PRIMEIRO ADMIN E LOGIN
 # ===================================================================
 
-### 1.1 - Cadastrar usuário ANALISTA
+### 1.1 - Cadastrar o primeiro usuário ADMIN (sem unidade operacional)
+# @name createAdmin
+POST {{hostname}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Super Admin",
+  "email": "admin@bombeiros.com",
+  "password": "senhaSuperSecreta123",
+  "profile": "ADMIN",
+  "matricula": "000000-0"
+}
+
+### 1.2 - Fazer login como ADMIN
+# AÇÃO: Execute e copie o token da resposta para a variável @adminToken acima.
+# @name loginAdmin
+POST {{hostname}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@bombeiros.com",
+  "password": "senhaSuperSecreta123"
+}
+
+
+# ===================================================================
+# FASE 2: SETUP ADMINISTRATIVO (com token de Admin)
+# ===================================================================
+
+### 2.1 - Cadastrar Grupamento
+# @name createGrupamento
+POST {{hostname}}/api/grupamentos
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "nome_grupamento": "Grupamento Tático",
+  "sigla": "GT"
+}
+
+### 2.2 - Cadastrar Unidade Operacional
+# @name createUnidade
+POST {{hostname}}/api/unidades-operacionais
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "nome_unidade": "Quartel Central",
+  "id_grupamento_fk": "{{createGrupamento.response.body.id_grupamento}}"
+}
+
+### 2.3 - Cadastrar Município
+# @name createMunicipio
+POST {{hostname}}/api/municipios
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "nome_municipio": "Recife" }
+
+### 2.4 - Cadastrar Hierarquia de Classificação
+# @name createNatureza
+POST {{hostname}}/api/naturezas
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+{ "descricao": "INCÊNDIO" }
+###
+# @name createGrupo
+POST {{hostname}}/api/grupos
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+{
+  "descricao_grupo": "Incêndio em Edificação",
+  "id_natureza_fk": "{{createNatureza.response.body.id_natureza}}"
+}
+###
+# @name createSubgrupo
+POST {{hostname}}/api/subgrupos
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+{
+  "descricao_subgrupo": "Incêndio em Edificação Residencial",
+  "id_grupo_fk": "{{createGrupo.response.body.id_grupo}}"
+}
+
+### 2.5 - Cadastrar Forma de Acervo
+# @name createFormaAcervo
+POST {{hostname}}/api/formas-acervo
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+{ "descricao": "Telefone 193" }
+
+
+# ===================================================================
+# FASE 3: CRIAÇÃO DE USUÁRIOS OPERACIONAIS E OCORRÊNCIAS
+# ===================================================================
+
+### 3.1 - Cadastrar um usuário ANALISTA (agora com Unidade)
 # @name createAnalista
 POST {{hostname}}/api/auth/register
 Content-Type: application/json
@@ -33,32 +123,7 @@ Content-Type: application/json
   "id_unidade_operacional_fk": "{{createUnidade.response.body.id_unidade}}"
 }
 
-### 1.2 - Cadastrar usuário ADMIN
-# @name createAdmin
-POST {{hostname}}/api/auth/register
-Content-Type: application/json
-
-{
-  "name": "Major Ana Silva",
-  "email": "ana.major@bombeiros.com",
-  "password": "senhaSuperSecreta123",
-  "profile": "ADMIN",
-  "matricula": "765432-1",
-  "id_unidade_operacional_fk": "{{createUnidade.response.body.id_unidade}}"
-}
-
-### 1.3 - Login como ADMIN
-# AÇÃO: Execute e copie o token para a variável @adminToken acima.
-# @name loginAdmin
-POST {{hostname}}/api/auth/login
-Content-Type: application/json
-
-{
-  "email": "ana.major@bombeiros.com",
-  "password": "senhaSuperSecreta123"
-}
-
-### 1.4 - Login como ANALISTA
+### 3.2 - Login como ANALISTA
 # AÇÃO: Execute e copie o token para a variável @analistaToken acima.
 # @name loginAnalista
 POST {{hostname}}/api/auth/login
@@ -69,98 +134,7 @@ Content-Type: application/json
   "password": "senhaValida123"
 }
 
-
-# ===================================================================
-# 2. SETUP ADMINISTRATIVO (Cadastrar Dados de Suporte)
-# TODAS as requisições abaixo precisam do token de ADMIN
-# ===================================================================
-
-### 2.1 - Cadastrar Grupamento
-# @name createGrupamento
-POST {{hostname}}/api/grupamentos
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-
-{
-  "nome_grupamento": "Grupamento de Bombeiros de Atendimento Pré-Hospitalar",
-  "sigla": "GBAPH"
-}
-
-### 2.2 - Cadastrar Unidade Operacional
-# @name createUnidade
-POST {{hostname}}/api/unidades-operacionais
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-
-{
-  "nome_unidade": "Quartel Central de Recife",
-  "id_grupamento_fk": "{{createGrupamento.response.body.id_grupamento}}"
-}
-
-### 2.3 - Cadastrar Viatura
-# @name createViatura
-POST {{hostname}}/api/viaturas
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-
-{
-  "tipo_vt": "ABT",
-  "numero_viatura": "ABT-0101",
-  "id_unidade_operacional_fk": "{{createUnidade.response.body.id_unidade}}"
-}
-
-### 2.4 - Cadastrar Município
-# @name createMunicipio
-POST {{hostname}}/api/municipios
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-
-{
-  "nome_municipio": "Recife"
-}
-
-### 2.5 - Cadastrar Hierarquia de Classificação
-# @name createNatureza
-POST {{hostname}}/api/naturezas
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-{ "descricao": "SALVAMENTO" }
-
-###
-# @name createGrupo
-POST {{hostname}}/api/grupos
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-{
-  "descricao_grupo": "Salvamento de Animais",
-  "id_natureza_fk": "{{createNatureza.response.body.id_natureza}}"
-}
-
-###
-# @name createSubgrupo
-POST {{hostname}}/api/subgrupos
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-{
-  "descricao_subgrupo": "Animal em Local de Risco",
-  "id_grupo_fk": "{{createGrupo.response.body.id_grupo}}"
-}
-
-### 2.6 - Cadastrar Forma de Acervo
-# @name createFormaAcervo
-POST {{hostname}}/api/formas-acervo
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-{ "descricao": "Telefone 193" }
-
-
-# ===================================================================
-# 3. OCORRÊNCIAS (W-02, W-03)
-# ===================================================================
-
-### 3.1 - Criar uma nova Ocorrência
-# Usa o token do ANALISTA e os IDs dos dados que acabamos de cadastrar.
-# Resultado esperado: 201 Created
+### 3.3 - Criar uma Ocorrência (com token de Analista)
 # @name createOcorrencia
 POST {{hostname}}/api/ocorrencias
 Authorization: Bearer {{analistaToken}}
@@ -175,42 +149,33 @@ Content-Type: application/json
   "id_forma_acervo_fk": "{{createFormaAcervo.response.body.id_forma_acervo}}"
 }
 
-### 3.2 - Listar Ocorrências (com filtros)
-# Resultado esperado: 200 OK com uma lista paginada
-GET {{hostname}}/api/ocorrencias?status=ABERTA&page=1&limit=5
+
+# ===================================================================
+# FASE 4: CONSULTAS E ANÁLISES
+# ===================================================================
+
+### 4.1 - Listar Ocorrências (com filtro)
+GET {{hostname}}/api/ocorrencias?status=ABERTA
 Authorization: Bearer {{analistaToken}}
 
-### 3.3 - Ver Detalhes de uma Ocorrência
-# Resultado esperado: 200 OK com todos os detalhes da ocorrência criada
+### 4.2 - Ver Detalhes de uma Ocorrência
 GET {{hostname}}/api/ocorrencias/{{createOcorrencia.response.body.id_ocorrencia}}
 Authorization: Bearer {{analistaToken}}
 
-
-# ===================================================================
-# 4. RELATÓRIOS E DASHBOARD (W-04, W-07)
-# ===================================================================
-
-### 4.1 - Gerar Relatório CSV de Ocorrências
-# Resultado esperado: Download do arquivo CSV
-GET {{hostname}}/api/relatorios/ocorrencias/csv?status=ABERTA
+### 4.3 - Gerar Relatório CSV (com token de Admin)
+GET {{hostname}}/api/relatorios/ocorrencias/csv
 Authorization: Bearer {{adminToken}}
 
-### 4.2 - Gerar Relatório PDF de Ocorrências
-# Resultado esperado: Download do arquivo PDF
-GET {{hostname}}/api/relatorios/ocorrencias/pdf?status=ABERTA
-Authorization: Bearer {{adminToken}}
-
-### 4.3 - Obter KPI de Ocorrências por Status
-# Resultado esperado: 200 OK com JSON { "ABERTA": 1, ... }
+### 4.4 - Obter KPI de Ocorrências por Status
 GET {{hostname}}/api/dashboard/ocorrencias-por-status
 Authorization: Bearer {{analistaToken}}
 
-### 4.4 - Obter KPI de Ocorrências por Tipo (Subgrupo)
-# Resultado esperado: 200 OK com JSON [ { "nome": "...", "total": 1 } ]
-GET {{hostname}}/api/dashboard/ocorrencias-por-tipo
-Authorization: Bearer {{analistaToken}}
 
-### 4.5 - Obter KPI de Ocorrências por Município
-# Resultado esperado: 200 OK com JSON [ { "nome": "Recife", "total": 1 } ]
-GET {{hostname}}/api/dashboard/ocorrencias-por-municipio
+# ===================================================================
+# FASE 5: TESTES DE SEGURANÇA
+# ===================================================================
+
+### 5.1 - Tentar aceder a rota de admin com token de ANALISTA
+# Resultado esperado: Erro 403 Forbidden
+GET {{hostname}}/api/users
 Authorization: Bearer {{analistaToken}}

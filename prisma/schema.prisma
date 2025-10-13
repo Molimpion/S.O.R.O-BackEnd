@@ -53,12 +53,12 @@ model User {
   senha_hash                String
   tipo_perfil               Profile   @default(ANALISTA)
   
-  createdAt                 DateTime  @default(now())   // <-- ADICIONE ESTA LINHA
-  updatedAt                 DateTime  @updatedAt        // <-- ADICIONE ESTA LINHA
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
 
-  // Relacionamento com Quartel Base
-  unidade_operacional       UnidadeOperacional @relation(fields: [id_unidade_operacional_fk], references: [id_unidade])
-  id_unidade_operacional_fk String
+  // ALTERAÇÃO AQUI: Adicione o '?' para tornar opcional
+  unidade_operacional       UnidadeOperacional? @relation(fields: [id_unidade_operacional_fk], references: [id_unidade])
+  id_unidade_operacional_fk String?
 
   // Relacionamentos Inversos
   ocorrencias_abertas       Ocorrencia[]       @relation("OcorrenciasAbertas")
