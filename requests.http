@@ -1,25 +1,26 @@
 # ===================================================================
-# ARQUIVO DE TESTES DA API - PROJETO BOMBEIROS
-# Para executar, clique em "Send Request" acima de cada bloco ###
+# SUÍTE DE TESTES COMPLETA - API PROJETO BOMBEIROS
+# Execute as requisições na ordem para um fluxo de teste completo.
 # ===================================================================
 
 # --- VARIÁVEIS GLOBAIS ---
-# Define o endereço base da API
 @hostname = http://localhost:3000
 
-# Tokens que serão obtidos durante os testes
+# Tokens (serão preenchidos durante os testes)
 @adminToken = 
 @analistaToken = 
 
-# ID de um usuário que será obtido durante os testes
+# IDs (serão preenchidos durante os testes)
 @userId = 
+@ocorrenciaId = 
 
 
 # ===================================================================
-# 1. TESTES DE CADASTRO (/api/auth/register)
+# 1. AUTENTICAÇÃO E USUÁRIOS (W-01 & W-05)
 # ===================================================================
 
-### 1.1 - Cadastrar um novo usuário ANALISTA com sucesso
+### 1.1 - Cadastrar usuário ANALISTA
+# @name createAnalista
 POST {{hostname}}/api/auth/register
 Content-Type: application/json
 
@@ -27,10 +28,13 @@ Content-Type: application/json
   "name": "Soldado Carlos",
   "email": "carlos.soldado@bombeiros.com",
   "password": "senhaValida123",
-  "profile": "ANALISTA"
+  "profile": "ANALISTA",
+  "matricula": "123456-7",
+  "id_unidade_operacional_fk": "{{createUnidade.response.body.id_unidade}}"
 }
 
-### 1.2 - Cadastrar um novo usuário ADMIN com sucesso
+### 1.2 - Cadastrar usuário ADMIN
+# @name createAdmin
 POST {{hostname}}/api/auth/register
 Content-Type: application/json
 
@@ -38,40 +42,14 @@ Content-Type: application/json
   "name": "Major Ana Silva",
   "email": "ana.major@bombeiros.com",
   "password": "senhaSuperSecreta123",
-  "profile": "ADMIN"
+  "profile": "ADMIN",
+  "matricula": "765432-1",
+  "id_unidade_operacional_fk": "{{createUnidade.response.body.id_unidade}}"
 }
 
-### 1.3 - Tentar cadastrar um usuário com email que já existe
-# Resultado esperado: Erro 400 Bad Request
-POST {{hostname}}/api/auth/register
-Content-Type: application/json
-
-{
-  "name": "Major Ana Silva",
-  "email": "ana.major@bombeiros.com",
-  "password": "outraSenha123",
-  "profile": "ADMIN"
-}
-
-### 1.4 - Tentar cadastrar com dados inválidos (senha curta)
-# Resultado esperado: Erro 400 Bad Request com detalhes do Zod
-POST {{hostname}}/api/auth/register
-Content-Type: application/json
-
-{
-  "name": "Usuario Invalido",
-  "email": "invalido@email.com",
-  "password": "123",
-  "profile": "ANALISTA"
-}
-
-
-# ===================================================================
-# 2. TESTES DE AUTENTICAÇÃO (/api/auth/login)
-# ===================================================================
-
-### 2.1 - Fazer login com usuário ADMIN
-# AÇÃO: Após rodar, copie o token da resposta e cole na variável @adminToken no topo do arquivo.
+### 1.3 - Login como ADMIN
+# AÇÃO: Execute e copie o token para a variável @adminToken acima.
+# @name loginAdmin
 POST {{hostname}}/api/auth/login
 Content-Type: application/json
 
@@ -80,8 +58,9 @@ Content-Type: application/json
   "password": "senhaSuperSecreta123"
 }
 
-### 2.2 - Fazer login com usuário ANALISTA
-# AÇÃO: Após rodar, copie o token da resposta e cole na variável @analistaToken no topo do arquivo.
+### 1.4 - Login como ANALISTA
+# AÇÃO: Execute e copie o token para a variável @analistaToken acima.
+# @name loginAnalista
 POST {{hostname}}/api/auth/login
 Content-Type: application/json
 
@@ -90,62 +69,148 @@ Content-Type: application/json
   "password": "senhaValida123"
 }
 
-### 2.3 - Tentar fazer login com senha errada
-# Resultado esperado: Erro 401 Unauthorized
-POST {{hostname}}/api/auth/login
-Content-Type: application/json
-
-{
-  "email": "ana.major@bombeiros.com",
-  "password": "senha-errada"
-}
-
 
 # ===================================================================
-# 3. TESTES DE GESTÃO DE USUÁRIOS (/api/users)
+# 2. SETUP ADMINISTRATIVO (Cadastrar Dados de Suporte)
 # TODAS as requisições abaixo precisam do token de ADMIN
 # ===================================================================
 
-### 3.1 - Listar todos os usuários
-# AÇÃO: Primeiro, execute o login do ADMIN (2.1) e cole o token na variável @adminToken
-# Resultado esperado: 200 OK com a lista de usuários
-GET {{hostname}}/api/users
-Authorization: Bearer {{adminToken}}
-
-### 3.2 - Obter detalhes de um usuário específico
-# AÇÃO: Primeiro, execute a listagem (3.1), copie o ID de um usuário (ex: do "Soldado Carlos") 
-# e cole na variável @userId no topo do arquivo.
-# Resultado esperado: 200 OK com os dados do usuário "Soldado Carlos"
-GET {{hostname}}/api/users/{{userId}}
-Authorization: Bearer {{adminToken}}
-
-### 3.3 - Atualizar um usuário
-# Resultado esperado: 200 OK com os dados do usuário atualizados
-PUT {{hostname}}/api/users/{{userId}}
+### 2.1 - Cadastrar Grupamento
+# @name createGrupamento
+POST {{hostname}}/api/grupamentos
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-  "name": "Cabo Carlos Silva",
-  "profile": "CHEFE"
+  "nome_grupamento": "Grupamento de Bombeiros de Atendimento Pré-Hospitalar",
+  "sigla": "GBAPH"
 }
 
-### 3.4 - Deletar um usuário
-# Resultado esperado: 204 No Content (sucesso, sem corpo de resposta)
-DELETE {{hostname}}/api/users/{{userId}}
+### 2.2 - Cadastrar Unidade Operacional
+# @name createUnidade
+POST {{hostname}}/api/unidades-operacionais
 Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "nome_unidade": "Quartel Central de Recife",
+  "id_grupamento_fk": "{{createGrupamento.response.body.id_grupamento}}"
+}
+
+### 2.3 - Cadastrar Viatura
+# @name createViatura
+POST {{hostname}}/api/viaturas
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "tipo_vt": "ABT",
+  "numero_viatura": "ABT-0101",
+  "id_unidade_operacional_fk": "{{createUnidade.response.body.id_unidade}}"
+}
+
+### 2.4 - Cadastrar Município
+# @name createMunicipio
+POST {{hostname}}/api/municipios
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "nome_municipio": "Recife"
+}
+
+### 2.5 - Cadastrar Hierarquia de Classificação
+# @name createNatureza
+POST {{hostname}}/api/naturezas
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+{ "descricao": "SALVAMENTO" }
+
+###
+# @name createGrupo
+POST {{hostname}}/api/grupos
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+{
+  "descricao_grupo": "Salvamento de Animais",
+  "id_natureza_fk": "{{createNatureza.response.body.id_natureza}}"
+}
+
+###
+# @name createSubgrupo
+POST {{hostname}}/api/subgrupos
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+{
+  "descricao_subgrupo": "Animal em Local de Risco",
+  "id_grupo_fk": "{{createGrupo.response.body.id_grupo}}"
+}
+
+### 2.6 - Cadastrar Forma de Acervo
+# @name createFormaAcervo
+POST {{hostname}}/api/formas-acervo
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+{ "descricao": "Telefone 193" }
 
 
 # ===================================================================
-# 4. TESTES DE SEGURANÇA (Autorização)
+# 3. OCORRÊNCIAS (W-02, W-03)
 # ===================================================================
 
-### 4.1 - Tentar listar usuários com token de ANALISTA
-# AÇÃO: Execute o login do ANALISTA (2.2) e cole o token na variável @analistaToken
-# Resultado esperado: Erro 403 Forbidden
-GET {{hostname}}/api/users
+### 3.1 - Criar uma nova Ocorrência
+# Usa o token do ANALISTA e os IDs dos dados que acabamos de cadastrar.
+# Resultado esperado: 201 Created
+# @name createOcorrencia
+POST {{hostname}}/api/ocorrencias
+Authorization: Bearer {{analistaToken}}
+Content-Type: application/json
+
+{
+  "data_acionamento": "2025-10-13T14:00:00Z",
+  "hora_acionamento": "2025-10-13T14:00:00Z",
+  "nr_aviso": "AV-2025-10-13-001",
+  "id_subgrupo_fk": "{{createSubgrupo.response.body.id_subgrupo}}",
+  "id_municipio_fk": "{{createMunicipio.response.body.id_municipio}}",
+  "id_forma_acervo_fk": "{{createFormaAcervo.response.body.id_forma_acervo}}"
+}
+
+### 3.2 - Listar Ocorrências (com filtros)
+# Resultado esperado: 200 OK com uma lista paginada
+GET {{hostname}}/api/ocorrencias?status=ABERTA&page=1&limit=5
 Authorization: Bearer {{analistaToken}}
 
-### 4.2 - Tentar listar usuários sem token
-# Resultado esperado: Erro 401 Unauthorized
-GET {{hostname}}/api/users
+### 3.3 - Ver Detalhes de uma Ocorrência
+# Resultado esperado: 200 OK com todos os detalhes da ocorrência criada
+GET {{hostname}}/api/ocorrencias/{{createOcorrencia.response.body.id_ocorrencia}}
+Authorization: Bearer {{analistaToken}}
+
+
+# ===================================================================
+# 4. RELATÓRIOS E DASHBOARD (W-04, W-07)
+# ===================================================================
+
+### 4.1 - Gerar Relatório CSV de Ocorrências
+# Resultado esperado: Download do arquivo CSV
+GET {{hostname}}/api/relatorios/ocorrencias/csv?status=ABERTA
+Authorization: Bearer {{adminToken}}
+
+### 4.2 - Gerar Relatório PDF de Ocorrências
+# Resultado esperado: Download do arquivo PDF
+GET {{hostname}}/api/relatorios/ocorrencias/pdf?status=ABERTA
+Authorization: Bearer {{adminToken}}
+
+### 4.3 - Obter KPI de Ocorrências por Status
+# Resultado esperado: 200 OK com JSON { "ABERTA": 1, ... }
+GET {{hostname}}/api/dashboard/ocorrencias-por-status
+Authorization: Bearer {{analistaToken}}
+
+### 4.4 - Obter KPI de Ocorrências por Tipo (Subgrupo)
+# Resultado esperado: 200 OK com JSON [ { "nome": "...", "total": 1 } ]
+GET {{hostname}}/api/dashboard/ocorrencias-por-tipo
+Authorization: Bearer {{analistaToken}}
+
+### 4.5 - Obter KPI de Ocorrências por Município
+# Resultado esperado: 200 OK com JSON [ { "nome": "Recife", "total": 1 } ]
+GET {{hostname}}/api/dashboard/ocorrencias-por-municipio
+Authorization: Bearer {{analistaToken}}
