@@ -1,10 +1,11 @@
-// src/services/ocorrenciaService.ts (AJUSTADO PARA SEGURANÇA E TIPAGEM)
+// src/services/ocorrenciaService.ts (ATUALIZADO)
+
 import { PrismaClient } from '@prisma/client';
-import { BadRequestError } from '../errors/api-errors';
+// Adicionamos o NotFoundError para usar na nova função
+import { BadRequestError, NotFoundError } from '../errors/api-errors';
 
 const prisma = new PrismaClient();
 
-// A interface agora não espera mais o ID do usuário que abriu
 interface CreateOcorrenciaData {
   data_acionamento: string | Date;
   hora_acionamento: string | Date;
@@ -16,8 +17,6 @@ interface CreateOcorrenciaData {
 
 /**
  * Cria uma nova ocorrência no banco de dados.
- * @param data - Os dados da ocorrência a ser criada.
- * @param userId - O ID do usuário logado que está criando a ocorrência.
  */
 export const createOcorrencia = async (data: CreateOcorrenciaData, userId: string) => {
   if (!data.id_subgrupo_fk || !data.id_municipio_fk || !data.id_forma_acervo_fk) {
@@ -29,7 +28,6 @@ export const createOcorrencia = async (data: CreateOcorrenciaData, userId: strin
       ...data,
       data_acionamento: new Date(data.data_acionamento),
       hora_acionamento: new Date(data.hora_acionamento),
-      // AQUI ESTÁ A MUDANÇA: Usamos o ID do usuário vindo do token
       id_usuario_abertura_fk: userId,
     },
   });
@@ -59,4 +57,53 @@ export const getAllOcorrencias = async () => {
   });
 
   return ocorrencias;
+};
+
+
+// =============================================================
+// ============ NOVA FUNÇÃO ADICIONADA ABAIXO ==================
+// =============================================================
+
+/**
+ * Busca uma ocorrência específica pelo seu ID, incluindo todos os dados relacionados.
+ * @param id - O ID da ocorrência a ser buscada.
+ */
+export const getOcorrenciaById = async (id: string) => {
+  const ocorrencia = await prisma.ocorrencia.findUnique({
+    where: {
+      // O nome do campo de ID no nosso model Ocorrencia é 'id_ocorrencia'
+      id_ocorrencia: id,
+    },
+    // O 'include' busca os dados das tabelas relacionadas, enriquecendo o resultado
+    include: {
+      subgrupo: true,
+      municipio: true,
+      forma_acervo: true,
+      usuario_abertura: {
+        select: { id: true, nome: true, nome_guerra: true, posto_grad: true },
+      },
+      localizacao: true,
+      vitimas: true,
+      midias: true,
+      viaturas_usadas: {
+        include: {
+          viatura: true, // Traz os detalhes da viatura (tipo, número)
+        },
+      },
+      equipe_ocorrencia: {
+        include: {
+          usuario: { // Traz os detalhes do bombeiro na equipe
+            select: { id: true, nome: true, nome_guerra: true, posto_grad: true },
+          },
+        },
+      },
+    },
+  });
+
+  // Se a ocorrência não for encontrada, lançamos nosso erro customizado
+  if (!ocorrencia) {
+    throw new NotFoundError('Ocorrência não encontrada');
+  }
+
+  return ocorrencia;
 };

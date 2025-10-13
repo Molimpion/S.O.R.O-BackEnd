@@ -1,4 +1,4 @@
-// src/routes/ocorrenciaRoutes.ts (ATUALIZADO COM VALIDAÇÃO)
+// src/routes/ocorrenciaRoutes.ts (ATUALIZADO)
 
 import { Router } from 'express';
 import * as ocorrenciaController from '../controllers/ocorrenciaController';
@@ -10,13 +10,16 @@ const router = Router();
 
 router.use(authenticateToken);
 
-// A rota GET continua a mesma
+// Rota para listar todas as ocorrências
 router.get('/', ocorrenciaController.listarTodas);
 
-// A rota POST agora tem o middleware de validação
+// Rota para buscar uma ocorrência específica por ID
+router.get('/:id', ocorrenciaController.getById);
+
+// Rota para criar uma nova ocorrência
 router.post(
   '/',
-  validate(createOcorrenciaSchema), // 3. APLICA A VALIDAÇÃO AQUI
+  validate(createOcorrenciaSchema),
   ocorrenciaController.criar
 );
 

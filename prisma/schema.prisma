@@ -44,24 +44,27 @@ model Ocorrencia {
 }
 
 model User {
-  id                   String    @id @default(uuid())
-  matricula            String    @unique
-  nome                 String
-  nome_guerra          String?
-  posto_grad           String?
-  email                String    @unique
-  senha_hash           String
-  tipo_perfil          Profile   @default(ANALISTA)
+  id                        String    @id @default(uuid())
+  matricula                 String    @unique
+  nome                      String
+  nome_guerra               String?
+  posto_grad                String?
+  email                     String    @unique
+  senha_hash                String
+  tipo_perfil               Profile   @default(ANALISTA)
+  
+  createdAt                 DateTime  @default(now())   // <-- ADICIONE ESTA LINHA
+  updatedAt                 DateTime  @updatedAt        // <-- ADICIONE ESTA LINHA
 
   // Relacionamento com Quartel Base
-  unidade_operacional  UnidadeOperacional @relation(fields: [id_unidade_operacional_fk], references: [id_unidade])
+  unidade_operacional       UnidadeOperacional @relation(fields: [id_unidade_operacional_fk], references: [id_unidade])
   id_unidade_operacional_fk String
 
   // Relacionamentos Inversos
-  ocorrencias_abertas  Ocorrencia[]       @relation("OcorrenciasAbertas")
-  uploads_midia        Midia[]
-  logs                 AuditLog[]
-  equipes_participadas OcorrenciaEquipe[]
+  ocorrencias_abertas       Ocorrencia[]       @relation("OcorrenciasAbertas")
+  uploads_midia             Midia[]
+  logs                      AuditLog[]
+  equipes_participadas      OcorrenciaEquipe[]
 
   @@map("usuarios")
 }
