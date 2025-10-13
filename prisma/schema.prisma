@@ -1,28 +1,234 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// prisma/schema.prisma (Versão S.O.R.O. Completa)
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String     @id @default(uuid())
-  email     String     @unique
-  name      String
-  password  String
-  profile   Profile    @default(ANALISTA)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  logs      AuditLog[] // Adiciona a relação para ver os logs de um usuário
+// ===================================================================
+// I. ENTIDADES CENTRAIS [cite: 3, 4]
+// ===================================================================
+
+model Ocorrencia {
+  id_ocorrencia         String   @id @default(uuid())
+  nr_aviso              String? // Número do aviso
+  data_acionamento      DateTime
+  hora_acionamento      DateTime
+  status_situacao       Status   @default(ABERTA)
+  carimbo_data_hora_abertura DateTime @default(now())
+  data_execucao_servico DateTime?
+  relacionado_eleicao   Boolean? @default(false)
+
+  // Relacionamentos (Chaves Estrangeiras)
+  subgrupo              Subgrupo         @relation(fields: [id_subgrupo_fk], references: [id_subgrupo])
+  id_subgrupo_fk        String
+  municipio             Municipio        @relation(fields: [id_municipio_fk], references: [id_municipio])
+  id_municipio_fk       String
+  forma_acervo          FormaAcervo      @relation(fields: [id_forma_acervo_fk], references: [id_forma_acervo])
+  id_forma_acervo_fk    String
+  usuario_abertura      User             @relation("OcorrenciasAbertas", fields: [id_usuario_abertura_fk], references: [id])
+  id_usuario_abertura_fk String
+
+  // Relacionamentos Inversos
+  localizacao           LocalizacaoOcorrencia?
+  vitimas               Vitima[]
+  midias                Midia[]
+  viaturas_usadas       OcorrenciaViatura[]
+  equipe_ocorrencia     OcorrenciaEquipe[]
+
+  @@map("ocorrencias")
 }
+
+model User {
+  id                   String    @id @default(uuid())
+  matricula            String    @unique
+  nome                 String
+  nome_guerra          String?
+  posto_grad           String?
+  email                String    @unique
+  senha_hash           String
+  tipo_perfil          Profile   @default(ANALISTA)
+
+  // Relacionamento com Quartel Base
+  unidade_operacional  UnidadeOperacional @relation(fields: [id_unidade_operacional_fk], references: [id_unidade])
+  id_unidade_operacional_fk String
+
+  // Relacionamentos Inversos
+  ocorrencias_abertas  Ocorrencia[]       @relation("OcorrenciasAbertas")
+  uploads_midia        Midia[]
+  logs                 AuditLog[]
+  equipes_participadas OcorrenciaEquipe[]
+
+  @@map("usuarios")
+}
+
+// ===================================================================
+// II. ENTIDADES DE HIERARQUIA E ORGANIZAÇÃO [cite: 5]
+// ===================================================================
+
+model Grupamento {
+  id_grupamento   String   @id @default(uuid())
+  nome_grupamento String
+  sigla           String   @unique
+
+  unidades        UnidadeOperacional[]
+
+  @@map("grupamentos")
+}
+
+model UnidadeOperacional {
+  id_unidade    String   @id @default(uuid())
+  nome_unidade  String
+  endereco_base String?
+
+  grupamento      Grupamento @relation(fields: [id_grupamento_fk], references: [id_grupamento])
+  id_grupamento_fk String
+
+  usuarios        User[]
+  viaturas        Viatura[]
+
+  @@map("unidades_operacionais")
+}
+
+model Viatura {
+  id_viatura           String    @id @default(uuid())
+  tipo_vt              String
+  numero_viatura       String    @unique
+
+  unidade_operacional  UnidadeOperacional @relation(fields: [id_unidade_operacional_fk], references: [id_unidade])
+  id_unidade_operacional_fk String
+
+  ocorrencias_participadas OcorrenciaViatura[]
+  equipes_alocadas         OcorrenciaEquipe[]
+
+  @@map("viaturas")
+}
+
+// ===================================================================
+// III. ENTIDADES DE CLASSIFICAÇÃO (LOOKUP) [cite: 9]
+// ===================================================================
+
+model Natureza {
+  id_natureza String  @id @default(uuid())
+  descricao   String
+  grupos      Grupo[]
+  @@map("naturezas")
+}
+
+model Grupo {
+  id_grupo         String   @id @default(uuid())
+  descricao_grupo  String
+  natureza         Natureza @relation(fields: [id_natureza_fk], references: [id_natureza])
+  id_natureza_fk   String
+  subgrupos        Subgrupo[]
+  @@map("grupos")
+}
+
+model Subgrupo {
+  id_subgrupo       String       @id @default(uuid())
+  descricao_subgrupo String
+  grupo             Grupo        @relation(fields: [id_grupo_fk], references: [id_grupo])
+  id_grupo_fk       String
+  ocorrencias       Ocorrencia[]
+  @@map("subgrupos")
+}
+
+model FormaAcervo {
+  id_forma_acervo String       @id @default(uuid())
+  descricao       String
+  ocorrencias     Ocorrencia[]
+  @@map("formas_acervo")
+}
+
+model Municipio {
+  id_municipio   String       @id @default(uuid())
+  nome_municipio String
+  regiao         String?
+  ais            String?
+  ocorrencias    Ocorrencia[]
+  @@map("municipios")
+}
+
+// ===================================================================
+// IV. ENTIDADES DE DETALHE E LOGÍSTICA [cite: 12]
+// ===================================================================
+
+model LocalizacaoOcorrencia {
+  ocorrencia       Ocorrencia @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia])
+  id_ocorrencia_fk String     @id
+  latitude         Float?
+  longitude        Float?
+  tipo_logradouro  String?
+  logradouro       String?
+  numero_km        String?
+  referencia_logradouro String?
+  @@map("localizacoes_ocorrencias")
+}
+
+model Vitima {
+  id_vitima          String     @id @default(uuid())
+  nome_vitima        String?
+  idade              Int?
+  classificacao_vitima String?
+  destino_vitima     String?
+  lesoes_json        Json?
+
+  ocorrencia       Ocorrencia @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia])
+  id_ocorrencia_fk String
+  @@map("vitimas")
+}
+
+model Midia {
+  id_midia         String   @id @default(uuid())
+  tipo_arquivo     String   // FOTO, VIDEO, ASSINATURA
+  url_caminho      String
+  data_upload      DateTime @default(now())
+
+  ocorrencia       Ocorrencia @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia])
+  id_ocorrencia_fk String
+  usuario_upload   User       @relation(fields: [id_usuario_upload_fk], references: [id])
+  id_usuario_upload_fk String
+  @@map("midias")
+}
+
+// -- Tabelas de Relacionamento N:M (Join Tables) --
+
+model OcorrenciaViatura {
+  ocorrencia         Ocorrencia @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia])
+  id_ocorrencia_fk   String
+  viatura            Viatura    @relation(fields: [id_viatura_fk], references: [id_viatura])
+  id_viatura_fk      String
+
+  horario_saida_quartel  DateTime?
+  horario_chegada_local  DateTime?
+  horario_saida_local    DateTime?
+
+  @@id([id_ocorrencia_fk, id_viatura_fk])
+  @@map("ocorrencias_viaturas")
+}
+
+model OcorrenciaEquipe {
+  ocorrencia             Ocorrencia @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia])
+  id_ocorrencia_fk       String
+  viatura                Viatura    @relation(fields: [id_viatura_fk], references: [id_viatura])
+  id_viatura_fk          String
+  usuario                User       @relation(fields: [matricula_usuario_fk], references: [id])
+  matricula_usuario_fk   String
+
+  funcao_na_equipe       String? // Condutor, Socorrista, Chefe de Guarnição
+
+  @@id([id_ocorrencia_fk, id_viatura_fk, matricula_usuario_fk])
+  @@map("ocorrencias_equipes")
+}
+
+
+// ===================================================================
+// V. MODELOS JÁ EXISTENTES (Mantidos)
+// ===================================================================
 
 enum Profile {
   ADMIN
@@ -30,27 +236,29 @@ enum Profile {
   CHEFE
 }
 
-// --- Modelos para Auditoria e Logs (W-06) ---
+enum Status {
+  ABERTA
+  EM_ANDAMENTO
+  CONCLUIDA
+}
 
 model AuditLog {
   id        String     @id @default(uuid())
-  action    ActionType // O tipo de ação que foi executada
-  details   String?    @db.Text // Detalhes extras, como "ID do usuário afetado: xyz"
-  ipAddress String?    // O endereço IP de onde partiu a requisição (opcional)
+  action    ActionType
+  details   String?    @db.Text
+  ipAddress String?
   timestamp DateTime   @default(now())
 
-  // Relacionamento: Qual usuário realizou a ação?
   userId    String?
   user      User?      @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
 }
 
 enum ActionType {
-  // Ações de Autenticação
   USER_LOGIN_SUCCESS
   USER_LOGIN_FAILURE
   USER_REGISTERED
-
-  // Ações de Gestão de Usuários (Admin)
   ADMIN_VIEWED_USERS
   ADMIN_VIEWED_USER_DETAILS
   ADMIN_UPDATED_USER
