@@ -1,18 +1,18 @@
-// src/routes/userRoutes.ts (CORRIGIDO)
-
 import { Router } from 'express';
 import { authenticateToken, checkAdmin } from '../middleware/authMiddleware';
-import * as userController from '../controllers/userController'; // Corrigido o caminho também
+import * as userController from '../controllers/userController';
+import { validate } from '../middleware/validate';
+// A importação agora vem do authValidator
+import { userUpdateSchema } from '../validators/authValidator';
 
 const router = Router();
 
-router.use(authenticateToken);
-router.use(checkAdmin);
+router.use(authenticateToken, checkAdmin);
 
-// CORREÇÃO: Usando 'userController' em vez de 'user'
 router.get('/', userController.getAll);
 router.get('/:id', userController.getById);
-router.put('/:id', userController.update);
+// A rota PUT usa o schema importado corretamente
+router.put('/:id', validate(userUpdateSchema), userController.update);
 router.delete('/:id', userController.remove);
 
 export default router;
