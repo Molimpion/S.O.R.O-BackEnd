@@ -1,11 +1,11 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, NumeroViatura } from '@prisma/client';
 import { NotFoundError, BadRequestError } from '../errors/api-errors';
 
 const prisma = new PrismaClient();
 
 interface ViaturaData {
   tipo_vt: string;
-  numero_viatura: string;
+  numero_viatura: NumeroViatura;
   id_unidade_operacional_fk: string;
 }
 
@@ -37,22 +37,23 @@ export const getAllViaturas = async () => {
 };
 
 /**
- * Deleta uma viatura.
+ * Deleta uma viatura pelo seu número.
+ * @param numero_viatura - O número da viatura a ser deletada (a chave primária).
  */
-export const deleteViatura = async (id: string) => {
-  const viatura = await prisma.viatura.findUnique({ where: { id_viatura: id } });
+export const deleteViatura = async (numero_viatura: NumeroViatura) => {
+  const viatura = await prisma.viatura.findUnique({ where: { numero_viatura } });
   if (!viatura) {
     throw new NotFoundError('Viatura não encontrada');
   }
 
   // Verifica se a viatura não está a ser usada em alguma ocorrência
   const ocorrenciasUsando = await prisma.ocorrenciaViatura.count({
-    where: { id_viatura_fk: id },
+    where: { id_viatura_fk: numero_viatura },
   });
 
   if (ocorrenciasUsando > 0) {
     throw new BadRequestError('Esta viatura não pode ser deletada pois está associada a ocorrências.');
   }
 
-  await prisma.viatura.delete({ where: { id_viatura: id } });
+  await prisma.viatura.delete({ where: { numero_viatura } });
 };

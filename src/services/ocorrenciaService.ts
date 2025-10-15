@@ -10,13 +10,13 @@ interface CreateOcorrenciaData {
   data_acionamento: string | Date;
   hora_acionamento: string | Date;
   id_subgrupo_fk: string;
-  id_municipio_fk: string;
+  id_bairro_fk: string;
   id_forma_acervo_fk: string;
   nr_aviso?: string;
 }
 
 export const createOcorrencia = async (data: CreateOcorrenciaData, userId: string) => {
-  if (!data.id_subgrupo_fk || !data.id_municipio_fk || !data.id_forma_acervo_fk) {
+  if (!data.id_subgrupo_fk || !data.id_bairro_fk || !data.id_forma_acervo_fk) {
     throw new BadRequestError('Faltam IDs de relacionamento obrigatórios para criar a ocorrência.');
   }
   const novaOcorrencia = await prisma.ocorrencia.create({
@@ -34,7 +34,7 @@ interface OcorrenciaFilters {
   dataInicio?: string;
   dataFim?: string;
   status?: Status;
-  municipioId?: string;
+  bairroId?: string;
   subgrupoId?: string;
   page?: number;
   limit?: number;
@@ -52,8 +52,8 @@ export const getAllOcorrencias = async (filters: OcorrenciaFilters) => {
   if (otherFilters.status) {
     where.status_situacao = otherFilters.status;
   }
-  if (otherFilters.municipioId) {
-    where.id_municipio_fk = otherFilters.municipioId;
+  if (otherFilters.bairroId) {
+    where.id_bairro_fk = otherFilters.bairroId;
   }
   if (otherFilters.subgrupoId) {
     where.id_subgrupo_fk = otherFilters.subgrupoId;
@@ -66,7 +66,7 @@ export const getAllOcorrencias = async (filters: OcorrenciaFilters) => {
       orderBy: { carimbo_data_hora_abertura: 'desc' },
       include: {
         subgrupo: true,
-        municipio: true,
+        bairro: true,
         usuario_abertura: { select: { id: true, nome: true, nome_guerra: true } },
       },
     }),
@@ -85,7 +85,7 @@ export const getOcorrenciaById = async (id: string) => {
     where: { id_ocorrencia: id },
     include: {
       subgrupo: true,
-      municipio: true,
+      bairro: true,
       forma_acervo: true,
       usuario_abertura: { select: { id: true, nome: true, nome_guerra: true, posto_grad: true } },
       localizacao: true,
@@ -117,8 +117,8 @@ export const exportOcorrenciasToCSV = async (filters: OcorrenciaFilters) => {
   if (otherFilters.status) {
     where.status_situacao = otherFilters.status;
   }
-  if (otherFilters.municipioId) {
-    where.id_municipio_fk = otherFilters.municipioId;
+  if (otherFilters.bairroId) {
+    where.id_bairro_fk = otherFilters.bairroId;
   }
   if (otherFilters.subgrupoId) {
     where.id_subgrupo_fk = otherFilters.subgrupoId;
@@ -132,7 +132,7 @@ export const exportOcorrenciasToCSV = async (filters: OcorrenciaFilters) => {
     },
     include: {
       subgrupo: true,
-      municipio: true,
+      bairro: true,
       usuario_abertura: true,
     },
   });
@@ -142,7 +142,7 @@ export const exportOcorrenciasToCSV = async (filters: OcorrenciaFilters) => {
     { key: 'nr_aviso', header: 'Nº Aviso' },
     { key: 'status_situacao', header: 'Status' },
     { key: 'data_acionamento', header: 'Data Acionamento' },
-    { key: 'municipio.nome_municipio', header: 'Município' },
+    { key: 'bairro.nome_bairro', header: 'Município' },
     { key: 'subgrupo.descricao_subgrupo', header: 'Subgrupo' },
     { key: 'usuario_abertura.nome', header: 'Usuário Abertura' },
   ];
@@ -151,9 +151,9 @@ export const exportOcorrenciasToCSV = async (filters: OcorrenciaFilters) => {
   const csvString = stringify(ocorrencias, {
     header: true,
     columns: columns,
-    // Formata os dados aninhados (ex: municipio.nome_municipio)
+    // Formata os dados aninhados (ex: bairro.nome_bairro)
     cast: {
-      object: (value) => value?.nome_municipio || value?.descricao_subgrupo || value?.nome || '',
+      object: (value) => value?.nome_bairro || value?.descricao_subgrupo || value?.nome || '',
     }
   });
 
@@ -172,13 +172,13 @@ export const exportOcorrenciasToPDF = async (filters: OcorrenciaFilters): Promis
   if (dataInicio) { where.carimbo_data_hora_abertura = { ...where.carimbo_data_hora_abertura, gte: new Date(dataInicio) } }
   if (dataFim) { where.carimbo_data_hora_abertura = { ...where.carimbo_data_hora_abertura, lte: new Date(dataFim) } }
   if (otherFilters.status) { where.status_situacao = otherFilters.status }
-  if (otherFilters.municipioId) { where.id_municipio_fk = otherFilters.municipioId }
+  if (otherFilters.bairroId) { where.id_bairro_fk = otherFilters.bairroId }
   if (otherFilters.subgrupoId) { where.id_subgrupo_fk = otherFilters.subgrupoId }
 
   const ocorrencias = await prisma.ocorrencia.findMany({
     where,
     orderBy: { carimbo_data_hora_abertura: 'desc' },
-    include: { subgrupo: true, municipio: true, usuario_abertura: true },
+    include: { subgrupo: true, bairro: true, usuario_abertura: true },
   });
 
   // A partir daqui, começa a criação do PDF
@@ -216,7 +216,7 @@ export const exportOcorrenciasToPDF = async (filters: OcorrenciaFilters): Promis
       const row = [
         new Date(ocorrencia.data_acionamento).toLocaleDateString(),
         ocorrencia.status_situacao,
-        ocorrencia.municipio.nome_municipio,
+        ocorrencia.bairro.nome_bairro,
         ocorrencia.subgrupo.descricao_subgrupo,
         ocorrencia.nr_aviso || '-',
       ];

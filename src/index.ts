@@ -1,5 +1,3 @@
-// src/index.ts (VERSÃO FINAL ATUALIZADA)
-
 import 'express-async-errors';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -17,7 +15,8 @@ import { authenticateToken } from './middleware/authMiddleware';
 import authRoutes from './routes/authRoutes';
 import ocorrenciaRoutes from './routes/ocorrenciaRoutes';
 import userRoutes from './routes/userRoutes';
-import municipioRoutes from './routes/municipioRoutes';
+// A linha de municipioRoutes foi REMOVIDA
+import bairroRoutes from './routes/bairroRoutes'; // <-- ADICIONADO
 import naturezaRoutes from './routes/naturezaRoutes';
 import grupoRoutes from './routes/grupoRoutes';
 import subgrupoRoutes from './routes/subgrupoRoutes';
@@ -34,22 +33,20 @@ const PORT = 3000;
 app.use(bodyParser.json());
 
 // --- ROTAS PÚBLICAS ---
-// (Rotas que não precisam de autenticação)
 app.get('/', (req, res) => { res.send('API está funcionando!') });
 app.use('/api/auth', authRoutes);
 
 // --- PONTO DE CONTROLE DE AUTENTICAÇÃO ---
-// Qualquer rota declarada abaixo desta linha precisará de um token válido.
 app.use(authenticateToken);
 
 // --- ROTAS PROTEGIDAS ---
-// (Rotas que exigem autenticação)
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/relatorios', relatorioRoutes);
 app.use('/api/ocorrencias', ocorrenciaRoutes);
 app.use('/api/users', userRoutes);
 // Rotas de Classificação/Lookup (Administrativas)
-app.use('/api/municipios', municipioRoutes);
+app.use('/api/bairros', bairroRoutes); // <-- ADICIONADO
+// A linha de /api/municipios foi REMOVIDA
 app.use('/api/naturezas', naturezaRoutes);
 app.use('/api/grupos', grupoRoutes);
 app.use('/api/subgrupos', subgrupoRoutes);
@@ -60,7 +57,6 @@ app.use('/api/unidades-operacionais', unidadeOperacionalRoutes);
 app.use('/api/viaturas', viaturaRoutes);
 
 // --- MIDDLEWARE DE ERRO ---
-// Deve ser o último middleware a ser adicionado.
 app.use(errorMiddleware);
 
 app.listen(PORT, () => {

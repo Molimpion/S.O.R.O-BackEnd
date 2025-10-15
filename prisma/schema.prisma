@@ -10,15 +10,15 @@ datasource db {
 }
 
 // ===================================================================
-// I. ENTIDADES CENTRAIS [cite: 3, 4]
+// I. ENTIDADES CENTRAIS
 // ===================================================================
 
 model Ocorrencia {
   id_ocorrencia         String   @id @default(uuid())
-  nr_aviso              String? // Número do aviso
+  nr_aviso              String?
   data_acionamento      DateTime
   hora_acionamento      DateTime
-  status_situacao       Status   @default(ABERTA)
+  status_situacao       Status   @default(PENDENTE)
   carimbo_data_hora_abertura DateTime @default(now())
   data_execucao_servico DateTime?
   relacionado_eleicao   Boolean? @default(false)
@@ -26,8 +26,8 @@ model Ocorrencia {
   // Relacionamentos (Chaves Estrangeiras)
   subgrupo              Subgrupo         @relation(fields: [id_subgrupo_fk], references: [id_subgrupo])
   id_subgrupo_fk        String
-  municipio             Municipio        @relation(fields: [id_municipio_fk], references: [id_municipio])
-  id_municipio_fk       String
+  bairro                Bairro           @relation(fields: [id_bairro_fk], references: [id_bairro])
+  id_bairro_fk          String
   forma_acervo          FormaAcervo      @relation(fields: [id_forma_acervo_fk], references: [id_forma_acervo])
   id_forma_acervo_fk    String
   usuario_abertura      User             @relation("OcorrenciasAbertas", fields: [id_usuario_abertura_fk], references: [id])
@@ -56,7 +56,6 @@ model User {
   createdAt                 DateTime  @default(now())
   updatedAt                 DateTime  @updatedAt
 
-  // ALTERAÇÃO AQUI: Adicione o '?' para tornar opcional
   unidade_operacional       UnidadeOperacional? @relation(fields: [id_unidade_operacional_fk], references: [id_unidade])
   id_unidade_operacional_fk String?
 
@@ -70,7 +69,7 @@ model User {
 }
 
 // ===================================================================
-// II. ENTIDADES DE HIERARQUIA E ORGANIZAÇÃO [cite: 5]
+// II. ENTIDADES DE HIERARQUIA E ORGANIZAÇÃO
 // ===================================================================
 
 model Grupamento {
@@ -97,10 +96,26 @@ model UnidadeOperacional {
   @@map("unidades_operacionais")
 }
 
+// ENUM DE VIATURAS ATUALIZADO
+enum NumeroViatura {
+  CAT_01
+  CAT_02
+  CAT_03
+  CAT_04
+  ABT_01
+  ABT_02
+  ABT_03
+  ABT_04
+  AR_01
+  AR_02
+  AR_03
+  AR_04
+}
+
 model Viatura {
-  id_viatura           String    @id @default(uuid())
+  // O campo 'id_viatura' foi removido
   tipo_vt              String
-  numero_viatura       String    @unique
+  numero_viatura       NumeroViatura    @id // AGORA É A CHAVE PRIMÁRIA
 
   unidade_operacional  UnidadeOperacional @relation(fields: [id_unidade_operacional_fk], references: [id_unidade])
   id_unidade_operacional_fk String
@@ -112,12 +127,19 @@ model Viatura {
 }
 
 // ===================================================================
-// III. ENTIDADES DE CLASSIFICAÇÃO (LOOKUP) [cite: 9]
+// III. ENTIDADES DE CLASSIFICAÇÃO (LOOKUP)
 // ===================================================================
 
+enum TipoNatureza {
+  PIROTECNICO
+  FISCALIZACAO
+  VISTORIA_DE_RISCO
+  OUTROS
+}
+
 model Natureza {
-  id_natureza String  @id @default(uuid())
-  descricao   String
+  id_natureza String       @id @default(uuid())
+  descricao   TipoNatureza
   grupos      Grupo[]
   @@map("naturezas")
 }
@@ -147,17 +169,111 @@ model FormaAcervo {
   @@map("formas_acervo")
 }
 
-model Municipio {
-  id_municipio   String       @id @default(uuid())
-  nome_municipio String
-  regiao         String?
-  ais            String?
-  ocorrencias    Ocorrencia[]
-  @@map("municipios")
+// ENUM DE BAIRROS CORRIGIDO
+enum BairrosRecife {
+  AFOGADOS
+  AGUA_FRIA
+  ALTO_DO_MANDU
+  ALTO_JOSE_BONIFACIO
+  ALTO_JOSE_DO_PINHO
+  APIPUCOS
+  AREIAS
+  ARRUDA
+  BARRO
+  BEBERIBE
+  BOA_VIAGEM
+  BOA_VISTA
+  BOMBA_DO_HEMETERIO
+  BONGI
+  BRASILIA_TEIMOSA
+  BREJO_DA_GUABIRABA
+  BREJO_DE_BEBERIBE
+  CABANGA
+  CACOTE
+  CAJUEIRO
+  CAMPINA_DO_BARRETO
+  CAMPO_GRANDE
+  CASA_AMARELA
+  CASA_FORTE
+  CIDADE_UNIVERSITARIA
+  COELHOS
+  COHAB
+  CORDEIRO
+  CORREGO_DO_JENIPAPO
+  CURADO
+  DERBY
+  DOIS_IRMAOS
+  DOIS_UNIDOS
+  ENCRUZILHADA
+  ENGENHO_DO_MEIO
+  ESPINHEIRO
+  ESTANCIA
+  FUNDAO
+  GRACAS
+  GUABIRABA
+  HIPODROMO
+  IBURA
+  ILHA_DO_LEITE
+  ILHA_DO_RETIRO
+  ILHA_JOANA_BEZERRA
+  IMBIRIBEIRA
+  IPSEP
+  IRAJA
+  JAQUEIRA
+  JARDIM_SAO_PAULO
+  JIQUIA
+  LINHA_DO_TIRO
+  MACAXEIRA
+  MADALENA
+  MANGABEIRA
+  MANGUEIRA
+  MONTEIRO
+  MORRO_DA_CONCEICAO
+  MUSTARDINHA
+  NOVA_DESCOBERTA
+  PAISSANDU
+  PARNAMIRIM
+  PASSARINHO
+  PAU_FERRO
+  PEIXINHOS
+  PINA
+  POCO_DA_PANELA
+  PONTO_DE_PARADA
+  PORTO_DA_MADEIRA
+  PRADO
+  RECIFE_ANTIGO
+  ROSARINHO
+  SANCHO
+  SANTANA
+  SANTO_AMARO
+  SANTO_ANTONIO
+  SAO_JOSE
+  SITIO_DOS_PINTOS
+  SOLEDADE
+  TAMARINEIRA
+  TEJIPIO
+  TORRE
+  TORREAO
+  TORROES
+  TOTO
+  TRES_PONTES
+  VARZEA
+  VASCO_DA_GAMA
+  ZUMBI
+  OUTROS
+}
+
+model Bairro {
+  id_bairro   String        @id @default(uuid())
+  nome_bairro BairrosRecife
+  regiao      String?
+  ais         String?
+  ocorrencias Ocorrencia[]
+  @@map("bairros")
 }
 
 // ===================================================================
-// IV. ENTIDADES DE DETALHE E LOGÍSTICA [cite: 12]
+// IV. ENTIDADES DE DETALHE E LOGÍSTICA
 // ===================================================================
 
 model LocalizacaoOcorrencia {
@@ -187,7 +303,7 @@ model Vitima {
 
 model Midia {
   id_midia         String   @id @default(uuid())
-  tipo_arquivo     String   // FOTO, VIDEO, ASSINATURA
+  tipo_arquivo     String
   url_caminho      String
   data_upload      DateTime @default(now())
 
@@ -203,8 +319,9 @@ model Midia {
 model OcorrenciaViatura {
   ocorrencia         Ocorrencia @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia])
   id_ocorrencia_fk   String
-  viatura            Viatura    @relation(fields: [id_viatura_fk], references: [id_viatura])
-  id_viatura_fk      String
+  // ALTERADO: A relação agora aponta para 'numero_viatura' e o tipo é o enum
+  viatura            Viatura       @relation(fields: [id_viatura_fk], references: [numero_viatura])
+  id_viatura_fk      NumeroViatura
 
   horario_saida_quartel  DateTime?
   horario_chegada_local  DateTime?
@@ -217,12 +334,14 @@ model OcorrenciaViatura {
 model OcorrenciaEquipe {
   ocorrencia             Ocorrencia @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia])
   id_ocorrencia_fk       String
-  viatura                Viatura    @relation(fields: [id_viatura_fk], references: [id_viatura])
-  id_viatura_fk          String
+  // ALTERADO: A relação agora aponta para 'numero_viatura' e o tipo é o enum
+  viatura                Viatura       @relation(fields: [id_viatura_fk], references: [numero_viatura])
+  id_viatura_fk          NumeroViatura
+  
   usuario                User       @relation(fields: [matricula_usuario_fk], references: [id])
   matricula_usuario_fk   String
 
-  funcao_na_equipe       String? // Condutor, Socorrista, Chefe de Guarnição
+  funcao_na_equipe       String?
 
   @@id([id_ocorrencia_fk, id_viatura_fk, matricula_usuario_fk])
   @@map("ocorrencias_equipes")
@@ -240,9 +359,10 @@ enum Profile {
 }
 
 enum Status {
-  ABERTA
+  PENDENTE
   EM_ANDAMENTO
-  CONCLUIDA
+  CONCLUIDO
+  CANCELADO
 }
 
 model AuditLog {

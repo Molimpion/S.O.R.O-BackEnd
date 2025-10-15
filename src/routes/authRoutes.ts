@@ -1,15 +1,16 @@
-// src/routes/auth.Routes.ts (VERSÃO FINAL CORRIGIDA PARA SEUS ARQUIVOS)
+// src/routes/authRoutes.ts (COM CORREÇÃO FORÇADA)
 
 import { Router } from 'express';
-// CORREÇÃO: Usando os nomes exatos dos seus arquivos
+import bodyParser from 'body-parser'; // <-- 1. IMPORTA O BODY-PARSER
 import * as authController from '../controllers/authController';
 import { registerSchema, loginSchema } from '../validators/authValidator';
 import { validate } from '../middleware/validate';
 
 const router = Router();
+const jsonParser = bodyParser.json(); // <-- 2. CRIA UMA INSTÂNCIA DO PARSER
 
-router.post('/register', validate(registerSchema), authController.register);
-
-router.post('/login', validate(loginSchema), authController.login);
+// APLICA O JSON PARSER DIRETAMENTE ANTES DA VALIDAÇÃO
+router.post('/register', jsonParser, validate(registerSchema), authController.register);
+router.post('/login', jsonParser, validate(loginSchema), authController.login);
 
 export default router;

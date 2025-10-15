@@ -4,7 +4,8 @@
 
 # --- VARIÁVEIS GLOBAIS ---
 @hostname = http://localhost:3000
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiYTRlZDgyNS00ZjE0LTQxNzYtODUwYi04ZTNhMTM0YzQ1YWYiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjAzNzY2MzksImV4cCI6MTc2MDQwNTQzOX0.n1BgozsD3Y_26jD1nbwVV4w4g3vYwsmHK0ld_9x6dPE
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkZGUzMGM3Zi03MGQ2LTQzYjQtOGMxMi0zYTJjMjE2YjNkODkiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjA1NDU5NTgsImV4cCI6MTc2MDU3NDc1OH0.nezHiZKXWilT0QS33RQXk1b7z545l3gzJu6x8TgIrHc
+@analistaToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIwNTE5N2YzYi04OWM1LTQxODAtOTJlMi0xNGNlZDRiODUwZDYiLCJwcm9maWxlIjoiQU5BTElTVEEiLCJpYXQiOjE3NjA1NDYzNTIsImV4cCI6MTc2MDU3NTE1Mn0.1AQ4SKBPQnHE7tbX1htQnJC1WkULgWVnTu7knuDu5rg
 @userId =
 @ocorrenciaId =
 
@@ -64,36 +65,41 @@ Content-Type: application/json
   "id_grupamento_fk": "{{createGrupamento.response.body.id_grupamento}}"
 }
 
-### 2.3 - Cadastrar Município
-# @name createMunicipio
-POST {{hostname}}/api/municipios
+### 2.3 - Cadastrar Bairro
+# @name createBairro
+POST {{hostname}}/api/bairros
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
-{ "nome_municipio": "Recife" }
+{ "nome_bairro": "BOA_VISTA" }
 
 ### 2.4 - Cadastrar Hierarquia de Classificação
 # @name createNatureza
 POST {{hostname}}/api/naturezas
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
-{ "descricao": "INCÊNDIO" }
+
+{ "descricao": "PIROTECNICO" }
+
 ###
 # @name createGrupo
 POST {{hostname}}/api/grupos
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
+
 {
-  "descricao_grupo": "Incêndio em Edificação",
+  "descricao_grupo": "Queima de Fogos",
   "id_natureza_fk": "{{createNatureza.response.body.id_natureza}}"
 }
+
 ###
 # @name createSubgrupo
 POST {{hostname}}/api/subgrupos
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
+
 {
-  "descricao_subgrupo": "Incêndio em Edificação Residencial",
+  "descricao_subgrupo": "Queima de Fogos em Local Proibido",
   "id_grupo_fk": "{{createGrupo.response.body.id_grupo}}"
 }
 
@@ -102,7 +108,20 @@ Content-Type: application/json
 POST {{hostname}}/api/formas-acervo
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
+
 { "descricao": "Telefone 193" }
+
+### 2.6 - Cadastrar Viatura
+# @name createViatura
+POST {{hostname}}/api/viaturas
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "tipo_vt": "Comando e Controle",
+  "numero_viatura": "CAT_01",
+  "id_unidade_operacional_fk": "{{createUnidade.response.body.id_unidade}}"
+}
 
 
 # ===================================================================
@@ -141,11 +160,11 @@ Authorization: Bearer {{analistaToken}}
 Content-Type: application/json
 
 {
-  "data_acionamento": "2025-10-13T14:00:00Z",
-  "hora_acionamento": "2025-10-13T14:00:00Z",
-  "nr_aviso": "AV-2025-10-13-001",
+  "data_acionamento": "2025-10-15T14:00:00Z",
+  "hora_acionamento": "2025-10-15T14:00:00Z",
+  "nr_aviso": "AV-2025-10-15-001",
   "id_subgrupo_fk": "{{createSubgrupo.response.body.id_subgrupo}}",
-  "id_municipio_fk": "{{createMunicipio.response.body.id_municipio}}",
+  "id_bairro_fk": "{{createBairro.response.body.id_bairro}}",
   "id_forma_acervo_fk": "{{createFormaAcervo.response.body.id_forma_acervo}}"
 }
 
@@ -155,7 +174,7 @@ Content-Type: application/json
 # ===================================================================
 
 ### 4.1 - Listar Ocorrências (com filtro)
-GET {{hostname}}/api/ocorrencias?status=ABERTA
+GET {{hostname}}/api/ocorrencias?status=PENDENTE
 Authorization: Bearer {{analistaToken}}
 
 ### 4.2 - Ver Detalhes de uma Ocorrência
