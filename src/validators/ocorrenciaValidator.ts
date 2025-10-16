@@ -20,4 +20,3 @@ export const listOcorrenciaSchema = z.object({
     limit: z.coerce.number().int().min(1).optional(),
   }),
 });
-
