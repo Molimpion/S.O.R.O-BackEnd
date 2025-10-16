@@ -52,7 +52,7 @@ model User {
   email                     String    @unique
   senha_hash                String
   tipo_perfil               Profile   @default(ANALISTA)
-  
+
   createdAt                 DateTime  @default(now())
   updatedAt                 DateTime  @updatedAt
 
@@ -317,7 +317,7 @@ model Midia {
 // -- Tabelas de Relacionamento N:M (Join Tables) --
 
 model OcorrenciaViatura {
-  ocorrencia         Ocorrencia @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia])
+  ocorrencia         Ocorrencia    @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia])
   id_ocorrencia_fk   String
   // ALTERADO: A relação agora aponta para 'numero_viatura' e o tipo é o enum
   viatura            Viatura       @relation(fields: [id_viatura_fk], references: [numero_viatura])
@@ -332,13 +332,13 @@ model OcorrenciaViatura {
 }
 
 model OcorrenciaEquipe {
-  ocorrencia             Ocorrencia @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia])
+  ocorrencia             Ocorrencia    @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia])
   id_ocorrencia_fk       String
   // ALTERADO: A relação agora aponta para 'numero_viatura' e o tipo é o enum
   viatura                Viatura       @relation(fields: [id_viatura_fk], references: [numero_viatura])
   id_viatura_fk          NumeroViatura
-  
-  usuario                User       @relation(fields: [matricula_usuario_fk], references: [id])
+
+  usuario                User          @relation(fields: [matricula_usuario_fk], references: [id])
   matricula_usuario_fk   String
 
   funcao_na_equipe       String?
