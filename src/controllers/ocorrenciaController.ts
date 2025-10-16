@@ -1,4 +1,4 @@
-// src/controllers/ocorrenciaController.ts (ATUALIZADO COM FILTROS)
+// src/controllers/ocorrenciaController.ts (ATUALIZADO COM NOMES PADRONIZADOS)
 import 'express-async-errors';
 import { Request, Response } from 'express';
 import * as ocorrenciaService from '../services/ocorrenciaService';
@@ -8,16 +8,15 @@ interface AuthRequest extends Request {
   user?: { userId: string; profile: string };
 }
 
-export const criar = async (req: AuthRequest, res: Response) => {
+// ATUALIZADO: Nome da função de 'criar' para 'create'
+export const create = async (req: AuthRequest, res: Response) => {
   const userId = req.user!.userId;
   const novaOcorrencia = await ocorrenciaService.createOcorrencia(req.body, userId);
   res.status(201).json(novaOcorrencia);
 };
 
-// FUNÇÃO ATUALIZADA para lidar com filtros e paginação
-export const listarTodas = async (req: Request, res: Response) => {
-  // Os filtros agora vêm da query string da URL (ex: ?status=ABERTA)
-  // e são repassados para a função de serviço.
+// ATUALIZADO: Nome da função de 'listarTodas' para 'getAll'
+export const getAll = async (req: Request, res: Response) => {
   const resultado = await ocorrenciaService.getAllOcorrencias(req.query);
   res.status(200).json(resultado);
 };

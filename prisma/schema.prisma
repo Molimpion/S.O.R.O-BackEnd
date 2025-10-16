@@ -1,4 +1,4 @@
-// prisma/schema.prisma (Versão S.O.R.O. Completa)
+// prisma/schema.prisma (Versão S.O.R.O. Final com Sintaxe Corrigida)
 
 generator client {
   provider = "prisma-client-js"
@@ -14,57 +14,59 @@ datasource db {
 // ===================================================================
 
 model Ocorrencia {
-  id_ocorrencia         String   @id @default(uuid())
-  nr_aviso              String?
-  data_acionamento      DateTime
-  hora_acionamento      DateTime
-  status_situacao       Status   @default(PENDENTE)
-  carimbo_data_hora_abertura DateTime @default(now())
-  data_execucao_servico DateTime?
-  relacionado_eleicao   Boolean? @default(false)
+  id_ocorrencia              String    @id @default(uuid())
+  nr_aviso                   String?
+  data_acionamento           DateTime
+  hora_acionamento           DateTime
+  status_situacao            Status    @default(PENDENTE)
+  carimbo_data_hora_abertura DateTime  @default(now())
+  data_execucao_servico      DateTime?
+  relacionado_eleicao        Boolean?  @default(false)
 
-  // Relacionamentos (Chaves Estrangeiras)
-  subgrupo              Subgrupo         @relation(fields: [id_subgrupo_fk], references: [id_subgrupo])
-  id_subgrupo_fk        String
-  bairro                Bairro           @relation(fields: [id_bairro_fk], references: [id_bairro])
-  id_bairro_fk          String
-  forma_acervo          FormaAcervo      @relation(fields: [id_forma_acervo_fk], references: [id_forma_acervo])
-  id_forma_acervo_fk    String
-  usuario_abertura      User             @relation("OcorrenciasAbertas", fields: [id_usuario_abertura_fk], references: [id])
+  subgrupo               Subgrupo    @relation(fields: [id_subgrupo_fk], references: [id_subgrupo], onDelete: Restrict, onUpdate: Cascade)
+  id_subgrupo_fk         String
+  bairro                 Bairro      @relation(fields: [id_bairro_fk], references: [id_bairro], onDelete: Restrict, onUpdate: Cascade)
+  id_bairro_fk           String
+  forma_acervo           FormaAcervo @relation(fields: [id_forma_acervo_fk], references: [id_forma_acervo], onDelete: Restrict, onUpdate: Cascade)
+  id_forma_acervo_fk     String
+  usuario_abertura       User        @relation("OcorrenciasAbertas", fields: [id_usuario_abertura_fk], references: [id], onDelete: Restrict, onUpdate: Cascade)
   id_usuario_abertura_fk String
 
-  // Relacionamentos Inversos
-  localizacao           LocalizacaoOcorrencia?
-  vitimas               Vitima[]
-  midias                Midia[]
-  viaturas_usadas       OcorrenciaViatura[]
-  equipe_ocorrencia     OcorrenciaEquipe[]
+  localizacao       LocalizacaoOcorrencia?
+  vitimas           Vitima[]
+  midias            Midia[]
+  viaturas_usadas   OcorrenciaViatura[]
+  equipe_ocorrencia OcorrenciaEquipe[]
 
+  @@index([id_subgrupo_fk])
+  @@index([id_bairro_fk])
+  @@index([id_forma_acervo_fk])
+  @@index([id_usuario_abertura_fk])
+  @@index([status_situacao])
   @@map("ocorrencias")
 }
 
 model User {
-  id                        String    @id @default(uuid())
-  matricula                 String    @unique
+  id                        String   @id @default(uuid())
+  matricula                 String   @unique
   nome                      String
   nome_guerra               String?
   posto_grad                String?
-  email                     String    @unique
+  email                     String   @unique
   senha_hash                String
-  tipo_perfil               Profile   @default(ANALISTA)
-
-  createdAt                 DateTime  @default(now())
-  updatedAt                 DateTime  @updatedAt
-
-  unidade_operacional       UnidadeOperacional? @relation(fields: [id_unidade_operacional_fk], references: [id_unidade])
+  tipo_perfil               Profile  @default(ANALISTA)
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
   id_unidade_operacional_fk String?
 
-  // Relacionamentos Inversos
-  ocorrencias_abertas       Ocorrencia[]       @relation("OcorrenciasAbertas")
-  uploads_midia             Midia[]
-  logs                      AuditLog[]
-  equipes_participadas      OcorrenciaEquipe[]
+  unidade_operacional UnidadeOperacional? @relation(fields: [id_unidade_operacional_fk], references: [id_unidade], onDelete: SetNull, onUpdate: Cascade)
 
+  ocorrencias_abertas  Ocorrencia[]       @relation("OcorrenciasAbertas")
+  uploads_midia        Midia[]
+  logs                 AuditLog[]
+  equipes_participadas OcorrenciaEquipe[]
+
+  @@index([id_unidade_operacional_fk])
   @@map("usuarios")
 }
 
@@ -73,30 +75,28 @@ model User {
 // ===================================================================
 
 model Grupamento {
-  id_grupamento   String   @id @default(uuid())
+  id_grupamento   String               @id @default(uuid())
   nome_grupamento String
-  sigla           String   @unique
-
+  sigla           String               @unique
   unidades        UnidadeOperacional[]
 
   @@map("grupamentos")
 }
 
 model UnidadeOperacional {
-  id_unidade    String   @id @default(uuid())
-  nome_unidade  String
-  endereco_base String?
-
-  grupamento      Grupamento @relation(fields: [id_grupamento_fk], references: [id_grupamento])
+  id_unidade       String  @id @default(uuid())
+  nome_unidade     String
+  endereco_base    String?
   id_grupamento_fk String
 
-  usuarios        User[]
-  viaturas        Viatura[]
+  grupamento Grupamento @relation(fields: [id_grupamento_fk], references: [id_grupamento], onDelete: Restrict, onUpdate: Cascade)
+  usuarios   User[]
+  viaturas   Viatura[]
 
+  @@index([id_grupamento_fk])
   @@map("unidades_operacionais")
 }
 
-// ENUM DE VIATURAS ATUALIZADO
 enum NumeroViatura {
   CAT_01
   CAT_02
@@ -113,16 +113,16 @@ enum NumeroViatura {
 }
 
 model Viatura {
-  // O campo 'id_viatura' foi removido
-  tipo_vt              String
-  numero_viatura       NumeroViatura    @id // AGORA É A CHAVE PRIMÁRIA
-
-  unidade_operacional  UnidadeOperacional @relation(fields: [id_unidade_operacional_fk], references: [id_unidade])
+  tipo_vt                   String
+  numero_viatura            NumeroViatura @id
   id_unidade_operacional_fk String
+
+  unidade_operacional UnidadeOperacional @relation(fields: [id_unidade_operacional_fk], references: [id_unidade], onDelete: Restrict, onUpdate: Cascade)
 
   ocorrencias_participadas OcorrenciaViatura[]
   equipes_alocadas         OcorrenciaEquipe[]
 
+  @@index([id_unidade_operacional_fk])
   @@map("viaturas")
 }
 
@@ -131,34 +131,43 @@ model Viatura {
 // ===================================================================
 
 enum TipoNatureza {
-  PIROTECNICO
-  FISCALIZACAO
-  VISTORIA_DE_RISCO
-  OUTROS
+  INCENDIO
+  ANIMAL
+  ARVORE
+  QUEIMADA
+  TRANSITO
+  RESGATE
 }
 
 model Natureza {
   id_natureza String       @id @default(uuid())
   descricao   TipoNatureza
   grupos      Grupo[]
+
   @@map("naturezas")
 }
 
 model Grupo {
-  id_grupo         String   @id @default(uuid())
-  descricao_grupo  String
-  natureza         Natureza @relation(fields: [id_natureza_fk], references: [id_natureza])
-  id_natureza_fk   String
-  subgrupos        Subgrupo[]
+  id_grupo        String @id @default(uuid())
+  descricao_grupo String
+  id_natureza_fk  String
+
+  natureza  Natureza   @relation(fields: [id_natureza_fk], references: [id_natureza], onDelete: Restrict, onUpdate: Cascade)
+  subgrupos Subgrupo[]
+
+  @@index([id_natureza_fk])
   @@map("grupos")
 }
 
 model Subgrupo {
-  id_subgrupo       String       @id @default(uuid())
+  id_subgrupo        String @id @default(uuid())
   descricao_subgrupo String
-  grupo             Grupo        @relation(fields: [id_grupo_fk], references: [id_grupo])
-  id_grupo_fk       String
-  ocorrencias       Ocorrencia[]
+  id_grupo_fk        String
+
+  grupo       Grupo        @relation(fields: [id_grupo_fk], references: [id_grupo], onDelete: Restrict, onUpdate: Cascade)
+  ocorrencias Ocorrencia[]
+
+  @@index([id_grupo_fk])
   @@map("subgrupos")
 }
 
@@ -166,10 +175,10 @@ model FormaAcervo {
   id_forma_acervo String       @id @default(uuid())
   descricao       String
   ocorrencias     Ocorrencia[]
+
   @@map("formas_acervo")
 }
 
-// ENUM DE BAIRROS CORRIGIDO
 enum BairrosRecife {
   AFOGADOS
   AGUA_FRIA
@@ -206,7 +215,7 @@ enum BairrosRecife {
   DOIS_UNIDOS
   ENCRUZILHADA
   ENGENHO_DO_MEIO
-  ESPINHEIRO
+  ESPINHEiro
   ESTANCIA
   FUNDAO
   GRACAS
@@ -269,6 +278,7 @@ model Bairro {
   regiao      String?
   ais         String?
   ocorrencias Ocorrencia[]
+
   @@map("bairros")
 }
 
@@ -277,79 +287,82 @@ model Bairro {
 // ===================================================================
 
 model LocalizacaoOcorrencia {
-  ocorrencia       Ocorrencia @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia])
-  id_ocorrencia_fk String     @id
-  latitude         Float?
-  longitude        Float?
-  tipo_logradouro  String?
-  logradouro       String?
-  numero_km        String?
+  id_ocorrencia_fk      String  @id
+  latitude              Float?
+  longitude             Float?
+  tipo_logradouro       String?
+  logradouro            String?
+  numero_km             String?
   referencia_logradouro String?
+
+  ocorrencia Ocorrencia @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia], onDelete: Cascade, onUpdate: Cascade)
+
   @@map("localizacoes_ocorrencias")
 }
 
 model Vitima {
-  id_vitima          String     @id @default(uuid())
-  nome_vitima        String?
-  idade              Int?
+  id_vitima            String  @id @default(uuid())
+  nome_vitima          String?
+  idade                Int?
   classificacao_vitima String?
-  destino_vitima     String?
-  lesoes_json        Json?
+  destino_vitima       String?
+  lesoes_json          Json?
+  id_ocorrencia_fk     String
 
-  ocorrencia       Ocorrencia @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia])
-  id_ocorrencia_fk String
+  ocorrencia Ocorrencia @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([id_ocorrencia_fk])
   @@map("vitimas")
 }
 
 model Midia {
-  id_midia         String   @id @default(uuid())
-  tipo_arquivo     String
-  url_caminho      String
-  data_upload      DateTime @default(now())
-
-  ocorrencia       Ocorrencia @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia])
-  id_ocorrencia_fk String
-  usuario_upload   User       @relation(fields: [id_usuario_upload_fk], references: [id])
+  id_midia             String   @id @default(uuid())
+  tipo_arquivo         String
+  url_caminho          String
+  data_upload          DateTime @default(now())
+  id_ocorrencia_fk     String
   id_usuario_upload_fk String
+
+  ocorrencia     Ocorrencia @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia], onDelete: Cascade, onUpdate: Cascade)
+  usuario_upload User       @relation(fields: [id_usuario_upload_fk], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([id_ocorrencia_fk])
+  @@index([id_usuario_upload_fk])
   @@map("midias")
 }
 
-// -- Tabelas de Relacionamento N:M (Join Tables) --
+// --- Tabelas de Relacionamento N:M (Join Tables) ---
 
 model OcorrenciaViatura {
-  ocorrencia         Ocorrencia    @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia])
-  id_ocorrencia_fk   String
-  // ALTERADO: A relação agora aponta para 'numero_viatura' e o tipo é o enum
-  viatura            Viatura       @relation(fields: [id_viatura_fk], references: [numero_viatura])
-  id_viatura_fk      NumeroViatura
+  id_ocorrencia_fk      String
+  id_viatura_fk         NumeroViatura
+  horario_saida_quartel DateTime?
+  horario_chegada_local DateTime?
+  horario_saida_local   DateTime?
 
-  horario_saida_quartel  DateTime?
-  horario_chegada_local  DateTime?
-  horario_saida_local    DateTime?
+  ocorrencia Ocorrencia @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia], onDelete: Cascade, onUpdate: Cascade)
+  viatura    Viatura    @relation(fields: [id_viatura_fk], references: [numero_viatura], onDelete: Restrict, onUpdate: Cascade)
 
   @@id([id_ocorrencia_fk, id_viatura_fk])
   @@map("ocorrencias_viaturas")
 }
 
 model OcorrenciaEquipe {
-  ocorrencia             Ocorrencia    @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia])
-  id_ocorrencia_fk       String
-  // ALTERADO: A relação agora aponta para 'numero_viatura' e o tipo é o enum
-  viatura                Viatura       @relation(fields: [id_viatura_fk], references: [numero_viatura])
-  id_viatura_fk          NumeroViatura
+  id_ocorrencia_fk     String
+  id_viatura_fk        NumeroViatura
+  matricula_usuario_fk String
+  funcao_na_equipe     String?
 
-  usuario                User          @relation(fields: [matricula_usuario_fk], references: [id])
-  matricula_usuario_fk   String
-
-  funcao_na_equipe       String?
+  ocorrencia Ocorrencia @relation(fields: [id_ocorrencia_fk], references: [id_ocorrencia], onDelete: Cascade, onUpdate: Cascade)
+  viatura    Viatura    @relation(fields: [id_viatura_fk], references: [numero_viatura], onDelete: Restrict, onUpdate: Cascade)
+  usuario    User       @relation(fields: [matricula_usuario_fk], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   @@id([id_ocorrencia_fk, id_viatura_fk, matricula_usuario_fk])
   @@map("ocorrencias_equipes")
 }
 
-
 // ===================================================================
-// V. MODELOS JÁ EXISTENTES (Mantidos)
+// V. MODELOS DE SUPORTE E ENUMS GLOBAIS
 // ===================================================================
 
 enum Profile {
@@ -371,10 +384,11 @@ model AuditLog {
   details   String?    @db.Text
   ipAddress String?
   timestamp DateTime   @default(now())
-
   userId    String?
-  user      User?      @relation(fields: [userId], references: [id])
 
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([userId])
   @@map("audit_logs")
 }
 

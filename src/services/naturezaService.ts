@@ -1,12 +1,13 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, TipoNatureza } from '@prisma/client'; // Importar TipoNatureza
 import { NotFoundError, BadRequestError } from '../errors/api-errors';
 
 const prisma = new PrismaClient();
 
 /**
  * Cria uma nova natureza de ocorrência.
+ * CORRIGIDO: O parâmetro 'descricao' agora é do tipo 'TipoNatureza'
  */
-export const createNatureza = async (descricao: string) => {
+export const createNatureza = async (descricao: TipoNatureza) => {
   const natureza = await prisma.natureza.create({
     data: { descricao },
   });
