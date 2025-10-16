@@ -1,20 +1,27 @@
 # ===================================================================
-# SUÍTE DE TESTES COMPLETA E ORDENADA - API PROJETO BOMBEIROS
+# SUÍTE DE TESTES COMPLETA E ATUALIZADA - API S.O.R.O. BOMBEIROS
 # ===================================================================
 
 # --- VARIÁVEIS GLOBAIS ---
+# AÇÃO 1: Escolha o ambiente de teste. Descomente a linha que quer usar.
+
+# Para testes locais:
 @hostname = http://localhost:3000
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkZGUzMGM3Zi03MGQ2LTQzYjQtOGMxMi0zYTJjMjE2YjNkODkiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjA1NDU5NTgsImV4cCI6MTc2MDU3NDc1OH0.nezHiZKXWilT0QS33RQXk1b7z545l3gzJu6x8TgIrHc
-@analistaToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIwNTE5N2YzYi04OWM1LTQxODAtOTJlMi0xNGNlZDRiODUwZDYiLCJwcm9maWxlIjoiQU5BTElTVEEiLCJpYXQiOjE3NjA1NDYzNTIsImV4cCI6MTc2MDU3NTE1Mn0.1AQ4SKBPQnHE7tbX1htQnJC1WkULgWVnTu7knuDu5rg
-@userId =
-@ocorrenciaId =
+
+# Para testes no ambiente de produção (Render):
+# @hostname = https://api-bombeiros-s-o-r-o.onrender.com
+
+
+# AÇÃO 2: Após executar os logins, copie e cole os tokens frescos aqui.
+@adminToken =
+@analistaToken =
 
 
 # ===================================================================
 # FASE 1: CRIAÇÃO DO PRIMEIRO ADMIN E LOGIN
 # ===================================================================
 
-### 1.1 - Cadastrar o primeiro usuário ADMIN (sem unidade operacional)
+### 1.1 - Cadastrar o primeiro usuário ADMIN
 # @name createAdmin
 POST {{hostname}}/api/auth/register
 Content-Type: application/json
@@ -75,11 +82,12 @@ Content-Type: application/json
 
 ### 2.4 - Cadastrar Hierarquia de Classificação
 # @name createNatureza
+# CORRIGIDO: "descricao" agora usa um valor válido do novo enum (ex: INCENDIO)
 POST {{hostname}}/api/naturezas
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
-{ "descricao": "PIROTECNICO" }
+{ "descricao": "INCENDIO" }
 
 ###
 # @name createGrupo
@@ -88,7 +96,7 @@ Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-  "descricao_grupo": "Queima de Fogos",
+  "descricao_grupo": "Incêndio em Vegetação",
   "id_natureza_fk": "{{createNatureza.response.body.id_natureza}}"
 }
 
@@ -99,7 +107,7 @@ Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-  "descricao_subgrupo": "Queima de Fogos em Local Proibido",
+  "descricao_subgrupo": "Queimada em Terreno Baldio",
   "id_grupo_fk": "{{createGrupo.response.body.id_grupo}}"
 }
 
@@ -118,8 +126,8 @@ Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-  "tipo_vt": "Comando e Controle",
-  "numero_viatura": "CAT_01",
+  "tipo_vt": "Auto Bomba Tanque",
+  "numero_viatura": "ABT_01",
   "id_unidade_operacional_fk": "{{createUnidade.response.body.id_unidade}}"
 }
 
@@ -160,9 +168,9 @@ Authorization: Bearer {{analistaToken}}
 Content-Type: application/json
 
 {
-  "data_acionamento": "2025-10-15T14:00:00Z",
-  "hora_acionamento": "2025-10-15T14:00:00Z",
-  "nr_aviso": "AV-2025-10-15-001",
+  "data_acionamento": "2025-10-16T18:30:00Z",
+  "hora_acionamento": "2025-10-16T18:30:00Z",
+  "nr_aviso": "AV-2025-10-16-001",
   "id_subgrupo_fk": "{{createSubgrupo.response.body.id_subgrupo}}",
   "id_bairro_fk": "{{createBairro.response.body.id_bairro}}",
   "id_forma_acervo_fk": "{{createFormaAcervo.response.body.id_forma_acervo}}"
@@ -182,11 +190,22 @@ GET {{hostname}}/api/ocorrencias/{{createOcorrencia.response.body.id_ocorrencia}
 Authorization: Bearer {{analistaToken}}
 
 ### 4.3 - Gerar Relatório CSV (com token de Admin)
+# @name getCsvReport
 GET {{hostname}}/api/relatorios/ocorrencias/csv
 Authorization: Bearer {{adminToken}}
 
-### 4.4 - Obter KPI de Ocorrências por Status
+### 4.4 - Gerar Relatório PDF (com token de Admin)
+# @name getPdfReport
+GET {{hostname}}/api/relatorios/ocorrencias/pdf
+Authorization: Bearer {{adminToken}}
+
+### 4.5 - Obter KPI de Ocorrências por Status
 GET {{hostname}}/api/dashboard/ocorrencias-por-status
+Authorization: Bearer {{analistaToken}}
+
+### 4.6 - Obter KPI de Ocorrências por Bairro
+# ATUALIZADO: O endpoint foi corrigido de 'municipio' para 'bairro'
+GET {{hostname}}/api/dashboard/ocorrencias-por-bairro
 Authorization: Bearer {{analistaToken}}
 
 
@@ -198,3 +217,7 @@ Authorization: Bearer {{analistaToken}}
 # Resultado esperado: Erro 403 Forbidden
 GET {{hostname}}/api/users
 Authorization: Bearer {{analistaToken}}
+
+### 5.2 - Tentar aceder a rota autenticada sem token
+# Resultado esperado: Erro 401 Unauthorized
+GET {{hostname}}/api/ocorrencias
