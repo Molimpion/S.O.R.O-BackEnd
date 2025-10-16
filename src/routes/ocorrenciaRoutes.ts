@@ -8,12 +8,10 @@ const router = Router();
 
 router.use(authenticateToken);
 
-// ATUALIZADO: Chamando 'ocorrenciaController.getAll'
 router.get('/', validate(listOcorrenciaSchema), ocorrenciaController.getAll);
 
 router.get('/:id', ocorrenciaController.getById);
 
-// ATUALIZADO: Chamando 'ocorrenciaController.create'
 router.post(
   '/',
   validate(createOcorrenciaSchema),
