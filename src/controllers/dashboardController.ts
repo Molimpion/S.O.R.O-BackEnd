@@ -1,4 +1,3 @@
-// src/controllers/dashboardController.ts
 import 'express-async-errors';
 import { Request, Response } from 'express';
 import * as dashboardService from '../services/dashboardService';
