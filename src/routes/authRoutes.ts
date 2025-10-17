@@ -1,16 +1,16 @@
-// src/routes/authRoutes.ts (COM CORREÇÃO FORÇADA)
+// src/routes/authRoutes.ts (CORRIGIDO)
 
 import { Router } from 'express';
-import bodyParser from 'body-parser'; // <-- 1. IMPORTA O BODY-PARSER
+// REMOVIDO: import bodyParser from 'body-parser';
 import * as authController from '../controllers/authController';
 import { registerSchema, loginSchema } from '../validators/authValidator';
 import { validate } from '../middleware/validate';
 
 const router = Router();
-const jsonParser = bodyParser.json(); // <-- 2. CRIA UMA INSTÂNCIA DO PARSER
+// REMOVIDO: const jsonParser = bodyParser.json();
 
-// APLICA O JSON PARSER DIRETAMENTE ANTES DA VALIDAÇÃO
-router.post('/register', jsonParser, validate(registerSchema), authController.register);
-router.post('/login', jsonParser, validate(loginSchema), authController.login);
+// As rotas agora dependem do bodyParser global definido em index.ts
+router.post('/register', validate(registerSchema), authController.register);
+router.post('/login', validate(loginSchema), authController.login);
 
 export default router;

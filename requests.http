@@ -13,8 +13,8 @@
 
 
 # AÇÃO 2: Após executar os logins, copie e cole os tokens frescos aqui.
-@adminToken =
-@analistaToken =
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIwNTg0ZDBlMi01MzdiLTQxNGEtOTc3ZC1lNDIwYTFiM2UxNWQiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjA3MDM2NjcsImV4cCI6MTc2MDczMjQ2N30.ynXslTPbqZcXKSSbKhveP_JUN7NhEkKR8W196ef4SCk
+@analistaToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyMTY4ZWY4ZS02M2I1LTQxYjAtODY4YS1lNjU4MGZkMDgxMTAiLCJwcm9maWxlIjoiQU5BTElTVEEiLCJpYXQiOjE3NjA3MDQwODIsImV4cCI6MTc2MDczMjg4Mn0.luarOd90qJzkC_9__LLFIOK0dhi8dWqQKnAZQV8ZdTA
 
 
 # ===================================================================
