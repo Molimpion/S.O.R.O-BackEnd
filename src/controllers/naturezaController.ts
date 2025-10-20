@@ -1,25 +1,22 @@
-// src/controllers/naturezaController.ts (CORRIGIDO)
+// src/controllers/naturezaController.ts (FINAL CORREÇÃO - Limpando TipoObsoleto)
 
 import { Request, Response } from 'express';
-// CORREÇÃO: Usando importação nomeada
 import { createNatureza, getAllNaturezas, deleteNatureza } from '../services/naturezaService';
-import { TipoNatureza } from '@prisma/client';
+// REMOVIDO: import { TipoNatureza } from '@prisma/client'; // <<-- ESTA LINHA CAUSAVA O ERRO
 
-export const create = async (req: Request, res: Response) => {
+export async function create(req: Request, res: Response) { // Assumindo sintaxe 'async function'
   const { descricao } = req.body;
-  // TipoNatureza não existe mais no prisma/client, mas a tipagem forçaria o erro
-  // Como refatoramos para string, removemos o cast e a importação do TipoNatureza (para NaturezaService)
-  // No Controller, mantemos o TipoNatureza importado do Prisma para evitar mais quebras de compilação
-  const novaNatureza = await createNatureza(descricao); // Removido o cast "as TipoNatureza"
+  // A função createNatureza espera apenas string, resolvendo o problema
+  const novaNatureza = await createNatureza(descricao);
   res.status(201).json(novaNatureza);
 };
 
-export const getAll = async (req: Request, res: Response) => {
+export async function getAll(req: Request, res: Response) { // Assumindo sintaxe 'async function'
   const naturezas = await getAllNaturezas();
   res.status(200).json(naturezas);
 };
 
-export const remove = async (req: Request, res: Response) => {
+export async function remove(req: Request, res: Response) { // Assumindo sintaxe 'async function'
   const { id } = req.params;
   await deleteNatureza(id);
   res.status(204).send();
