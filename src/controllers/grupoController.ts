@@ -1,18 +1,21 @@
+// src/controllers/grupoController.ts (CORRIGIDO)
+
 import { Request, Response } from 'express';
-import * as grupoService from '../services/grupoService';
+// CORREÇÃO: Usando importação nomeada
+import { createGrupo, getAllGrupos, deleteGrupo } from '../services/grupoService';
 
 export const create = async (req: Request, res: Response) => {
-  const novoGrupo = await grupoService.createGrupo(req.body);
+  const novoGrupo = await createGrupo(req.body);
   res.status(201).json(novoGrupo);
 };
 
 export const getAll = async (req: Request, res: Response) => {
-  const grupos = await grupoService.getAllGrupos();
+  const grupos = await getAllGrupos();
   res.status(200).json(grupos);
 };
 
 export const remove = async (req: Request, res: Response) => {
   const { id } = req.params;
-  await grupoService.deleteGrupo(id);
+  await deleteGrupo(id);
   res.status(204).send();
 };

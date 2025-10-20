@@ -1,18 +1,21 @@
+// src/controllers/subgrupoController.ts (CORRIGIDO)
+
 import { Request, Response } from 'express';
-import * as subgrupoService from '../services/subgrupoService';
+// CORREÇÃO: Usando importação nomeada
+import { createSubgrupo, getAllSubgrupos, deleteSubgrupo } from '../services/subgrupoService';
 
 export const create = async (req: Request, res: Response) => {
-  const novoSubgrupo = await subgrupoService.createSubgrupo(req.body);
+  const novoSubgrupo = await createSubgrupo(req.body);
   res.status(201).json(novoSubgrupo);
 };
 
 export const getAll = async (req: Request, res: Response) => {
-  const subgrupos = await subgrupoService.getAllSubgrupos();
+  const subgrupos = await getAllSubgrupos();
   res.status(200).json(subgrupos);
 };
 
 export const remove = async (req: Request, res: Response) => {
   const { id } = req.params;
-  await subgrupoService.deleteSubgrupo(id);
+  await deleteSubgrupo(id);
   res.status(204).send();
 };
