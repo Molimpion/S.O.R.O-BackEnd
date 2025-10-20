@@ -1,4 +1,4 @@
-// src/validators/ocorrenciaValidator.ts (CORRIGIDO PARCIALMENTE)
+// src/validators/ocorrenciaValidator.ts (CORRIGIDO)
 import { z } from 'zod';
 
 // Apenas o `createOcorrenciaSchema` precisa ser envolvido pelo `body`, pois ele valida o corpo de uma requisição POST.
@@ -14,6 +14,7 @@ export const createOcorrenciaSchema = z.object({
 });
 
 // O `listOcorrenciaSchema` valida `req.query`, então ele já está correto e não precisa de alterações.
+// **ATUALIZADO:** Adicionado o validador `type` para exportação unificada.
 export const listOcorrenciaSchema = z.object({
   query: z.object({
     dataInicio: z.string().datetime().optional(),
@@ -23,5 +24,10 @@ export const listOcorrenciaSchema = z.object({
     subgrupoId: z.string().uuid().optional(),
     page: z.coerce.number().int().min(1).optional(),
     limit: z.coerce.number().int().min(1).optional(),
+    // Novo parâmetro de filtro: tipo de exportação
+    type: z.enum(['csv', 'pdf'], {
+      required_error: 'O tipo de exportação (csv ou pdf) é obrigatório.',
+      invalid_type_error: "Tipo de exportação inválido. Use 'csv' ou 'pdf'.",
+    }),
   }),
 });

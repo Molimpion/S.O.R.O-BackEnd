@@ -1,6 +1,3 @@
-// src/controllers/userController.ts (REFATORADO E LIMPO)
-
-import 'express-async-errors';
 import { Request, Response } from 'express';
 import * as userService from '../services/userService';
 

@@ -1,23 +1,34 @@
-import 'express-async-errors';
 import { Request, Response } from 'express';
 import * as ocorrenciaService from '../services/ocorrenciaService';
+import { BadRequestError } from '../errors/api-errors';
 
-export const exportCsv = async (req: Request, res: Response) => {
-  const filters = req.query;
-  const csvString = await ocorrenciaService.exportOcorrenciasToCSV(filters as any);
+export const exportRelatorio = async (req: Request, res: Response) => {
+  // O validador (listOcorrenciaSchema) garante que req.query.type exista e seja 'csv' ou 'pdf'.
+  const { type, ...filters } = req.query as any;
 
-  res.setHeader('Content-Type', 'text/csv');
-  res.setHeader('Content-Disposition', 'attachment; filename=relatorio_ocorrencias.csv');
+  // 1. Executa a consulta unificada no banco
+  const ocorrencias = await ocorrenciaService.getOcorrenciasForExport(filters);
+  
+  if (type === 'csv') {
+    // 2. Chama a função de geração de CSV
+    const csvString = await ocorrenciaService.exportOcorrenciasToCSV(ocorrencias);
 
-  res.status(200).send(csvString);
-};
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=relatorio_ocorrencias.csv');
 
-export const exportPdf = async (req: Request, res: Response) => {
-  const filters = req.query;
-  const pdfBuffer = await ocorrenciaService.exportOcorrenciasToPDF(filters as any);
+    return res.status(200).send(csvString);
 
-  res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader('Content-Disposition', 'attachment; filename=relatorio_ocorrencias.pdf');
+  } else if (type === 'pdf') {
+    // 3. Chama a função de geração de PDF
+    const pdfBuffer = await ocorrenciaService.exportOcorrenciasToPDF(ocorrencias);
 
-  res.status(200).send(pdfBuffer);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=relatorio_ocorrencias.pdf');
+
+    return res.status(200).send(pdfBuffer);
+
+  } else {
+    // Caso de fallback (embora o validador deva prevenir isso)
+    throw new BadRequestError('Tipo de exportação inválido.');
+  }
 };

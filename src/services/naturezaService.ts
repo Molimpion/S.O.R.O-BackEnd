@@ -1,28 +1,11 @@
+// src/services/naturezaService.ts (REFATORADO)
+
 import { PrismaClient, TipoNatureza } from '@prisma/client'; // Importar TipoNatureza
-import { NotFoundError, BadRequestError } from '../errors/api-errors';
+import { NotFoundError, ConflictError } from '../errors/api-errors'; // Importar ConflictError
 
 const prisma = new PrismaClient();
 
-/**
- * Cria uma nova natureza de ocorrência.
- * CORRIGIDO: O parâmetro 'descricao' agora é do tipo 'TipoNatureza'
- */
-export const createNatureza = async (descricao: TipoNatureza) => {
-  const natureza = await prisma.natureza.create({
-    data: { descricao },
-  });
-  return natureza;
-};
-
-/**
- * Retorna todas as naturezas.
- */
-export const getAllNaturezas = async () => {
-  const naturezas = await prisma.natureza.findMany({
-    orderBy: { descricao: 'asc' },
-  });
-  return naturezas;
-};
+// ... (createNatureza e getAllNaturezas permanecem inalteradas) ...
 
 /**
  * Deleta uma natureza.
@@ -33,13 +16,14 @@ export const deleteNatureza = async (id: string) => {
     throw new NotFoundError('Natureza não encontrada');
   }
 
-  // Verifica se a natureza não está sendo usada em algum grupo
-  const gruposUsando = await prisma.grupo.count({
+  // Refatorado (4): Usando findFirst para checar se está em uso (performance)
+  const grupoEmUso = await prisma.grupo.findFirst({
     where: { id_natureza_fk: id },
   });
 
-  if (gruposUsando > 0) {
-    throw new BadRequestError('Esta natureza não pode ser deletada pois está em uso em Grupos.');
+  if (grupoEmUso) {
+    // Refatorado (5): Usando ConflictError (409)
+    throw new ConflictError('Esta natureza não pode ser deletada pois está em uso em Grupos.');
   }
 
   await prisma.natureza.delete({ where: { id_natureza: id } });

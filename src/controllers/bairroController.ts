@@ -1,4 +1,3 @@
-import 'express-async-errors';
 import { Request, Response } from 'express';
 import * as bairroService from '../services/bairroService';
 

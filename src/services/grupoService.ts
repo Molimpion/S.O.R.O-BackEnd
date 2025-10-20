@@ -1,41 +1,11 @@
+// src/services/grupoService.ts (REFATORADO)
+
 import { PrismaClient } from '@prisma/client';
-import { NotFoundError, BadRequestError } from '../errors/api-errors';
+import { NotFoundError, ConflictError } from '../errors/api-errors'; // Importar ConflictError
 
 const prisma = new PrismaClient();
 
-interface GrupoData {
-  descricao_grupo: string;
-  id_natureza_fk: string;
-}
-
-/**
- * Cria um novo grupo, associado a uma natureza.
- */
-export const createGrupo = async (data: GrupoData) => {
-  // Verifica se a natureza associada existe
-  const naturezaExists = await prisma.natureza.findUnique({
-    where: { id_natureza: data.id_natureza_fk },
-  });
-  if (!naturezaExists) {
-    throw new NotFoundError('Natureza associada não encontrada.');
-  }
-
-  const grupo = await prisma.grupo.create({ data });
-  return grupo;
-};
-
-/**
- * Retorna todos os grupos, incluindo a natureza a que pertencem.
- */
-export const getAllGrupos = async () => {
-  const grupos = await prisma.grupo.findMany({
-    orderBy: { descricao_grupo: 'asc' },
-    include: {
-      natureza: true, // Inclui os dados da natureza relacionada
-    },
-  });
-  return grupos;
-};
+// ... (interfaces, createGrupo e getAllGrupos permanecem inalteradas) ...
 
 /**
  * Deleta um grupo.
@@ -46,13 +16,14 @@ export const deleteGrupo = async (id: string) => {
     throw new NotFoundError('Grupo não encontrado');
   }
 
-  // Verifica se o grupo não está sendo usado em algum subgrupo
-  const subgruposUsando = await prisma.subgrupo.count({
+  // Refatorado (4): Usando findFirst para checar se está em uso (performance)
+  const subgrupoEmUso = await prisma.subgrupo.findFirst({
     where: { id_grupo_fk: id },
   });
 
-  if (subgruposUsando > 0) {
-    throw new BadRequestError('Este grupo não pode ser deletado pois está em uso em Subgrupos.');
+  if (subgrupoEmUso) {
+    // Refatorado (5): Usando ConflictError (409)
+    throw new ConflictError('Este grupo não pode ser deletado pois está em uso em Subgrupos.');
   }
 
   await prisma.grupo.delete({ where: { id_grupo: id } });

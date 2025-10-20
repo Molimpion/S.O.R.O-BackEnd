@@ -1,6 +1,7 @@
-import 'express-async-errors';
 import { Request, Response } from 'express';
 import * as grupamentoService from '../services/grupamentoService';
+
+
 
 export const create = async (req: Request, res: Response) => {
   const novoGrupamento = await grupamentoService.createGrupamento(req.body);

@@ -1,3 +1,5 @@
+// src/errors/api-errors.ts (ADICIONADO ConflictError)
+
 // src/errors/api-errors.ts
 
 // Esta é nossa classe base para todos os erros da API.
@@ -29,5 +31,12 @@ export class NotFoundError extends ApiError {
 export class UnauthorizedError extends ApiError {
   constructor(message: string) {
     super(message, 401); // Unauthorized
+  }
+}
+
+// NOVO: Erro para conflito de estado do recurso (HTTP 409)
+export class ConflictError extends ApiError {
+  constructor(message: string) {
+    super(message, 409); // Conflict
   }
 }

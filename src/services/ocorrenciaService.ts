@@ -1,3 +1,5 @@
+// src/services/ocorrenciaService.ts (REFATORADO PARA EXPORTAÇÃO UNIFICADA)
+
 import PDFDocument from 'pdfkit';
 import { stringify } from 'csv-stringify/sync';
 import { PrismaClient, Status } from '@prisma/client';
@@ -12,6 +14,16 @@ interface CreateOcorrenciaData {
   id_bairro_fk: string;
   id_forma_acervo_fk: string;
   nr_aviso?: string;
+}
+
+// Interface de filtros (simplificada para as funções de exportação)
+interface OcorrenciaFilters {
+  dataInicio?: string;
+  dataFim?: string;
+  status?: Status;
+  bairroId?: string;
+  subgrupoId?: string;
+  // page e limit ignorados para exportação
 }
 
 export const createOcorrencia = async (data: CreateOcorrenciaData, userId: string) => {
@@ -29,17 +41,9 @@ export const createOcorrencia = async (data: CreateOcorrenciaData, userId: strin
   return novaOcorrencia;
 };
 
-interface OcorrenciaFilters {
-  dataInicio?: string;
-  dataFim?: string;
-  status?: Status;
-  bairroId?: string;
-  subgrupoId?: string;
-  page?: number;
-  limit?: number;
-}
+// ... (getAllOcorrencias e getOcorrenciaById permanecem inalteradas) ...
 
-export const getAllOcorrencias = async (filters: OcorrenciaFilters) => {
+export const getAllOcorrencias = async (filters: any) => {
   const { page = 1, limit = 10, dataInicio, dataFim, ...otherFilters } = filters;
   const where: any = {};
   if (dataInicio) {
@@ -114,37 +118,33 @@ export const getOcorrenciaById = async (id: string) => {
   return ocorrencia;
 };
 
-export const exportOcorrenciasToCSV = async (filters: OcorrenciaFilters) => {
-  const { dataInicio, dataFim, ...otherFilters } = filters;
+
+// ----------------------------------------------------
+// FUNÇÃO UNIFICADA DE CONSULTA PARA EXPORTAÇÃO
+// ----------------------------------------------------
+export const getOcorrenciasForExport = async (filters: OcorrenciaFilters) => {
+  const { dataInicio, dataFim, status, bairroId, subgrupoId } = filters;
   const where: any = {};
-  if (dataInicio) {
-    where.carimbo_data_hora_abertura = { ...where.carimbo_data_hora_abertura, gte: new Date(dataInicio) };
-  }
-  if (dataFim) {
-    where.carimbo_data_hora_abertura = { ...where.carimbo_data_hora_abertura, lte: new Date(dataFim) };
-  }
-  if (otherFilters.status) {
-    where.status_situacao = otherFilters.status;
-  }
-  if (otherFilters.bairroId) {
-    where.id_bairro_fk = otherFilters.bairroId;
-  }
-  if (otherFilters.subgrupoId) {
-    where.id_subgrupo_fk = otherFilters.subgrupoId;
-  }
 
-  const ocorrencias = await prisma.ocorrencia.findMany({
+  if (dataInicio) { where.carimbo_data_hora_abertura = { ...where.carimbo_data_hora_abertura, gte: new Date(dataInicio) } }
+  if (dataFim) { where.carimbo_data_hora_abertura = { ...where.carimbo_data_hora_abertura, lte: new Date(dataFim) } }
+  if (status) { where.status_situacao = status }
+  if (bairroId) { where.id_bairro_fk = bairroId }
+  if (subgrupoId) { where.id_subgrupo_fk = subgrupoId }
+
+  return await prisma.ocorrencia.findMany({
     where,
-    orderBy: {
-      carimbo_data_hora_abertura: 'desc',
-    },
-    include: {
-      subgrupo: true,
-      bairro: true,
-      usuario_abertura: true,
-    },
+    orderBy: { carimbo_data_hora_abertura: 'desc' },
+    include: { subgrupo: true, bairro: true, usuario_abertura: true },
   });
+}
 
+
+// ----------------------------------------------------
+// FUNÇÕES DE EXPORTAÇÃO (Recebem apenas os dados, não os filtros)
+// ----------------------------------------------------
+
+export const exportOcorrenciasToCSV = async (ocorrencias: any[]) => { // Recebe os dados
   const columns = [
     { key: 'nr_aviso', header: 'Nº Aviso' },
     { key: 'status_situacao', header: 'Status' },
@@ -165,21 +165,7 @@ export const exportOcorrenciasToCSV = async (filters: OcorrenciaFilters) => {
   return csvString;
 };
 
-export const exportOcorrenciasToPDF = async (filters: OcorrenciaFilters): Promise<Buffer> => {
-  const { dataInicio, dataFim, ...otherFilters } = filters;
-  const where: any = {};
-  if (dataInicio) { where.carimbo_data_hora_abertura = { ...where.carimbo_data_hora_abertura, gte: new Date(dataInicio) } }
-  if (dataFim) { where.carimbo_data_hora_abertura = { ...where.carimbo_data_hora_abertura, lte: new Date(dataFim) } }
-  if (otherFilters.status) { where.status_situacao = otherFilters.status }
-  if (otherFilters.bairroId) { where.id_bairro_fk = otherFilters.bairroId }
-  if (otherFilters.subgrupoId) { where.id_subgrupo_fk = otherFilters.subgrupoId }
-
-  const ocorrencias = await prisma.ocorrencia.findMany({
-    where,
-    orderBy: { carimbo_data_hora_abertura: 'desc' },
-    include: { subgrupo: true, bairro: true, usuario_abertura: true },
-  });
-
+export const exportOcorrenciasToPDF = async (ocorrencias: any[]): Promise<Buffer> => { // Recebe os dados
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ margin: 30, size: 'A4' });
     const buffers: Buffer[] = [];

@@ -1,6 +1,6 @@
-// src/controllers/authController.ts (REFATORADO E LIMPO)
+// src/controllers/authController.ts (LIMPO)
 
-import 'express-async-errors' // Importante: importa o pacote para lidar com erros em async
+// REMOVIDO: import 'express-async-errors' // Redundante, centralizado em index.ts
 import { Request, Response } from 'express';
 import * as authService from '../services/authService';
 

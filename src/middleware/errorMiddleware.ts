@@ -13,8 +13,11 @@ export const errorMiddleware = (
   // Senão, use o status 500 (Internal Server Error).
   const statusCode = error.statusCode ?? 500
 
-  // Se o erro tiver uma mensagem, use-a. Senão, uma mensagem padrão.
-  const message = error.statusCode ? error.message : 'Internal Server Error'
+  // Se o erro for um ApiError (tem statusCode) E tem mensagem, usa a mensagem dele.
+  // Senão, usa uma mensagem padrão para esconder detalhes de erros 500.
+  const message = (error.statusCode && error.message) 
+    ? error.message 
+    : 'Internal Server Error'
 
   // Retorna o erro para o cliente
   return res.status(statusCode).json({ error: message })

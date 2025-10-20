@@ -1,6 +1,7 @@
-// src/services/bairroService.ts (CORRIGIDO)
+// src/services/bairroService.ts
+
 import { PrismaClient, BairrosRecife } from '@prisma/client';
-import { NotFoundError, BadRequestError } from '../errors/api-errors';
+import { NotFoundError, ConflictError } from '../errors/api-errors'; // Importado ConflictError
 
 const prisma = new PrismaClient();
 
@@ -22,7 +23,8 @@ export const getAllBairros = async () => {
   return bairros;
 };
 
-export const getBairroById = async (id: string) => {
+// CORREÇÃO TS2304: Alterado para 'export async function' para garantir o hoisting (acessibilidade interna)
+export async function getBairroById(id: string) {
   const bairro = await prisma.bairro.findUnique({ where: { id_bairro: id } });
   if (!bairro) {
     throw new NotFoundError('Bairro não encontrado');
@@ -41,11 +43,15 @@ export const updateBairro = async (id: string, data: Partial<BairroData>) => {
 
 export const deleteBairro = async (id: string) => {
   await getBairroById(id);
-  const ocorrenciasUsando = await prisma.ocorrencia.count({
+  
+  // Refatorado (4): Usando findFirst para checar se está em uso (performance)
+  const ocorrenciaEmUso = await prisma.ocorrencia.findFirst({
     where: { id_bairro_fk: id },
   });
-  if (ocorrenciasUsando > 0) {
-    throw new BadRequestError('Este bairro não pode ser deletado pois está em uso em ocorrências.');
+
+  if (ocorrenciaEmUso) {
+    // Refatorado (5): Usando ConflictError (409)
+    throw new ConflictError('Este bairro não pode ser deletado pois está em uso em ocorrências.');
   }
   await prisma.bairro.delete({ where: { id_bairro: id } });
 };

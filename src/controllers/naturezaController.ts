@@ -1,4 +1,3 @@
-import 'express-async-errors';
 import { Request, Response } from 'express';
 import * as naturezaService from '../services/naturezaService';
 import { TipoNatureza } from '@prisma/client';
