@@ -1,223 +1,55 @@
 # ===================================================================
-# SUÍTE DE TESTES COMPLETA E ATUALIZADA - API S.O.R.O. BOMBEIROS
+# SETUP INICIAL: REGISTRO E LOGIN DO ADMINISTRADOR
+# Use este arquivo no VS Code com a extensão "REST Client"
 # ===================================================================
 
 # --- VARIÁVEIS GLOBAIS ---
-# AÇÃO 1: Escolha o ambiente de teste. Descomente a linha que quer usar.
 
-# Para testes locais:
-@hostname = http://localhost:3000
-
-# Para testes no ambiente de produção (Render):
-# @hostname = https://api-bombeiros-s-o-r-o.onrender.com
+# AÇÃO 1: Defina a URL do seu serviço no Render.
+@hostname = https://api-bombeiros-s-o-r-o.onrender.com 
 
 
-# AÇÃO 2: Após executar os logins, copie e cole os tokens frescos aqui.
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIwNTg0ZDBlMi01MzdiLTQxNGEtOTc3ZC1lNDIwYTFiM2UxNWQiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjA3MDM2NjcsImV4cCI6MTc2MDczMjQ2N30.ynXslTPbqZcXKSSbKhveP_JUN7NhEkKR8W196ef4SCk
-@analistaToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyMTY4ZWY4ZS02M2I1LTQxYjAtODY4YS1lNjU4MGZkMDgxMTAiLCJwcm9maWxlIjoiQU5BTElTVEEiLCJpYXQiOjE3NjA3MDQwODIsImV4cCI6MTc2MDczMjg4Mn0.luarOd90qJzkC_9__LLFIOK0dhi8dWqQKnAZQV8ZdTA
+# AÇÃO 2: APÓS EXECUTAR O PASSO 1.2, COPIE E COLE O TOKEN OBTIDO AQUI.
+@adminToken =  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxNGRkYTUyNS0wN2NiLTRiYTUtODkyZi1mZDA4ZDRkYmJlN2IiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjA3MzczODYsImV4cCI6MTc2MDc2NjE4Nn0.w1NQk1QG2kkrGzAh2_58Ul3HE1jAfTSf8CdthJtIt7c
 
 
 # ===================================================================
-# FASE 1: CRIAÇÃO DO PRIMEIRO ADMIN E LOGIN
+# 1. REGISTRO E LOGIN
 # ===================================================================
 
 ### 1.1 - Cadastrar o primeiro usuário ADMIN
+# AÇÃO: Execute esta requisição (POST /api/auth/register).
+# O status esperado é 201 Created.
+# O usuário será criado no seu banco de dados no Render.
 # @name createAdmin
 POST {{hostname}}/api/auth/register
 Content-Type: application/json
 
 {
-  "name": "Super Admin",
-  "email": "admin@bombeiros.com",
-  "password": "senhaSuperSecreta123",
+  "name": "Maria Silva",
+  "email": "mariasilva@bombeiros.com",
+  "password": "cafedamanha123",
   "profile": "ADMIN",
   "matricula": "000000-0"
 }
 
 ### 1.2 - Fazer login como ADMIN
-# AÇÃO: Execute e copie o token da resposta para a variável @adminToken acima.
+# AÇÃO: Execute esta requisição (POST /api/auth/login).
+# Na resposta, copie o valor do campo "token".
+# Cole o token na variável @adminToken no topo deste arquivo.
 # @name loginAdmin
 POST {{hostname}}/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "admin@bombeiros.com",
-  "password": "senhaSuperSecreta123"
+  "email": "mariasilva@bombeiros.com",
+  "password": "cafedamanha123"
 }
 
-
-# ===================================================================
-# FASE 2: SETUP ADMINISTRATIVO (com token de Admin)
-# ===================================================================
-
-### 2.1 - Cadastrar Grupamento
-# @name createGrupamento
-POST {{hostname}}/api/grupamentos
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-
-{
-  "nome_grupamento": "Grupamento Tático",
-  "sigla": "GT"
-}
-
-### 2.2 - Cadastrar Unidade Operacional
-# @name createUnidade
-POST {{hostname}}/api/unidades-operacionais
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-
-{
-  "nome_unidade": "Quartel Central",
-  "id_grupamento_fk": "{{createGrupamento.response.body.id_grupamento}}"
-}
-
-### 2.3 - Cadastrar Bairro
-# @name createBairro
-POST {{hostname}}/api/bairros
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-
-{ "nome_bairro": "BOA_VISTA" }
-
-### 2.4 - Cadastrar Hierarquia de Classificação
-# @name createNatureza
-# CORRIGIDO: "descricao" agora usa um valor válido do novo enum (ex: INCENDIO)
-POST {{hostname}}/api/naturezas
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-
-{ "descricao": "INCENDIO" }
-
-###
-# @name createGrupo
-POST {{hostname}}/api/grupos
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-
-{
-  "descricao_grupo": "Incêndio em Vegetação",
-  "id_natureza_fk": "{{createNatureza.response.body.id_natureza}}"
-}
-
-###
-# @name createSubgrupo
-POST {{hostname}}/api/subgrupos
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-
-{
-  "descricao_subgrupo": "Queimada em Terreno Baldio",
-  "id_grupo_fk": "{{createGrupo.response.body.id_grupo}}"
-}
-
-### 2.5 - Cadastrar Forma de Acervo
-# @name createFormaAcervo
-POST {{hostname}}/api/formas-acervo
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-
-{ "descricao": "Telefone 193" }
-
-### 2.6 - Cadastrar Viatura
-# @name createViatura
-POST {{hostname}}/api/viaturas
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-
-{
-  "tipo_vt": "Auto Bomba Tanque",
-  "numero_viatura": "ABT_01",
-  "id_unidade_operacional_fk": "{{createUnidade.response.body.id_unidade}}"
-}
-
-
-# ===================================================================
-# FASE 3: CRIAÇÃO DE USUÁRIOS OPERACIONAIS E OCORRÊNCIAS
-# ===================================================================
-
-### 3.1 - Cadastrar um usuário ANALISTA (agora com Unidade)
-# @name createAnalista
-POST {{hostname}}/api/auth/register
-Content-Type: application/json
-
-{
-  "name": "Soldado Carlos",
-  "email": "carlos.soldado@bombeiros.com",
-  "password": "senhaValida123",
-  "profile": "ANALISTA",
-  "matricula": "123456-7",
-  "id_unidade_operacional_fk": "{{createUnidade.response.body.id_unidade}}"
-}
-
-### 3.2 - Login como ANALISTA
-# AÇÃO: Execute e copie o token para a variável @analistaToken acima.
-# @name loginAnalista
-POST {{hostname}}/api/auth/login
-Content-Type: application/json
-
-{
-  "email": "carlos.soldado@bombeiros.com",
-  "password": "senhaValida123"
-}
-
-### 3.3 - Criar uma Ocorrência (com token de Analista)
-# @name createOcorrencia
-POST {{hostname}}/api/ocorrencias
-Authorization: Bearer {{analistaToken}}
-Content-Type: application/json
-
-{
-  "data_acionamento": "2025-10-16T18:30:00Z",
-  "hora_acionamento": "2025-10-16T18:30:00Z",
-  "nr_aviso": "AV-2025-10-16-001",
-  "id_subgrupo_fk": "{{createSubgrupo.response.body.id_subgrupo}}",
-  "id_bairro_fk": "{{createBairro.response.body.id_bairro}}",
-  "id_forma_acervo_fk": "{{createFormaAcervo.response.body.id_forma_acervo}}"
-}
-
-
-# ===================================================================
-# FASE 4: CONSULTAS E ANÁLISES
-# ===================================================================
-
-### 4.1 - Listar Ocorrências (com filtro)
-GET {{hostname}}/api/ocorrencias?status=PENDENTE
-Authorization: Bearer {{analistaToken}}
-
-### 4.2 - Ver Detalhes de uma Ocorrência
-GET {{hostname}}/api/ocorrencias/{{createOcorrencia.response.body.id_ocorrencia}}
-Authorization: Bearer {{analistaToken}}
-
-### 4.3 - Gerar Relatório CSV (com token de Admin)
-# @name getCsvReport
-GET {{hostname}}/api/relatorios/ocorrencias/csv
-Authorization: Bearer {{adminToken}}
-
-### 4.4 - Gerar Relatório PDF (com token de Admin)
-# @name getPdfReport
-GET {{hostname}}/api/relatorios/ocorrencias/pdf
-Authorization: Bearer {{adminToken}}
-
-### 4.5 - Obter KPI de Ocorrências por Status
-GET {{hostname}}/api/dashboard/ocorrencias-por-status
-Authorization: Bearer {{analistaToken}}
-
-### 4.6 - Obter KPI de Ocorrências por Bairro
-# ATUALIZADO: O endpoint foi corrigido de 'municipio' para 'bairro'
-GET {{hostname}}/api/dashboard/ocorrencias-por-bairro
-Authorization: Bearer {{analistaToken}}
-
-
-# ===================================================================
-# FASE 5: TESTES DE SEGURANÇA
-# ===================================================================
-
-### 5.1 - Tentar aceder a rota de admin com token de ANALISTA
-# Resultado esperado: Erro 403 Forbidden
+### 1.3 - Testar Acesso Admin
+# AÇÃO: Após atualizar a variável @adminToken, execute esta requisição.
+# O status esperado é 200 OK (se o token for válido).
+# Esta é a rota de listagem de usuários, exclusiva para ADMIN.
+# @name testAdminAccess
 GET {{hostname}}/api/users
-Authorization: Bearer {{analistaToken}}
-
-### 5.2 - Tentar aceder a rota autenticada sem token
-# Resultado esperado: Erro 401 Unauthorized
-GET {{hostname}}/api/ocorrencias
+Authorization: Bearer {{adminToken}}
