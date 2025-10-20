@@ -2,13 +2,8 @@
 import { z } from 'zod';
 
 export const naturezaSchema = z.object({
-  body: z.object({ // <-- Adicionado
-    descricao: z.enum(
-      ['INCENDIO', 'ANIMAL', 'ARVORE', 'QUEIMADA', 'TRANSITO', 'RESGATE'],
-      {
-        required_error: 'A descrição da natureza é obrigatória.',
-        invalid_type_error: "A descrição deve ser um dos valores predefinidos (INCENDIO, ANIMAL, etc.).",
-      }
-    ),
+  body: z.object({ 
+    // Corrigido: Agora aceita qualquer string, pois o Enum foi removido
+    descricao: z.string({ required_error: 'A descrição da natureza é obrigatória.' }).min(1), 
   }),
 });
