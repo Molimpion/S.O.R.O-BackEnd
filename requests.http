@@ -1,55 +1,265 @@
 # ===================================================================
-# SETUP INICIAL: REGISTRO E LOGIN DO ADMINISTRADOR
-# Use este arquivo no VS Code com a extensão "REST Client"
+# SUÍTE DE TESTES DE COBERTURA TOTAL - API S.O.R.O. BOMBEIROS
+# Cobre todas as rotas CRUD, analíticas e de segurança da API.
 # ===================================================================
 
 # --- VARIÁVEIS GLOBAIS ---
+# ATENÇÃO: Os tokens abaixo são placeholders. Copie os tokens obtidos
+# nos passos 1.2 e 1.4 (ou 3.2) para que os testes funcionem.
 
-# AÇÃO 1: Defina a URL do seu serviço no Render.
-@hostname = https://api-bombeiros-s-o-r-o.onrender.com 
+# AÇÃO 1: Defina a URL do seu serviço
+@hostname = https://api-bombeiros-s-o-r-o.onrender.com
+# @hostname = http://localhost:3000
 
-
-# AÇÃO 2: APÓS EXECUTAR O PASSO 1.2, COPIE E COLE O TOKEN OBTIDO AQUI.
-@adminToken =  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxNGRkYTUyNS0wN2NiLTRiYTUtODkyZi1mZDA4ZDRkYmJlN2IiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjA3MzczODYsImV4cCI6MTc2MDc2NjE4Nn0.w1NQk1QG2kkrGzAh2_58Ul3HE1jAfTSf8CdthJtIt7c
+# AÇÃO 2: Copie e cole os tokens frescos aqui
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzMWI4YjM0MS1kODQ4LTRlZjYtYjEyYS1mZmFlNTc1MzY1OTIiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjA5OTg2NjQsImV4cCI6MTc2MTAyNzQ2NH0.sjXgjHxqVzmbYb1A-Pbvbaz15KwiDWBPCTuDl3eTsis
+@analistaToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODhkNGMzOS1mMWU5LTRiODgtYTNhMS1jODlmZjYwYWUyY2MiLCJwcm9maWxlIjoiQU5BTElTVEEiLCJpYXQiOjE3NjA5OTkyMjQsImV4cCI6MTc2MTAyODAyNH0.LOzSuSeMUzszfe4Jpij2EGMQYrSpLTZSq1dqycFJkKQ
+@bairroId =
+@naturezaId =
+@grupoId =
+@subgrupoId =
+@formaAcervoId =
+@grupamentoId =
+@unidadeId =
+@viaturaId =
+@analistaId =
+@ocorrenciaId =
 
 
 # ===================================================================
-# 1. REGISTRO E LOGIN
+# FASE 1: SETUP INICIAL E AUTENTICAÇÃO
 # ===================================================================
 
 ### 1.1 - Cadastrar o primeiro usuário ADMIN
-# AÇÃO: Execute esta requisição (POST /api/auth/register).
-# O status esperado é 201 Created.
-# O usuário será criado no seu banco de dados no Render.
 # @name createAdmin
 POST {{hostname}}/api/auth/register
 Content-Type: application/json
 
 {
-  "name": "Maria Silva",
-  "email": "mariasilva@bombeiros.com",
-  "password": "cafedamanha123",
-  "profile": "ADMIN",
-  "matricula": "000000-0"
+    "name": "Super Admin",
+    "email": "adm.teste@bombeiros.com",
+    "password": "senhaAdmin123",
+    "profile": "ADMIN",
+    "matricula": "999999-0"
 }
 
 ### 1.2 - Fazer login como ADMIN
-# AÇÃO: Execute esta requisição (POST /api/auth/login).
-# Na resposta, copie o valor do campo "token".
-# Cole o token na variável @adminToken no topo deste arquivo.
+# AÇÃO: Execute e copie o token da resposta para a variável @adminToken acima.
 # @name loginAdmin
 POST {{hostname}}/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "mariasilva@bombeiros.com",
-  "password": "cafedamanha123"
+    "email": "adm.teste@bombeiros.com",
+    "password": "senhaAdmin123"
 }
 
 ### 1.3 - Testar Acesso Admin
-# AÇÃO: Após atualizar a variável @adminToken, execute esta requisição.
-# O status esperado é 200 OK (se o token for válido).
-# Esta é a rota de listagem de usuários, exclusiva para ADMIN.
-# @name testAdminAccess
+# Resultado esperado: 200 OK (Valida o token)
 GET {{hostname}}/api/users
+Authorization: Bearer {{adminToken}}
+
+
+# ===================================================================
+# FASE 2: CRIAÇÃO DE DADOS MÍNIMOS DE DEPENDÊNCIA (ADMIN)
+# ===================================================================
+
+### 2.1 - POST: Criar Grupamento
+# @name createGrupamento
+POST {{hostname}}/api/grupamentos
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "nome_grupamento": "Primeiro Grupamento", "sigla": "G1" }
+
+### 2.2 - POST: Criar Unidade Operacional
+# @name createUnidade
+POST {{hostname}}/api/unidades-operacionais
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "nome_unidade": "Quartel Central",
+    "id_grupamento_fk": "{{createGrupamento.response.body.id_grupamento}}"
+}
+
+### 2.3 - POST: Criar Natureza (Base para Grupo)
+# @name createNatureza
+POST {{hostname}}/api/naturezas
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "descricao": "RESGATE_TESTE2" }
+
+### 2.4 - POST: Criar Grupo (Base para Subgrupo)
+# @name createGrupo
+POST {{hostname}}/api/grupos
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "descricao_grupo": "Resgate de Animais",
+    "id_natureza_fk": "{{createNatureza.response.body.id_natureza}}"
+}
+
+### 2.5 - POST: Criar Subgrupo (Base para Ocorrência)
+# @name createSubgrupo
+POST {{hostname}}/api/subgrupos
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "descricao_subgrupo": "Resgate de Gato em Árvore",
+    "id_grupo_fk": "{{createGrupo.response.body.id_grupo}}"
+}
+
+### 2.6 - POST: Criar Bairro (Base para Ocorrência)
+# @name createBairro
+POST {{hostname}}/api/bairros
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "nome_bairro": "BOA_VIAGEM" }
+
+### 2.7 - POST: Criar Forma Acervo (Base para Ocorrência)
+# @name createFormaAcervo
+POST {{hostname}}/api/formas-acervo
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "descricao": "APLICATIVO" }
+
+
+# ===================================================================
+# FASE 3: OCORRÊNCIAS E TESTES OPERACIONAIS
+# ===================================================================
+
+### 3.1 - Cadastrar Usuário ANALISTA
+# @name createAnalista
+POST {{hostname}}/api/auth/register
+Content-Type: application/json
+
+{
+    "name": "Analista Teste",
+    "email": "analista.teste@bombeiros.com",
+    "password": "senhaAnalista123",
+    "profile": "ANALISTA",
+    "matricula": "123123-1",
+    "id_unidade_operacional_fk": "{{createUnidade.response.body.id_unidade}}"
+}
+
+### 3.2 - Login como ANALISTA
+# AÇÃO: Copie o token de resposta para a variável @analistaToken acima.
+# @name loginAnalista
+POST {{hostname}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "analista.teste@bombeiros.com",
+    "password": "senhaAnalista123"
+}
+
+### 3.3 - POST: Criar Ocorrência (Analista)
+# @name createOcorrencia
+POST {{hostname}}/api/ocorrencias
+Authorization: Bearer {{analistaToken}}
+Content-Type: application/json
+
+{
+    "data_acionamento": "2025-10-20T10:00:00Z",
+    "hora_acionamento": "2025-10-20T10:00:00Z",
+    "nr_aviso": "OC-2025-10-20-001",
+    "id_subgrupo_fk": "{{createSubgrupo.response.body.id_subgrupo}}",
+    "id_bairro_fk": "{{createBairro.response.body.id_bairro}}",
+    "id_forma_acervo_fk": "{{createFormaAcervo.response.body.id_forma_acervo}}"
+}
+
+### 3.4 - GET: Listar Ocorrências com Paginação e Filtro de Data
+# Resultado esperado: 200 OK, lista paginada
+GET {{hostname}}/api/ocorrencias?page=1&limit=5&dataInicio=2025-10-01T00:00:00Z
+Authorization: Bearer {{analistaToken}}
+
+### 3.5 - GET: Detalhes da Ocorrência
+# @name getOcorrenciaById
+GET {{hostname}}/api/ocorrencias/{{createOcorrencia.response.body.id_ocorrencia}}
+Authorization: Bearer {{analistaToken}}
+
+
+# ===================================================================
+# FASE 4: TESTES ANALÍTICOS E DE RELATÓRIOS
+# ===================================================================
+
+### 4.1 - GET: KPI Ocorrências por Status
+# Testando o novo filtro de data no KPI
+GET {{hostname}}/api/dashboard/ocorrencias-por-status?dataFim=2025-10-30T00:00:00Z
+Authorization: Bearer {{analistaToken}}
+
+### 4.2 - GET: KPI Ocorrências por Bairro
+GET {{hostname}}/api/dashboard/ocorrencias-por-bairro
+Authorization: Bearer {{analistaToken}}
+
+### 4.3 - GET: Relatório CSV (Rota Unificada)
+# Rota corrigida: usa query param ?type=csv
+GET {{hostname}}/api/relatorios?type=csv&status=PENDENTE
+Authorization: Bearer {{adminToken}}
+
+### 4.4 - GET: Relatório PDF (Rota Unificada)
+# Rota corrigida: usa query param ?type=pdf
+GET {{hostname}}/api/relatorios?type=pdf
+Authorization: Bearer {{adminToken}}
+
+
+# ===================================================================
+# FASE 5: TESTES CRUD COMPLETO (PUT & DELETE)
+# ===================================================================
+
+### 5.1 - PUT: Atualizar Bairro
+# @name updateBairro
+PUT {{hostname}}/api/bairros/{{createBairro.response.body.id_bairro}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "nome_bairro": "BOA_VIAGEM_ATUALIZADO" }
+
+### 5.2 - PUT: Atualizar Usuário (Admin)
+# Atualiza o nome do analista
+PUT {{hostname}}/api/users/{{createAnalista.response.body.id}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "nome": "Analista Carlos" }
+
+
+# ===================================================================
+# FASE 6: TESTES DE CONFLITO E LIMPEZA (DELETE)
+# ===================================================================
+
+### 6.1 - DELETE: Tentar excluir Subgrupo em uso
+# Resultado esperado: 409 Conflict (A Ocorrência 3.3 está usando)
+DELETE {{hostname}}/api/subgrupos/{{createSubgrupo.response.body.id_subgrupo}}
+Authorization: Bearer {{adminToken}}
+
+### 6.2 - DELETE: Tentar excluir Bairro em uso
+# Resultado esperado: 409 Conflict
+DELETE {{hostname}}/api/bairros/{{createBairro.response.body.id_bairro}}
+Authorization: Bearer {{adminToken}}
+
+### 6.3 - DELETE: Excluir a Ocorrência para liberar as dependências (Limpeza)
+# NOTA: O S.O.R.O. não tem endpoint de DELETE para ocorrência, então vamos simular a limpeza.
+# Na prática, você teria que mudar o status (CONCLUIDO/CANCELADO) e deletar via banco.
+# Para manter a atomicidade, vamos limpar apenas as entidades não relacionadas à Ocorrência principal (Grupamento).
+# Os testes subsequentes de DELETE devem ser focados nas tabelas sem dependência.
+
+
+### 6.4 - POST: Criar Grupamento Secundário (Para DELETE limpo)
+# @name createGrupamento2
+POST {{hostname}}/api/grupamentos
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "nome_grupamento": "Grupamento Limpeza", "sigla": "GL" }
+
+### 6.5 - DELETE: Deletar Grupamento Secundário
+# Resultado esperado: 204 No Content (Sem dependências)
+DELETE {{hostname}}/api/grupamentos/{{createGrupamento2.response.body.id_grupamento}}
 Authorization: Bearer {{adminToken}}
