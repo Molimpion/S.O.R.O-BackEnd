@@ -1,4 +1,4 @@
-// src/services/ocorrenciaService.ts (CORREÇÃO DE BUG FINAL)
+// src/services/ocorrenciaService.ts (FINAL COM CORREÇÃO DE EXECUÇÃO)
 
 import PDFDocument from 'pdfkit';
 import { stringify } from 'csv-stringify/sync';
@@ -45,7 +45,7 @@ export const getAllOcorrencias = async (filters: any) => {
  const { page = 1, limit = 10, dataInicio, dataFim, ...otherFilters } = filters;
  const where: any = {};
   
-  // CORREÇÃO FINAL: Constrói o filtro de data separadamente para garantir a segurança.
+  // Lógica de filtro de data corrigida permanece
   const dateFilter: any = {};
   let isDateFilterActive = false;
 
@@ -61,7 +61,7 @@ export const getAllOcorrencias = async (filters: any) => {
   if (isDateFilterActive) {
       where.carimbo_data_hora_abertura = dateFilter;
   }
-  // Fim da correção de filtro de data
+  // Fim da lógica de filtro de data
 
  if (otherFilters.status) {
   where.status_situacao = otherFilters.status;
@@ -73,20 +73,20 @@ export const getAllOcorrencias = async (filters: any) => {
   where.id_subgrupo_fk = otherFilters.subgrupoId;
  }
   
- const [ocorrencias, total] = await prisma.$transaction([
-  prisma.ocorrencia.findMany({
-   where,
-   skip: (page - 1) * limit,
-   take: limit,
-   orderBy: { carimbo_data_hora_abertura: 'desc' },
-   include: {
-    subgrupo: true,
-    bairro: true,
-    usuario_abertura: { select: { id: true, nome: true, nome_guerra: true } },
-   },
-  }),
-  prisma.ocorrencia.count({ where }),
- ]);
+  // CORREÇÃO: Executa as queries sequencialmente, removendo prisma.$transaction
+ const total = await prisma.ocorrencia.count({ where });
+ const ocorrencias = await prisma.ocorrencia.findMany({
+  where,
+  skip: (page - 1) * limit,
+  take: limit,
+  orderBy: { carimbo_data_hora_abertura: 'desc' },
+  include: {
+   subgrupo: true,
+   bairro: true,
+   usuario_abertura: { select: { id: true, nome: true, nome_guerra: true } },
+  },
+ });
+  
  return {
   data: ocorrencias,
   total,
