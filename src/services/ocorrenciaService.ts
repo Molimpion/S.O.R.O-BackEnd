@@ -1,4 +1,4 @@
-// src/services/ocorrenciaService.ts (FINAL COM CORREÇÃO DE FILTRO DE DATA)
+// src/services/ocorrenciaService.ts (CORREÇÃO DE BUG FINAL)
 
 import PDFDocument from 'pdfkit';
 import { stringify } from 'csv-stringify/sync';
@@ -45,17 +45,23 @@ export const getAllOcorrencias = async (filters: any) => {
  const { page = 1, limit = 10, dataInicio, dataFim, ...otherFilters } = filters;
  const where: any = {};
   
-  // CORREÇÃO DE BUG: Inicializa o objeto de filtro de data de forma explícita
-  if (dataInicio || dataFim) {
-      where.carimbo_data_hora_abertura = {};
-  }
-  
+  // CORREÇÃO FINAL: Constrói o filtro de data separadamente para garantir a segurança.
+  const dateFilter: any = {};
+  let isDateFilterActive = false;
+
   if (dataInicio) {
-    where.carimbo_data_hora_abertura.gte = new Date(dataInicio);
+    dateFilter.gte = new Date(dataInicio);
+    isDateFilterActive = true;
   }
   if (dataFim) {
-    where.carimbo_data_hora_abertura.lte = new Date(dataFim);
+    dateFilter.lte = new Date(dataFim);
+    isDateFilterActive = true;
   }
+  
+  if (isDateFilterActive) {
+      where.carimbo_data_hora_abertura = dateFilter;
+  }
+  // Fim da correção de filtro de data
 
  if (otherFilters.status) {
   where.status_situacao = otherFilters.status;
@@ -132,17 +138,23 @@ export const getOcorrenciasForExport = async (filters: OcorrenciaFilters) => {
  const { dataInicio, dataFim, status, bairroId, subgrupoId } = filters;
  const where: any = {};
 
-  // CORREÇÃO DE BUG: Inicializa o objeto de filtro de data de forma explícita
-  if (dataInicio || dataFim) {
-      where.carimbo_data_hora_abertura = {};
-  }
+  // CORREÇÃO FINAL: Constrói o filtro de data separadamente para garantir a segurança.
+  const dateFilter: any = {};
+  let isDateFilterActive = false;
   
   if (dataInicio) {
-    where.carimbo_data_hora_abertura.gte = new Date(dataInicio);
+    dateFilter.gte = new Date(dataInicio);
+    isDateFilterActive = true;
   }
   if (dataFim) {
-    where.carimbo_data_hora_abertura.lte = new Date(dataFim);
+    dateFilter.lte = new Date(dataFim);
+    isDateFilterActive = true;
   }
+  
+  if (isDateFilterActive) {
+      where.carimbo_data_hora_abertura = dateFilter;
+  }
+  // Fim da correção de filtro de data
 
  if (status) { where.status_situacao = status }
  if (bairroId) { where.id_bairro_fk = bairroId }

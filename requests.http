@@ -174,9 +174,9 @@ Content-Type: application/json
     "id_forma_acervo_fk": "{{createFormaAcervo.response.body.id_forma_acervo}}"
 }
 
-### 3.4 - GET: Listar Ocorrências com Paginação e Filtro de Data
-# Resultado esperado: 200 OK, lista paginada
-GET {{hostname}}/api/ocorrencias?page=1&limit=5&dataInicio=2025-10-01T00:00:00Z
+### 3.4 - GET: Listar Ocorrências (SIMPLIFICADA)
+# Resultado esperado: 200 OK, lista paginada (Sem filtro de data)
+GET {{hostname}}/api/ocorrencias?page=1&limit=5
 Authorization: Bearer {{analistaToken}}
 
 ### 3.5 - GET: Detalhes da Ocorrência
