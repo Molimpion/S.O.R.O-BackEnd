@@ -1,31 +1,46 @@
-// src/services/unidadeOperacionalService.ts (REFATORADO)
-
+// src/services/unidadeOperacionalService.ts (CORRIGIDO: Sintaxe)
 import { PrismaClient } from '@prisma/client';
-import { NotFoundError, ConflictError } from '../errors/api-errors'; // Importar ConflictError
+import { NotFoundError, ConflictError } from '../errors/api-errors';
 
 const prisma = new PrismaClient();
 
-// ... (interfaces, createUnidade e getAllUnidades permanecem inalteradas) ...
+interface UnidadeData {
+  nome_unidade: string;
+  endereco_base?: string;
+  id_grupamento_fk: string;
+}
 
-/**
- * Deleta uma Unidade Operacional.
- */
-export const deleteUnidade = async (id: string) => {
+export async function createUnidade(data: UnidadeData) { // Sintaxe Corrigida
+  const grupamentoExists = await prisma.grupamento.findUnique({
+    where: { id_grupamento: data.id_grupamento_fk },
+  });
+  if (!grupamentoExists) {
+    throw new NotFoundError('Grupamento associado não encontrado.');
+  }
+
+  return await prisma.unidadeOperacional.create({ data });
+};
+
+export async function getAllUnidades() { // Sintaxe Corrigida
+  return await prisma.unidadeOperacional.findMany({
+    orderBy: { nome_unidade: 'asc' },
+    include: { grupamento: true },
+  });
+};
+
+export async function deleteUnidade(id: string) { // Sintaxe Corrigida
   const unidade = await prisma.unidadeOperacional.findUnique({ where: { id_unidade: id } });
   if (!unidade) {
     throw new NotFoundError('Unidade Operacional não encontrada');
   }
 
-  // Refatorado (4): Usando findFirst para checar se há usuários ou viaturas em uso
   const usuarioEmUso = await prisma.user.findFirst({ where: { id_unidade_operacional_fk: id } });
   if (usuarioEmUso) {
-    // Refatorado (5): Usando ConflictError (409)
     throw new ConflictError('Esta unidade não pode ser deletada pois possui usuários associados.');
   }
 
   const viaturaEmUso = await prisma.viatura.findFirst({ where: { id_unidade_operacional_fk: id } });
   if (viaturaEmUso) {
-    // Refatorado (5): Usando ConflictError (409)
     throw new ConflictError('Esta unidade não pode ser deletada pois possui viaturas associadas.');
   }
 

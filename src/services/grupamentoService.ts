@@ -1,28 +1,30 @@
-// src/services/grupamentoService.ts (REFATORADO)
-
+// src/services/grupamentoService.ts (CORRIGIDO: Sintaxe)
 import { PrismaClient } from '@prisma/client';
-import { NotFoundError, ConflictError } from '../errors/api-errors'; // Importar ConflictError
+import { NotFoundError, ConflictError } from '../errors/api-errors';
 
 const prisma = new PrismaClient();
 
-// ... (createGrupamento e getAllGrupamentos permanecem inalteradas) ...
+export async function createGrupamento(data: { nome_grupamento: string; sigla: string }) { // Sintaxe Corrigida
+  return await prisma.grupamento.create({ data });
+};
 
-/**
- * Deleta um grupamento.
- */
-export const deleteGrupamento = async (id: string) => {
+export async function getAllGrupamentos() { // Sintaxe Corrigida
+  return await prisma.grupamento.findMany({
+    orderBy: { nome_grupamento: 'asc' },
+  });
+};
+
+export async function deleteGrupamento(id: string) { // Sintaxe Corrigida
   const grupamento = await prisma.grupamento.findUnique({ where: { id_grupamento: id } });
   if (!grupamento) {
     throw new NotFoundError('Grupamento não encontrado');
   }
 
-  // Refatorado (4): Usando findFirst para checar se está em uso (performance)
   const unidadeEmUso = await prisma.unidadeOperacional.findFirst({
     where: { id_grupamento_fk: id },
   });
 
   if (unidadeEmUso) {
-    // Refatorado (5): Usando ConflictError (409)
     throw new ConflictError('Este grupamento não pode ser deletado pois está em uso por Unidades Operacionais.');
   }
 

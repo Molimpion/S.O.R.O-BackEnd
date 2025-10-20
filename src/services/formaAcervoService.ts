@@ -1,28 +1,34 @@
-// src/services/formaAcervoService.ts (REFATORADO)
-
+// src/services/formaAcervoService.ts (CORRIGIDO: Sintaxe)
 import { PrismaClient } from '@prisma/client';
-import { NotFoundError, ConflictError } from '../errors/api-errors'; // Importar ConflictError
+import { NotFoundError, ConflictError } from '../errors/api-errors';
 
 const prisma = new PrismaClient();
 
-// ... (createFormaAcervo e getAllFormasAcervo permanecem inalteradas) ...
+export async function createFormaAcervo(descricao: string) { // Sintaxe Corrigida
+  const formaAcervo = await prisma.formaAcervo.create({
+    data: { descricao },
+  });
+  return formaAcervo;
+};
 
-/**
- * Deleta uma forma de acervo.
- */
-export const deleteFormaAcervo = async (id: string) => {
+export async function getAllFormasAcervo() { // Sintaxe Corrigida
+  const formasAcervo = await prisma.formaAcervo.findMany({
+    orderBy: { descricao: 'asc' },
+  });
+  return formasAcervo;
+};
+
+export async function deleteFormaAcervo(id: string) { // Sintaxe Corrigida
   const formaAcervo = await prisma.formaAcervo.findUnique({ where: { id_forma_acervo: id } });
   if (!formaAcervo) {
     throw new NotFoundError('Forma de acervo não encontrada');
   }
 
-  // Refatorado (4): Usando findFirst para checar se está em uso (performance)
-  const ocorrenciaEmUso = await prisma.ocorrencia.findFirst({
+  const ocorrenciasUsando = await prisma.ocorrencia.findFirst({
     where: { id_forma_acervo_fk: id },
   });
 
-  if (ocorrenciaEmUso) {
-    // Refatorado (5): Usando ConflictError (409)
+  if (ocorrenciasUsando) {
     throw new ConflictError('Esta forma de acervo não pode ser deletada pois está em uso em Ocorrências.');
   }
 

@@ -1,28 +1,51 @@
-// src/services/subgrupoService.ts (REFATORADO)
-
+// src/services/subgrupoService.ts (CORRIGIDO: Sintaxe)
 import { PrismaClient } from '@prisma/client';
-import { NotFoundError, ConflictError } from '../errors/api-errors'; // Importar ConflictError
+import { NotFoundError, ConflictError } from '../errors/api-errors';
 
 const prisma = new PrismaClient();
 
-// ... (createSubgrupo e getAllSubgrupos permanecem inalteradas) ...
+interface SubgrupoData {
+  descricao_subgrupo: string;
+  id_grupo_fk: string;
+}
 
-/**
- * Deleta um subgrupo.
- */
-export const deleteSubgrupo = async (id: string) => {
+export async function createSubgrupo(data: SubgrupoData) { // Sintaxe Corrigida
+  const grupoExists = await prisma.grupo.findUnique({
+    where: { id_grupo: data.id_grupo_fk },
+  });
+  if (!grupoExists) {
+    throw new NotFoundError('Grupo associado não encontrado.');
+  }
+
+  const subgrupo = await prisma.subgrupo.create({ data });
+  return subgrupo;
+};
+
+export async function getAllSubgrupos() { // Sintaxe Corrigida
+  const subgrupos = await prisma.subgrupo.findMany({
+    orderBy: { descricao_subgrupo: 'asc' },
+    include: {
+      grupo: {
+        include: {
+          natureza: true,
+        },
+      },
+    },
+  });
+  return subgrupos;
+};
+
+export async function deleteSubgrupo(id: string) { // Sintaxe Corrigida
   const subgrupo = await prisma.subgrupo.findUnique({ where: { id_subgrupo: id } });
   if (!subgrupo) {
     throw new NotFoundError('Subgrupo não encontrado');
   }
 
-  // Refatorado (4): Usando findFirst para checar se está em uso (performance)
-  const ocorrenciaEmUso = await prisma.ocorrencia.findFirst({
+  const ocorrenciasUsando = await prisma.ocorrencia.findFirst({
     where: { id_subgrupo_fk: id },
   });
 
-  if (ocorrenciaEmUso) {
-    // Refatorado (5): Usando ConflictError (409)
+  if (ocorrenciasUsando) {
     throw new ConflictError('Este subgrupo não pode ser deletado pois está em uso em Ocorrências.');
   }
 
