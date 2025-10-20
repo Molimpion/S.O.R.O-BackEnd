@@ -1,9 +1,9 @@
-// src/controllers/viaturaController.ts (LIMPO E FINALIZADO)
+// src/controllers/viaturaController.ts (FINAL)
 
 import { Request, Response } from 'express';
-// CORREÇÃO: Usando importação nomeada
+// Correção: Importação nomeada
 import { createViatura, getAllViaturas, deleteViatura } from '../services/viaturaService';
-// REMOVIDO: import { NumeroViatura } from '@prisma/client'; // Não é mais necessário
+// Removido: import { NumeroViatura } from '@prisma/client';
 
 export async function create(req: Request, res: Response) {
   const novaViatura = await createViatura(req.body);
@@ -17,7 +17,7 @@ export async function getAll(req: Request, res: Response) {
 
 export async function remove(req: Request, res: Response) {
   const { id } = req.params;
-  // Agora usa o ID (string) que é o novo PK UUID
+  // O deleteViatura agora espera o ID (string) do novo PK
   await deleteViatura(id);
   res.status(204).send();
 };
