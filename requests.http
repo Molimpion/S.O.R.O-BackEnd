@@ -36,11 +36,11 @@ POST {{hostname}}/api/auth/register
 Content-Type: application/json
 
 {
-    "name": "Super Admin",
+    "name": "Super Admin1",
     "email": "adm.teste@bombeiros.com",
     "password": "senhaAdmin123",
     "profile": "ADMIN",
-    "matricula": "999999-0"
+    "matricula": "999998-0"
 }
 
 ### 1.2 - Fazer login como ADMIN
@@ -174,8 +174,8 @@ Content-Type: application/json
     "id_forma_acervo_fk": "{{createFormaAcervo.response.body.id_forma_acervo}}"
 }
 
-### 3.4 - GET: Listar Ocorrências (TESTE ISOLADO)
-# Resultado esperado: 200 OK
+### 3.4 - GET: Listar Ocorrências (Com Filtros)
+# Resultado esperado: 200 OK, lista paginada
 GET {{hostname}}/api/ocorrencias?page=1&limit=5&dataInicio=2025-10-01T00:00:00Z
 Authorization: Bearer {{analistaToken}}
 
@@ -227,7 +227,7 @@ PUT {{hostname}}/api/users/{{createAnalista.response.body.id}}
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
-{ "nome": "Analista Carlos" }
+{ "nome": "Analista Teste" }
 
 
 # ===================================================================

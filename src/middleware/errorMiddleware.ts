@@ -9,6 +9,9 @@ export const errorMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
+  // ADICIONADO: Isto imprime o erro detalhado nos logs do Render
+  console.error(error); 
+
   // Se o erro for uma instância de ApiError, use o statusCode dele.
   // Senão, use o status 500 (Internal Server Error).
   const statusCode = error.statusCode ?? 500
