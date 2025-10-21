@@ -1,27 +1,23 @@
-// src/services/naturezaService.ts (CORRIGIDO: Sintaxe e Tipagem)
-import { PrismaClient } from '@prisma/client'; // Removido TipoNatureza
+import { PrismaClient } from '@prisma/client';
 import { NotFoundError, ConflictError } from '../errors/api-errors';
 
 const prisma = new PrismaClient();
 
-/**
- * Cria uma nova natureza de ocorrência.
- */
-export async function createNatureza(descricao: string) { // Sintaxe Corrigida, Args: string
+export async function createNatureza(descricao: string) {
   const natureza = await prisma.natureza.create({
     data: { descricao },
   });
   return natureza;
 };
 
-export async function getAllNaturezas() { // Sintaxe Corrigida
+export async function getAllNaturezas() {
   const naturezas = await prisma.natureza.findMany({
     orderBy: { descricao: 'asc' },
   });
   return naturezas;
 };
 
-export async function deleteNatureza(id: string) { // Sintaxe Corrigida
+export async function deleteNatureza(id: string) {
   const natureza = await prisma.natureza.findUnique({ where: { id_natureza: id } });
   if (!natureza) {
     throw new NotFoundError('Natureza não encontrada');

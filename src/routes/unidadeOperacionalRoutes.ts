@@ -5,9 +5,7 @@ import { validate } from '../middleware/validate';
 import { unidadeSchema } from '../validators/unidadeOperacionalValidator';
 
 const router = Router();
-
 router.use(authenticateToken, checkAdmin);
-
 router.post('/', validate(unidadeSchema), unidadeController.create);
 router.get('/', unidadeController.getAll);
 router.delete('/:id', unidadeController.remove);

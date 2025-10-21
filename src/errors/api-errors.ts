@@ -1,9 +1,3 @@
-// src/errors/api-errors.ts (ADICIONADO ConflictError)
-
-// src/errors/api-errors.ts
-
-// Esta é nossa classe base para todos os erros da API.
-// Ela estende a classe Error padrão do Node.js.
 export class ApiError extends Error {
   public readonly statusCode: number;
 
@@ -13,30 +7,26 @@ export class ApiError extends Error {
   }
 }
 
-// Erro para requisições inválidas (ex: dados faltando no body)
 export class BadRequestError extends ApiError {
   constructor(message: string) {
-    super(message, 400); // Bad Request
+    super(message, 400);
   }
 }
 
-// Erro para quando um recurso não é encontrado
 export class NotFoundError extends ApiError {
   constructor(message: string) {
-    super(message, 404); // Not Found
+    super(message, 404);
   }
 }
 
-// Erro para quando o usuário não está autorizado
 export class UnauthorizedError extends ApiError {
   constructor(message: string) {
-    super(message, 401); // Unauthorized
+    super(message, 401);
   }
 }
 
-// NOVO: Erro para conflito de estado do recurso (HTTP 409)
 export class ConflictError extends ApiError {
   constructor(message: string) {
-    super(message, 409); // Conflict
+    super(message, 409);
   }
 }

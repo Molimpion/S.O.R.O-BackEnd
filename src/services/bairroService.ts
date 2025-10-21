@@ -1,28 +1,27 @@
-// src/services/bairroService.ts (CORRIGIDO: Sintaxe e Tipagem)
-import { PrismaClient } from '@prisma/client'; // Removido BairrosRecife
+import { PrismaClient } from '@prisma/client';
 import { NotFoundError, ConflictError } from '../errors/api-errors';
 
 const prisma = new PrismaClient();
 
 interface BairroData {
-  nome_bairro: string; // Alterado para string
+  nome_bairro: string;
   regiao?: string;
   ais?: string;
 }
 
-export async function createBairro(data: BairroData) { // Sintaxe Corrigida
+export async function createBairro(data: BairroData) {
   const bairro = await prisma.bairro.create({ data });
   return bairro;
 };
 
-export async function getAllBairros() { // Sintaxe Corrigida
+export async function getAllBairros() {
   const bairros = await prisma.bairro.findMany({
     orderBy: { nome_bairro: 'asc' },
   });
   return bairros;
 };
 
-// getBairroById mantido como 'export async function' para garantir hoisting e acessibilidade
+
 export async function getBairroById(id: string) {
   const bairro = await prisma.bairro.findUnique({ where: { id_bairro: id } });
   if (!bairro) {
@@ -31,7 +30,7 @@ export async function getBairroById(id: string) {
   return bairro;
 };
 
-export async function updateBairro(id: string, data: Partial<BairroData>) { // Sintaxe Corrigida
+export async function updateBairro(id: string, data: Partial<BairroData>) {
   await getBairroById(id);
   const updatedBairro = await prisma.bairro.update({
     where: { id_bairro: id },
@@ -40,7 +39,7 @@ export async function updateBairro(id: string, data: Partial<BairroData>) { // S
   return updatedBairro;
 };
 
-export async function deleteBairro(id: string) { // Sintaxe Corrigida
+export async function deleteBairro(id: string) {
   await getBairroById(id);
   const ocorrenciaEmUso = await prisma.ocorrencia.findFirst({
     where: { id_bairro_fk: id },

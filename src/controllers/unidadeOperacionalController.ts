@@ -1,7 +1,4 @@
-// src/controllers/unidadeOperacionalController.ts (CORRIGIDO)
-
 import { Request, Response } from 'express';
-// CORREÇÃO: Usando importação nomeada
 import { createUnidade, getAllUnidades, deleteUnidade } from '../services/unidadeOperacionalService';
 
 export const create = async (req: Request, res: Response) => {

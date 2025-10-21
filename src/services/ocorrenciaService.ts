@@ -1,5 +1,3 @@
-// src/services/ocorrenciaService.ts (CORRIGIDO PARA PARSEINT)
-
 import PDFDocument from 'pdfkit';
 import { stringify } from 'csv-stringify/sync';
 import { PrismaClient, Status } from '@prisma/client';
@@ -16,14 +14,12 @@ interface CreateOcorrenciaData {
  nr_aviso?: string;
 }
 
-// Interface de filtros (simplificada para as funções de exportação)
 interface OcorrenciaFilters {
  dataInicio?: string;
  dataFim?: string;
  status?: Status;
  bairroId?: string;
  subgrupoId?: string;
- // page e limit ignorados para exportação
 }
 
 export const createOcorrencia = async (data: CreateOcorrenciaData, userId: string) => {
@@ -42,24 +38,17 @@ export const createOcorrencia = async (data: CreateOcorrenciaData, userId: strin
 };
 
 export const getAllOcorrencias = async (filters: any) => {
-  // Pega os valores da query, definindo padrões se não existirem
   const pageParam = filters.page ?? 1;
   const limitParam = filters.limit ?? 10;
   const { dataInicio, dataFim, ...otherFilters } = filters;
-
-  // *** CORREÇÃO: Converter page e limit para número ***
   const page = parseInt(String(pageParam), 10);
   const limit = parseInt(String(limitParam), 10);
-
-  // Verifica se a conversão deu certo (caso contrário, usa padrões seguros)
   const safePage = isNaN(page) || page < 1 ? 1 : page;
   const safeLimit = isNaN(limit) || limit < 1 ? 10 : limit;
-  // *** FIM DA CORREÇÃO ***
 
 
   const where: any = {};
 
-  // Lógica de filtro de data permanece
   const dateFilter: any = {};
   let isDateFilterActive = false;
 
@@ -75,7 +64,6 @@ export const getAllOcorrencias = async (filters: any) => {
   if (isDateFilterActive) {
       where.carimbo_data_hora_abertura = dateFilter;
   }
-  // Fim da lógica de filtro de data
 
  if (otherFilters.status) {
   where.status_situacao = otherFilters.status;
@@ -87,14 +75,11 @@ export const getAllOcorrencias = async (filters: any) => {
   where.id_subgrupo_fk = otherFilters.subgrupoId;
  }
 
-  // CORREÇÃO: Executa as queries sequencialmente, removendo prisma.$transaction
  const total = await prisma.ocorrencia.count({ where });
  const ocorrencias = await prisma.ocorrencia.findMany({
   where,
-  // *** USAR OS VALORES CONVERTIDOS E SEGUROS ***
   skip: (safePage - 1) * safeLimit,
   take: safeLimit,
-  // *** FIM DA ALTERAÇÃO ***
   orderBy: { carimbo_data_hora_abertura: 'desc' },
   include: {
    subgrupo: true,
@@ -106,15 +91,14 @@ export const getAllOcorrencias = async (filters: any) => {
  return {
   data: ocorrencias,
   total,
-  page: safePage, // Retorna a página segura usada
-  totalPages: Math.ceil(total / safeLimit), // Usa o limite seguro no cálculo
+  page: safePage,
+  totalPages: Math.ceil(total / safeLimit),
  };
 };
 
 export const getOcorrenciaById = async (id: string) => {
  const ocorrencia = await prisma.ocorrencia.findUnique({
   where: { id_ocorrencia: id },
-  // SUGESTÃO DE MELHORIA: Usar 'select' dentro de 'include' para performance.
   include: {
    subgrupo: true,
    bairro: true,
@@ -129,7 +113,7 @@ export const getOcorrenciaById = async (id: string) => {
     select: {
      horario_chegada_local: true,
      horario_saida_local: true,
-     viatura: true // Continua a trazer o objeto completo da viatura
+     viatura: true
     }
    },
    equipe_ocorrencia: {
@@ -147,14 +131,10 @@ export const getOcorrenciaById = async (id: string) => {
 };
 
 
-// ----------------------------------------------------
-// FUNÇÃO UNIFICADA DE CONSULTA PARA EXPORTAÇÃO
-// ----------------------------------------------------
 export const getOcorrenciasForExport = async (filters: OcorrenciaFilters) => {
  const { dataInicio, dataFim, status, bairroId, subgrupoId } = filters;
  const where: any = {};
 
-  // CORREÇÃO FINAL: Constrói o filtro de data separadamente para garantir a segurança.
   const dateFilter: any = {};
   let isDateFilterActive = false;
 
@@ -170,7 +150,6 @@ export const getOcorrenciasForExport = async (filters: OcorrenciaFilters) => {
   if (isDateFilterActive) {
       where.carimbo_data_hora_abertura = dateFilter;
   }
-  // Fim da correção de filtro de data
 
  if (status) { where.status_situacao = status }
  if (bairroId) { where.id_bairro_fk = bairroId }
@@ -184,11 +163,7 @@ export const getOcorrenciasForExport = async (filters: OcorrenciaFilters) => {
 }
 
 
-// ----------------------------------------------------
-// FUNÇÕES DE EXPORTAÇÃO (Recebem apenas os dados, não os filtros)
-// ----------------------------------------------------
-
-export const exportOcorrenciasToCSV = async (ocorrencias: any[]) => { // Recebe os dados
+export const exportOcorrenciasToCSV = async (ocorrencias: any[]) => {
  const columns = [
   { key: 'nr_aviso', header: 'Nº Aviso' },
   { key: 'status_situacao', header: 'Status' },
@@ -209,7 +184,7 @@ export const exportOcorrenciasToCSV = async (ocorrencias: any[]) => { // Recebe 
  return csvString;
 };
 
-export const exportOcorrenciasToPDF = async (ocorrencias: any[]): Promise<Buffer> => { // Recebe os dados
+export const exportOcorrenciasToPDF = async (ocorrencias: any[]): Promise<Buffer> => {
  return new Promise((resolve, reject) => {
   const doc = new PDFDocument({ margin: 30, size: 'A4' });
   const buffers: Buffer[] = [];

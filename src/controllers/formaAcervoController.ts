@@ -1,7 +1,4 @@
-// src/controllers/formaAcervoController.ts (CORRIGIDO)
-
 import { Request, Response } from 'express';
-// CORREÇÃO: Usando importação nomeada
 import { createFormaAcervo, getAllFormasAcervo, deleteFormaAcervo } from '../services/formaAcervoService'; 
 
 export const create = async (req: Request, res: Response) => {

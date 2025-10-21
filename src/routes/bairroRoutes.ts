@@ -5,10 +5,7 @@ import { validate } from '../middleware/validate';
 import { bairroSchema } from '../validators/bairroValidator';
 
 const router = Router();
-
-// Protege todas as rotas de bairro, apenas administradores podem gerir
 router.use(authenticateToken, checkAdmin);
-
 router.post('/', validate(bairroSchema), bairroController.create);
 router.get('/', bairroController.getAll);
 router.get('/:id', bairroController.getById);

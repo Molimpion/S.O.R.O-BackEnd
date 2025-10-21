@@ -35,9 +35,7 @@ export const getUserById = async (id: string) => {
   return user;
 };
 
-// Função de atualização MODIFICADA
 export const updateUser = async (id: string, data: any, adminUserId: string) => {
-  // Garante que o usuário que está a ser atualizado existe
   await getUserById(id);
 
   const updatedUser = await prisma.user.update({

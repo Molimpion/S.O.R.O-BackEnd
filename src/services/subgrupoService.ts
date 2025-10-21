@@ -1,4 +1,3 @@
-// src/services/subgrupoService.ts (CORRIGIDO: Sintaxe)
 import { PrismaClient } from '@prisma/client';
 import { NotFoundError, ConflictError } from '../errors/api-errors';
 
@@ -9,7 +8,7 @@ interface SubgrupoData {
   id_grupo_fk: string;
 }
 
-export async function createSubgrupo(data: SubgrupoData) { // Sintaxe Corrigida
+export async function createSubgrupo(data: SubgrupoData) {
   const grupoExists = await prisma.grupo.findUnique({
     where: { id_grupo: data.id_grupo_fk },
   });
@@ -21,7 +20,7 @@ export async function createSubgrupo(data: SubgrupoData) { // Sintaxe Corrigida
   return subgrupo;
 };
 
-export async function getAllSubgrupos() { // Sintaxe Corrigida
+export async function getAllSubgrupos() {
   const subgrupos = await prisma.subgrupo.findMany({
     orderBy: { descricao_subgrupo: 'asc' },
     include: {
@@ -35,7 +34,7 @@ export async function getAllSubgrupos() { // Sintaxe Corrigida
   return subgrupos;
 };
 
-export async function deleteSubgrupo(id: string) { // Sintaxe Corrigida
+export async function deleteSubgrupo(id: string) {
   const subgrupo = await prisma.subgrupo.findUnique({ where: { id_subgrupo: id } });
   if (!subgrupo) {
     throw new NotFoundError('Subgrupo não encontrado');

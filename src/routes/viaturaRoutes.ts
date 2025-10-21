@@ -5,10 +5,7 @@ import { validate } from '../middleware/validate';
 import { viaturaSchema } from '../validators/viaturaValidator';
 
 const router = Router();
-
-// Protege todas as rotas de viatura para acesso de administrador
 router.use(authenticateToken, checkAdmin);
-
 router.post('/', validate(viaturaSchema), viaturaController.create);
 router.get('/', viaturaController.getAll);
 router.delete('/:id', viaturaController.remove);

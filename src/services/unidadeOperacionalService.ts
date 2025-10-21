@@ -1,4 +1,3 @@
-// src/services/unidadeOperacionalService.ts (CORRIGIDO: Sintaxe)
 import { PrismaClient } from '@prisma/client';
 import { NotFoundError, ConflictError } from '../errors/api-errors';
 
@@ -10,7 +9,7 @@ interface UnidadeData {
   id_grupamento_fk: string;
 }
 
-export async function createUnidade(data: UnidadeData) { // Sintaxe Corrigida
+export async function createUnidade(data: UnidadeData) {
   const grupamentoExists = await prisma.grupamento.findUnique({
     where: { id_grupamento: data.id_grupamento_fk },
   });
@@ -21,14 +20,14 @@ export async function createUnidade(data: UnidadeData) { // Sintaxe Corrigida
   return await prisma.unidadeOperacional.create({ data });
 };
 
-export async function getAllUnidades() { // Sintaxe Corrigida
+export async function getAllUnidades() {
   return await prisma.unidadeOperacional.findMany({
     orderBy: { nome_unidade: 'asc' },
     include: { grupamento: true },
   });
 };
 
-export async function deleteUnidade(id: string) { // Sintaxe Corrigida
+export async function deleteUnidade(id: string) {
   const unidade = await prisma.unidadeOperacional.findUnique({ where: { id_unidade: id } });
   if (!unidade) {
     throw new NotFoundError('Unidade Operacional não encontrada');

@@ -11,12 +11,10 @@ import bodyParser from 'body-parser';
 import { errorMiddleware } from './middleware/errorMiddleware';
 import { authenticateToken } from './middleware/authMiddleware';
 
-// Importações de todas as rotas
 import authRoutes from './routes/authRoutes';
 import ocorrenciaRoutes from './routes/ocorrenciaRoutes';
 import userRoutes from './routes/userRoutes';
-// A linha de municipioRoutes foi REMOVIDA
-import bairroRoutes from './routes/bairroRoutes'; // <-- ADICIONADO
+import bairroRoutes from './routes/bairroRoutes';
 import naturezaRoutes from './routes/naturezaRoutes';
 import grupoRoutes from './routes/grupoRoutes';
 import subgrupoRoutes from './routes/subgrupoRoutes';
@@ -32,31 +30,24 @@ const PORT = 3000;
 
 app.use(bodyParser.json());
 
-// --- ROTAS PÚBLICAS ---
 app.get('/', (req, res) => { res.send('API está funcionando!') });
 app.use('/api/auth', authRoutes);
 
-// --- PONTO DE CONTROLE DE AUTENTICAÇÃO ---
 app.use(authenticateToken);
 
-// --- ROTAS PROTEGIDAS ---
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/relatorios', relatorioRoutes);
 app.use('/api/ocorrencias', ocorrenciaRoutes);
 app.use('/api/users', userRoutes);
-// Rotas de Classificação/Lookup (Administrativas)
-app.use('/api/bairros', bairroRoutes); // <-- ADICIONADO
-// A linha de /api/municipios foi REMOVIDA
+app.use('/api/bairros', bairroRoutes);
 app.use('/api/naturezas', naturezaRoutes);
 app.use('/api/grupos', grupoRoutes);
 app.use('/api/subgrupos', subgrupoRoutes);
 app.use('/api/formas-acervo', formaAcervoRoutes);
-// Rotas de Hierarquia Organizacional (Administrativas)
 app.use('/api/grupamentos', grupamentoRoutes);
 app.use('/api/unidades-operacionais', unidadeOperacionalRoutes);
 app.use('/api/viaturas', viaturaRoutes);
 
-// --- MIDDLEWARE DE ERRO ---
 app.use(errorMiddleware);
 
 app.listen(PORT, () => {

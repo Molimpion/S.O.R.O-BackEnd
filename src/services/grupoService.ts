@@ -1,4 +1,3 @@
-// src/services/grupoService.ts (CORRIGIDO: Sintaxe)
 import { PrismaClient } from '@prisma/client';
 import { NotFoundError, ConflictError } from '../errors/api-errors';
 
@@ -9,7 +8,7 @@ interface GrupoData {
   id_natureza_fk: string;
 }
 
-export async function createGrupo(data: GrupoData) { // Sintaxe Corrigida
+export async function createGrupo(data: GrupoData) {
   const naturezaExists = await prisma.natureza.findUnique({
     where: { id_natureza: data.id_natureza_fk },
   });
@@ -21,7 +20,7 @@ export async function createGrupo(data: GrupoData) { // Sintaxe Corrigida
   return grupo;
 };
 
-export async function getAllGrupos() { // Sintaxe Corrigida
+export async function getAllGrupos() {
   const grupos = await prisma.grupo.findMany({
     orderBy: { descricao_grupo: 'asc' },
     include: {
@@ -31,7 +30,7 @@ export async function getAllGrupos() { // Sintaxe Corrigida
   return grupos;
 };
 
-export async function deleteGrupo(id: string) { // Sintaxe Corrigida
+export async function deleteGrupo(id: string) {
   const grupo = await prisma.grupo.findUnique({ where: { id_grupo: id } });
   if (!grupo) {
     throw new NotFoundError('Grupo não encontrado');

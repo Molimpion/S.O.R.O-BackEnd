@@ -1,10 +1,7 @@
-// src/services/dashboardService.ts
-
 import { PrismaClient, Status } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// Define a interface para os filtros passados para as funções de serviço
 interface DashboardFilters {
   dataInicio?: string;
   dataFim?: string;
@@ -13,10 +10,8 @@ interface DashboardFilters {
   subgrupoId?: string;
 }
 
-// Função utilitária para construir a cláusula 'where' com base nos filtros
 const buildWhereClause = (filters: DashboardFilters) => {
   const where: any = {};
-  // Filtro por período de data de abertura
   if (filters.dataInicio) {
     where.carimbo_data_hora_abertura = { 
       ...where.carimbo_data_hora_abertura, 
@@ -29,7 +24,7 @@ const buildWhereClause = (filters: DashboardFilters) => {
       lte: new Date(filters.dataFim) 
     };
   }
-  // Outros filtros
+
   if (filters.status) {
     where.status_situacao = filters.status;
   }
@@ -42,9 +37,6 @@ const buildWhereClause = (filters: DashboardFilters) => {
   return where;
 }
 
-/**
- * Calcula e retorna o número de ocorrências para cada status, aplicando filtros.
- */
 export const getOcorrenciasPorStatus = async (filters: DashboardFilters) => {
   const where = buildWhereClause(filters); // <-- Aplicando filtro
 
@@ -62,9 +54,6 @@ export const getOcorrenciasPorStatus = async (filters: DashboardFilters) => {
   return formattedResult;
 };
 
-/**
- * Calcula e retorna o número de ocorrências para cada tipo (Subgrupo), aplicando filtros.
- */
 export const getOcorrenciasPorTipo = async (filters: DashboardFilters) => {
   const where = buildWhereClause(filters); // <-- Aplicando filtro
 
@@ -79,7 +68,6 @@ export const getOcorrenciasPorTipo = async (filters: DashboardFilters) => {
     },
   });
 
-  // Pega os IDs dos subgrupos para buscar seus nomes
   const subgrupoIds = groupByType.map(item => item.id_subgrupo_fk);
   const subgrupos = await prisma.subgrupo.findMany({
     where: {
@@ -91,7 +79,6 @@ export const getOcorrenciasPorTipo = async (filters: DashboardFilters) => {
     },
   });
 
-  // Mapeia os nomes para os resultados
   const result = groupByType.map(item => {
     const subgrupo = subgrupos.find(s => s.id_subgrupo === item.id_subgrupo_fk);
     return {
@@ -103,9 +90,6 @@ export const getOcorrenciasPorTipo = async (filters: DashboardFilters) => {
   return result;
 };
 
-/**
- * Calcula e retorna o número de ocorrências para cada Bairro, aplicando filtros.
- */
 export const getOcorrenciasPorBairro = async (filters: DashboardFilters) => {
   const where = buildWhereClause(filters); // <-- Aplicando filtro
   
@@ -120,7 +104,6 @@ export const getOcorrenciasPorBairro = async (filters: DashboardFilters) => {
     },
   });
 
-  // Pega os IDs dos bairros para buscar seus nomes
   const bairroIds = groupByBairro.map(item => item.id_bairro_fk);
   const bairros = await prisma.bairro.findMany({
     where: {
@@ -132,7 +115,6 @@ export const getOcorrenciasPorBairro = async (filters: DashboardFilters) => {
     },
   });
 
-  // Mapeia os nomes para os resultados
   const result = groupByBairro.map(item => {
     const bairro = bairros.find(m => m.id_bairro === item.id_bairro_fk);
     return {

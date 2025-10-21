@@ -1,6 +1,3 @@
-// src/controllers/authController.ts (LIMPO)
-
-// REMOVIDO: import 'express-async-errors' // Redundante, centralizado em index.ts
 import { Request, Response } from 'express';
 import * as authService from '../services/authService';
 

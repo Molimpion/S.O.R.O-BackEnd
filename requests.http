@@ -1,17 +1,12 @@
 # ===================================================================
-# SUÍTE DE TESTES DE DEMONSTRAÇÃO - API S.O.R.O. BOMBEIROS (v2 - Nomes Alternativos)
-# Cobre as principais funcionalidades com dados realistas.
+# apresentação Geraldo
+# API S.O.R.O. BOMBEIROS - Cenário: Incêndio Residencial
 # ===================================================================
 
 # --- VARIÁVEIS GLOBAIS ---
-# ATENÇÃO: Execute os testes na ordem. Copie os tokens obtidos
-# nos passos 1.2 e 3.2 para as variáveis abaixo.
-
-# AÇÃO 1: Defina a URL do seu serviço
 @hostname = https://api-bombeiros-s-o-r-o.onrender.com
 # @hostname = http://localhost:3000
 
-# AÇÃO 2: Copie e cole os tokens frescos aqui após executar 1.2 e 3.2
 @adminToken = # Copie o token do teste 1.2 aqui
 @analistaToken = # Copie o token do teste 3.2 aqui
 @bairroId =
@@ -30,17 +25,17 @@
 # FASE 1: SETUP INICIAL E AUTENTICAÇÃO
 # ===================================================================
 
-### 1.1 - Cadastrar o usuário ADMIN (Ex: Comandante)
+### 1.1 - Cadastrar o usuário ADMIN (Ex: Comandante Silva)
 # @name createAdmin
 POST {{hostname}}/api/auth/register
 Content-Type: application/json
 
 {
-    "name": "Capitão Silva",
-    "email": "cap.silva.admin@bombeiros.pe.gov.br",
+    "name": "Comandante Silva",
+    "email": "cmd.silva.admin.dia1@bombeiros.pe.gov.br", # Email Único
     "password": "senhaAdminForte123",
     "profile": "ADMIN",
-    "matricula": "100001-1"
+    "matricula": "100001-A" # Matrícula Única
 }
 
 ### 1.2 - Fazer login como ADMIN
@@ -50,12 +45,11 @@ POST {{hostname}}/api/auth/login
 Content-Type: application/json
 
 {
-    "email": "cap.silva.admin@bombeiros.pe.gov.br",
+    "email": "cmd.silva.admin.dia1@bombeiros.pe.gov.br",
     "password": "senhaAdminForte123"
 }
 
 ### 1.3 - Testar Acesso Admin (Listar Usuários)
-# Resultado esperado: 200 OK (Valida o token e lista usuários)
 GET {{hostname}}/api/users
 Authorization: Bearer {{adminToken}}
 
@@ -83,68 +77,68 @@ Content-Type: application/json
     "id_grupamento_fk": "{{createGrupamento.response.body.id_grupamento}}"
 }
 
-### 2.3 - POST: Criar Natureza (Ex: Salvamento) - ALTERADO
+### 2.3 - POST: Criar Natureza (Ex: Incêndio)
 # @name createNatureza
 POST {{hostname}}/api/naturezas
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
-{ "descricao": "SALVAMENTO" } # Nome diferente
+{ "descricao": "INCENDIO" }
 
-### 2.4 - POST: Criar Grupo (Ex: Salvamento Terrestre) - ALTERADO
+### 2.4 - POST: Criar Grupo (Ex: Incêndio em Edificação)
 # @name createGrupo
 POST {{hostname}}/api/grupos
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-    "descricao_grupo": "Salvamento Terrestre", # Nome diferente
+    "descricao_grupo": "Incêndio em Edificação",
     "id_natureza_fk": "{{createNatureza.response.body.id_natureza}}"
 }
 
-### 2.5 - POST: Criar Subgrupo (Ex: Resgate em Elevador) - ALTERADO
+### 2.5 - POST: Criar Subgrupo (Ex: Incêndio em Residência)
 # @name createSubgrupo
 POST {{hostname}}/api/subgrupos
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-    "descricao_subgrupo": "Resgate em Elevador", # Nome diferente
+    "descricao_subgrupo": "Incêndio em Residência Unifamiliar",
     "id_grupo_fk": "{{createGrupo.response.body.id_grupo}}"
 }
 
-### 2.6 - POST: Criar Bairro (Ex: Madalena) - ALTERADO
+### 2.6 - POST: Criar Bairro (Ex: Boa Vista)
 # @name createBairro
 POST {{hostname}}/api/bairros
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
-{ "nome_bairro": "MADALENA", "regiao": "Oeste" } # Nome diferente
+{ "nome_bairro": "BOA VISTA", "regiao": "Central" }
 
-### 2.7 - POST: Criar Forma Acervo (Ex: Rádio Operacional) - ALTERADO
+### 2.7 - POST: Criar Forma Acervo (Ex: Telefone 193)
 # @name createFormaAcervo
 POST {{hostname}}/api/formas-acervo
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
-{ "descricao": "RADIO_OPERACIONAL" } # Nome diferente
+{ "descricao": "TELEFONE 193" }
 
 
 # ===================================================================
 # FASE 3: OCORRÊNCIAS E TESTES OPERACIONAIS
 # ===================================================================
 
-### 3.1 - Cadastrar Usuário ANALISTA (Ex: Operador de Rádio)
+### 3.1 - Cadastrar Usuário ANALISTA (Ex: Operador Oliveira)
 # @name createAnalista
 POST {{hostname}}/api/auth/register
 Content-Type: application/json
 
 {
-    "name": "Sargento Oliveira",
-    "email": "sgt.oliveira.analista@bombeiros.pe.gov.br",
+    "name": "Operador Oliveira",
+    "email": "op.oliveira.analista.dia1@bombeiros.pe.gov.br", # Email Único
     "password": "senhaAnalistaSegura456",
     "profile": "ANALISTA",
-    "matricula": "200002-2",
+    "matricula": "200002-B", # Matrícula Única
     "id_unidade_operacional_fk": "{{createUnidade.response.body.id_unidade}}"
 }
 
@@ -155,29 +149,26 @@ POST {{hostname}}/api/auth/login
 Content-Type: application/json
 
 {
-    "email": "sgt.oliveira.analista@bombeiros.pe.gov.br",
+    "email": "op.oliveira.analista.dia1@bombeiros.pe.gov.br",
     "password": "senhaAnalistaSegura456"
 }
 
-### 3.3 - POST: Criar Ocorrência (Analista - Agora de Resgate em Elevador na Madalena)
+### 3.3 - POST: Criar Ocorrência (Incêndio Residencial na Boa Vista)
 # @name createOcorrencia
 POST {{hostname}}/api/ocorrencias
 Authorization: Bearer {{analistaToken}}
 Content-Type: application/json
 
 {
-    "data_acionamento": "2025-10-21T15:00:00Z", # Data/Hora do acionamento real
-    "hora_acionamento": "2025-10-21T15:00:00Z", # Pode ser a mesma ou ligeiramente diferente
-    "nr_aviso": "AV-20251021-002", # Número de aviso diferente
-    "id_subgrupo_fk": "{{createSubgrupo.response.body.id_subgrupo}}", # Usa o novo subgrupo
-    "id_bairro_fk": "{{createBairro.response.body.id_bairro}}", # Usa o novo bairro
-    "id_forma_acervo_fk": "{{createFormaAcervo.response.body.id_forma_acervo}}" # Usa a nova forma de acervo
-    # Poderia adicionar localização aqui se a API suportar na criação
-    # "localizacao": { "logradouro": "Rua Real da Torre", "numero_km": "1000", "referencia_logradouro": "Edifício X"}
+    "data_acionamento": "2025-10-21T10:15:00Z", # Data/Hora do acionamento
+    "hora_acionamento": "2025-10-21T10:15:00Z",
+    "nr_aviso": "AV-DIA1-001", # Número de aviso do Dia 1
+    "id_subgrupo_fk": "{{createSubgrupo.response.body.id_subgrupo}}",
+    "id_bairro_fk": "{{createBairro.response.body.id_bairro}}",
+    "id_forma_acervo_fk": "{{createFormaAcervo.response.body.id_forma_acervo}}"
 }
 
-### 3.4 - GET: Listar Ocorrências (Com Filtros - Ex: Pendentes de Hoje)
-# Resultado esperado: 200 OK, lista paginada
+### 3.4 - GET: Listar Ocorrências (Pendentes de Hoje)
 GET {{hostname}}/api/ocorrencias?status=PENDENTE&dataInicio=2025-10-21T00:00:00Z
 Authorization: Bearer {{analistaToken}}
 
@@ -191,19 +182,19 @@ Authorization: Bearer {{analistaToken}}
 # FASE 4: TESTES ANALÍTICOS E DE RELATÓRIOS (ADMIN)
 # ===================================================================
 
-### 4.1 - GET: KPI Ocorrências por Status (Ex: Todas Pendentes)
-GET {{hostname}}/api/dashboard/ocorrencias-por-status?status=PENDENTE
-Authorization: Bearer {{adminToken}} # Geralmente KPIs são vistos por gestão/admin
+### 4.1 - GET: KPI Ocorrências por Status
+GET {{hostname}}/api/dashboard/ocorrencias-por-status
+Authorization: Bearer {{adminToken}}
 
-### 4.2 - GET: KPI Ocorrências por Bairro (Ex: Do Bairro Madalena)
+### 4.2 - GET: KPI Ocorrências por Bairro (Do Bairro Boa Vista)
 GET {{hostname}}/api/dashboard/ocorrencias-por-bairro?bairroId={{createBairro.response.body.id_bairro}}
 Authorization: Bearer {{adminToken}}
 
-### 4.3 - GET: Relatório CSV (Ex: Ocorrências de Salvamento Pendentes)
+### 4.3 - GET: Relatório CSV (Ocorrências de Incêndio Pendentes)
 GET {{hostname}}/api/relatorios?type=csv&status=PENDENTE&subgrupoId={{createSubgrupo.response.body.id_subgrupo}}
 Authorization: Bearer {{adminToken}}
 
-### 4.4 - GET: Relatório PDF (Ex: Todas as ocorrências do dia)
+### 4.4 - GET: Relatório PDF (Todas as ocorrências do dia)
 GET {{hostname}}/api/relatorios?type=pdf&dataInicio=2025-10-21T00:00:00Z
 Authorization: Bearer {{adminToken}}
 
@@ -212,20 +203,20 @@ Authorization: Bearer {{adminToken}}
 # FASE 5: TESTES CRUD COMPLETO (PUT & DELETE - ADMIN)
 # ===================================================================
 
-### 5.1 - PUT: Atualizar Bairro (Ex: Adicionar AIS à Madalena)
+### 5.1 - PUT: Atualizar Bairro (Adicionar AIS)
 # @name updateBairro
 PUT {{hostname}}/api/bairros/{{createBairro.response.body.id_bairro}}
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
-{ "nome_bairro": "MADALENA", "regiao": "Oeste", "ais": "AIS 4" }
+{ "nome_bairro": "BOA VISTA", "regiao": "Central", "ais": "AIS 1" }
 
-### 5.2 - PUT: Atualizar Usuário (Admin) (Ex: Adicionar Nome de Guerra)
+### 5.2 - PUT: Atualizar Usuário (Adicionar Posto/Grad)
 PUT {{hostname}}/api/users/{{createAnalista.response.body.data.id}}
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
-{ "nome_guerra": "SGT Oliveira" }
+{ "posto_grad": "3º SGT" }
 
 
 # ===================================================================
@@ -242,15 +233,17 @@ Authorization: Bearer {{adminToken}}
 DELETE {{hostname}}/api/bairros/{{createBairro.response.body.id_bairro}}
 Authorization: Bearer {{adminToken}}
 
-### 6.3 - POST: Criar Grupamento Secundário (Ex: Incêndio)
+### 6.3 - POST: Criar Grupamento Secundário (Ex: Agreste)
 # @name createGrupamento2
 POST {{hostname}}/api/grupamentos
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
-{ "nome_grupamento": "Grupamento de Incêndio", "sigla": "GBI" }
+{ "nome_grupamento": "Grupamento de Bombeiros do Agreste", "sigla": "GBA" } # Sigla Única
 
 ### 6.4 - DELETE: Deletar Grupamento Secundário (Não está em uso)
 # Resultado esperado: 204 No Content
 DELETE {{hostname}}/api/grupamentos/{{createGrupamento2.response.body.id_grupamento}}
 Authorization: Bearer {{adminToken}}
+
+

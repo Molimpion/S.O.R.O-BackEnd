@@ -5,10 +5,7 @@ import { validate } from '../middleware/validate';
 import { grupoSchema } from '../validators/grupoValidator';
 
 const router = Router();
-
-// Protege todas as rotas, apenas admins podem gerenciar
 router.use(authenticateToken, checkAdmin);
-
 router.post('/', validate(grupoSchema), grupoController.create);
 router.get('/', grupoController.getAll);
 router.delete('/:id', grupoController.remove);

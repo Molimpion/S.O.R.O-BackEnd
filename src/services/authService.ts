@@ -1,4 +1,3 @@
-// src/services/authService.ts (CORRIGIDO)
 import { PrismaClient, Profile } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -13,11 +12,11 @@ export const registerUser = async (data: any) => {
   const user = await prisma.user.create({
     data: {
       email: data.email,
-      nome: data.name, // ALTERADO
-      senha_hash: hashedPassword, // ALTERADO
-      tipo_perfil: data.profile as Profile, // ALTERADO
-      matricula: data.matricula, // Assumindo que a matrícula virá no cadastro
-      id_unidade_operacional_fk: data.id_unidade_operacional_fk, // Assumindo que virá no cadastro
+      nome: data.name,
+      senha_hash: hashedPassword,
+      tipo_perfil: data.profile as Profile,
+      matricula: data.matricula,
+      id_unidade_operacional_fk: data.id_unidade_operacional_fk,
     },
   });
 
@@ -44,7 +43,7 @@ export const loginUser = async (data: any) => {
     throw new UnauthorizedError('Email ou senha inválidos');
   }
 
-  const isPasswordValid = await bcrypt.compare(data.password, user.senha_hash); // ALTERADO
+  const isPasswordValid = await bcrypt.compare(data.password, user.senha_hash);
 
   if (!isPasswordValid) {
     await createLog({
@@ -62,7 +61,7 @@ export const loginUser = async (data: any) => {
   });
 
   const token = jwt.sign(
-    { userId: user.id, profile: user.tipo_perfil }, // ALTERADO
+    { userId: user.id, profile: user.tipo_perfil },
     process.env.JWT_SECRET as string,
     { expiresIn: '8h' }
   );

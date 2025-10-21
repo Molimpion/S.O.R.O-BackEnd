@@ -1,7 +1,4 @@
-// src/controllers/grupoController.ts (CORRIGIDO)
-
 import { Request, Response } from 'express';
-// CORREÇÃO: Usando importação nomeada
 import { createGrupo, getAllGrupos, deleteGrupo } from '../services/grupoService';
 
 export const create = async (req: Request, res: Response) => {

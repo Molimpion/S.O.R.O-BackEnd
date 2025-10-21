@@ -1,7 +1,5 @@
-// src/validators/ocorrenciaValidator.ts (FINALIZADO)
 import { z } from 'zod';
 
-// 1. Schema para CRIAÇÃO
 export const createOcorrenciaSchema = z.object({
   body: z.object({
     data_acionamento: z.string({ required_error: 'A data de acionamento é obrigatória.' }).datetime(),
@@ -13,7 +11,6 @@ export const createOcorrenciaSchema = z.object({
   }),
 });
 
-// 2. Schema para LISTAGEM (Filtros. Não exige 'type')
 export const listOcorrenciaSchema = z.object({
   query: z.object({
     dataInicio: z.string().datetime().optional(),
@@ -26,7 +23,6 @@ export const listOcorrenciaSchema = z.object({
   }),
 });
 
-// 3. Schema para RELATÓRIOS (Exige 'type'. Usa a lista de filtros)
 export const reportOcorrenciaSchema = z.object({
   query: listOcorrenciaSchema.shape.query.extend({
     type: z.enum(['csv', 'pdf'], {

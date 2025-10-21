@@ -1,9 +1,7 @@
-// src/validators/authValidator.ts (CORRIGIDO)
 import { z } from 'zod';
 
-// Schema para o registo
 export const registerSchema = z.object({
-  body: z.object({ // <-- Adicionado para validar o corpo da requisição
+  body: z.object({
     name: z.string({ required_error: 'O nome é obrigatório' }).min(3),
     email: z.string({ required_error: 'O email é obrigatório' }).email(),
     password: z.string({ required_error: 'A senha é obrigatória' }).min(6),
@@ -13,17 +11,15 @@ export const registerSchema = z.object({
   })
 });
 
-// Schema para o login
 export const loginSchema = z.object({
-  body: z.object({ // <-- Adicionado para validar o corpo da requisição
+  body: z.object({
     email: z.string().email(),
     password: z.string({ required_error: 'A senha é obrigatória' }),
   })
 });
 
-// Schema para atualização de utilizador
 export const userUpdateSchema = z.object({
-  body: z.object({ // <-- Adicionado para validar o corpo da requisição
+  body: z.object({
     nome: z.string().min(3).optional(),
     email: z.string().email().optional(),
     tipo_perfil: z.enum(['ADMIN', 'ANALISTA', 'CHEFE']).optional(),

@@ -4,7 +4,7 @@ import { ZodError, z } from 'zod';
 export const validate = (schema: z.Schema) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // O parse agora é feito num objeto que contém todas as partes da requisição
+    
       await schema.parseAsync({
         body: req.body,
         query: req.query,

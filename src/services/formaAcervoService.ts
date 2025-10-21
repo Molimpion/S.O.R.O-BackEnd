@@ -1,24 +1,23 @@
-// src/services/formaAcervoService.ts (CORRIGIDO: Sintaxe)
 import { PrismaClient } from '@prisma/client';
 import { NotFoundError, ConflictError } from '../errors/api-errors';
 
 const prisma = new PrismaClient();
 
-export async function createFormaAcervo(descricao: string) { // Sintaxe Corrigida
+export async function createFormaAcervo(descricao: string) {
   const formaAcervo = await prisma.formaAcervo.create({
     data: { descricao },
   });
   return formaAcervo;
 };
 
-export async function getAllFormasAcervo() { // Sintaxe Corrigida
+export async function getAllFormasAcervo() {
   const formasAcervo = await prisma.formaAcervo.findMany({
     orderBy: { descricao: 'asc' },
   });
   return formasAcervo;
 };
 
-export async function deleteFormaAcervo(id: string) { // Sintaxe Corrigida
+export async function deleteFormaAcervo(id: string) {
   const formaAcervo = await prisma.formaAcervo.findUnique({ where: { id_forma_acervo: id } });
   if (!formaAcervo) {
     throw new NotFoundError('Forma de acervo não encontrada');
