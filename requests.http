@@ -12,8 +12,8 @@
 # @hostname = http://localhost:3000
 
 # AÇÃO 2: Copie e cole os tokens frescos aqui
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzMWI4YjM0MS1kODQ4LTRlZjYtYjEyYS1mZmFlNTc1MzY1OTIiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjA5OTg2NjQsImV4cCI6MTc2MTAyNzQ2NH0.sjXgjHxqVzmbYb1A-Pbvbaz15KwiDWBPCTuDl3eTsis
-@analistaToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODhkNGMzOS1mMWU5LTRiODgtYTNhMS1jODlmZjYwYWUyY2MiLCJwcm9maWxlIjoiQU5BTElTVEEiLCJpYXQiOjE3NjA5OTkyMjQsImV4cCI6MTc2MTAyODAyNH0.LOzSuSeMUzszfe4Jpij2EGMQYrSpLTZSq1dqycFJkKQ
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyNjMyYzc2OS04NTUwLTRkZjQtODYzYi1jZmU0ZDAwMGQ2MTEiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjEwMDkyODksImV4cCI6MTc2MTAzODA4OX0.TxurYPanZqR0dsTPdZjGHKtugfO8DhubZYHQpwqAqxY
+@analistaToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlY2QzNThkNi1lMTgxLTQ3MWQtYmU3OC0yZWJiMWJlOTZlMTMiLCJwcm9maWxlIjoiQU5BTElTVEEiLCJpYXQiOjE3NjEwMDk5NzgsImV4cCI6MTc2MTAzODc3OH0.Gevc6wq_uHQVcMgXQaTKhOkvVzTi3H_ecfFxJJPrGcM
 @bairroId =
 @naturezaId =
 @grupoId =
@@ -37,7 +37,7 @@ Content-Type: application/json
 
 {
     "name": "Super Admin1",
-    "email": "adm.teste@bombeiros.com",
+    "email": "adm.test1@bombeiros.com",
     "password": "senhaAdmin123",
     "profile": "ADMIN",
     "matricula": "999998-0"
@@ -50,7 +50,7 @@ POST {{hostname}}/api/auth/login
 Content-Type: application/json
 
 {
-    "email": "adm.teste@bombeiros.com",
+    "email": "adm.test1@bombeiros.com",
     "password": "senhaAdmin123"
 }
 
@@ -70,7 +70,7 @@ POST {{hostname}}/api/grupamentos
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
-{ "nome_grupamento": "Primeiro Grupamento", "sigla": "G1" }
+{ "nome_grupamento": "segundo Grupamento", "sigla": "G2" }
 
 ### 2.2 - POST: Criar Unidade Operacional
 # @name createUnidade
@@ -79,7 +79,7 @@ Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-    "nome_unidade": "Quartel Central",
+    "nome_unidade": "Quartel sul",
     "id_grupamento_fk": "{{createGrupamento.response.body.id_grupamento}}"
 }
 
@@ -89,7 +89,7 @@ POST {{hostname}}/api/naturezas
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
-{ "descricao": "RESGATE_TESTE2" }
+{ "descricao": "RESGATE_TESTE4" }
 
 ### 2.4 - POST: Criar Grupo (Base para Subgrupo)
 # @name createGrupo
@@ -98,7 +98,7 @@ Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-    "descricao_grupo": "Resgate de Animais",
+    "descricao_grupo": "Resgate de Animais felinos",
     "id_natureza_fk": "{{createNatureza.response.body.id_natureza}}"
 }
 
@@ -109,7 +109,7 @@ Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-    "descricao_subgrupo": "Resgate de Gato em Árvore",
+    "descricao_subgrupo": "Resgate de Gato em telhado",
     "id_grupo_fk": "{{createGrupo.response.body.id_grupo}}"
 }
 
@@ -119,7 +119,7 @@ POST {{hostname}}/api/bairros
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
-{ "nome_bairro": "BOA_VIAGEM" }
+{ "nome_bairro": "ENCRUZILHADA" }
 
 ### 2.7 - POST: Criar Forma Acervo (Base para Ocorrência)
 # @name createFormaAcervo
@@ -140,11 +140,11 @@ POST {{hostname}}/api/auth/register
 Content-Type: application/json
 
 {
-    "name": "Analista Teste",
-    "email": "analista.teste@bombeiros.com",
+    "name": "Analista Teste2",
+    "email": "analista.teste2@bombeiros.com",
     "password": "senhaAnalista123",
     "profile": "ANALISTA",
-    "matricula": "123123-1",
+    "matricula": "123123-2",
     "id_unidade_operacional_fk": "{{createUnidade.response.body.id_unidade}}"
 }
 
@@ -155,7 +155,7 @@ POST {{hostname}}/api/auth/login
 Content-Type: application/json
 
 {
-    "email": "analista.teste@bombeiros.com",
+    "email": "analista.teste2@bombeiros.com",
     "password": "senhaAnalista123"
 }
 

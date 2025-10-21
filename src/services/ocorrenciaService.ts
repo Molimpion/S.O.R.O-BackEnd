@@ -1,4 +1,4 @@
-// src/services/ocorrenciaService.ts (FINAL COM CORREÇÃO DE EXECUÇÃO)
+// src/services/ocorrenciaService.ts (CORRIGIDO PARA PARSEINT)
 
 import PDFDocument from 'pdfkit';
 import { stringify } from 'csv-stringify/sync';
@@ -42,10 +42,24 @@ export const createOcorrencia = async (data: CreateOcorrenciaData, userId: strin
 };
 
 export const getAllOcorrencias = async (filters: any) => {
- const { page = 1, limit = 10, dataInicio, dataFim, ...otherFilters } = filters;
- const where: any = {};
-  
-  // Lógica de filtro de data corrigida permanece
+  // Pega os valores da query, definindo padrões se não existirem
+  const pageParam = filters.page ?? 1;
+  const limitParam = filters.limit ?? 10;
+  const { dataInicio, dataFim, ...otherFilters } = filters;
+
+  // *** CORREÇÃO: Converter page e limit para número ***
+  const page = parseInt(String(pageParam), 10);
+  const limit = parseInt(String(limitParam), 10);
+
+  // Verifica se a conversão deu certo (caso contrário, usa padrões seguros)
+  const safePage = isNaN(page) || page < 1 ? 1 : page;
+  const safeLimit = isNaN(limit) || limit < 1 ? 10 : limit;
+  // *** FIM DA CORREÇÃO ***
+
+
+  const where: any = {};
+
+  // Lógica de filtro de data permanece
   const dateFilter: any = {};
   let isDateFilterActive = false;
 
@@ -57,7 +71,7 @@ export const getAllOcorrencias = async (filters: any) => {
     dateFilter.lte = new Date(dataFim);
     isDateFilterActive = true;
   }
-  
+
   if (isDateFilterActive) {
       where.carimbo_data_hora_abertura = dateFilter;
   }
@@ -72,13 +86,15 @@ export const getAllOcorrencias = async (filters: any) => {
  if (otherFilters.subgrupoId) {
   where.id_subgrupo_fk = otherFilters.subgrupoId;
  }
-  
+
   // CORREÇÃO: Executa as queries sequencialmente, removendo prisma.$transaction
  const total = await prisma.ocorrencia.count({ where });
  const ocorrencias = await prisma.ocorrencia.findMany({
   where,
-  skip: (page - 1) * limit,
-  take: limit,
+  // *** USAR OS VALORES CONVERTIDOS E SEGUROS ***
+  skip: (safePage - 1) * safeLimit,
+  take: safeLimit,
+  // *** FIM DA ALTERAÇÃO ***
   orderBy: { carimbo_data_hora_abertura: 'desc' },
   include: {
    subgrupo: true,
@@ -86,12 +102,12 @@ export const getAllOcorrencias = async (filters: any) => {
    usuario_abertura: { select: { id: true, nome: true, nome_guerra: true } },
   },
  });
-  
+
  return {
   data: ocorrencias,
   total,
-  page,
-  totalPages: Math.ceil(total / limit),
+  page: safePage, // Retorna a página segura usada
+  totalPages: Math.ceil(total / safeLimit), // Usa o limite seguro no cálculo
  };
 };
 
@@ -103,24 +119,24 @@ export const getOcorrenciaById = async (id: string) => {
    subgrupo: true,
    bairro: true,
    forma_acervo: true,
-   usuario_abertura: { 
-    select: { id: true, nome: true, nome_guerra: true, posto_grad: true } 
+   usuario_abertura: {
+    select: { id: true, nome: true, nome_guerra: true, posto_grad: true }
    },
    localizacao: true,
    vitimas: true,
    midias: true,
-   viaturas_usadas: { 
-    select: { 
+   viaturas_usadas: {
+    select: {
      horario_chegada_local: true,
      horario_saida_local: true,
      viatura: true // Continua a trazer o objeto completo da viatura
-    } 
+    }
    },
-   equipe_ocorrencia: { 
-    select: { 
+   equipe_ocorrencia: {
+    select: {
      funcao_na_equipe: true,
      usuario: { select: { id: true, nome: true, nome_guerra: true, posto_grad: true } }
-    } 
+    }
    },
   },
  });
@@ -141,7 +157,7 @@ export const getOcorrenciasForExport = async (filters: OcorrenciaFilters) => {
   // CORREÇÃO FINAL: Constrói o filtro de data separadamente para garantir a segurança.
   const dateFilter: any = {};
   let isDateFilterActive = false;
-  
+
   if (dataInicio) {
     dateFilter.gte = new Date(dataInicio);
     isDateFilterActive = true;
@@ -150,7 +166,7 @@ export const getOcorrenciasForExport = async (filters: OcorrenciaFilters) => {
     dateFilter.lte = new Date(dataFim);
     isDateFilterActive = true;
   }
-  
+
   if (isDateFilterActive) {
       where.carimbo_data_hora_abertura = dateFilter;
   }
@@ -181,7 +197,7 @@ export const exportOcorrenciasToCSV = async (ocorrencias: any[]) => { // Recebe 
   { key: 'subgrupo.descricao_subgrupo', header: 'Subgrupo' },
   { key: 'usuario_abertura.nome', header: 'Usuário Abertura' },
  ];
- 
+
  const csvString = stringify(ocorrencias, {
   header: true,
   columns: columns,
