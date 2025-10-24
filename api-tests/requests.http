@@ -7,7 +7,7 @@
 @hostname = https://api-bombeiros-s-o-r-o.onrender.com
 # @hostname = http://localhost:3000
 
-@adminToken = # Copie o token do teste 1.2 aqui
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0Y2ZlNGRjNi1kZjhjLTRlNjYtYTE1YS0zNDI5ZjU4ZTE2OGQiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjExMzUzNzksImV4cCI6MTc2MTE2NDE3OX0.F3LYxrm277bWYtDB6zp9z1RaaDuuZtKigssKLyrnDSI
 @analistaToken = # Copie o token do teste 3.2 aqui
 @bairroId =
 @naturezaId =
@@ -31,11 +31,11 @@ POST {{hostname}}/api/auth/register
 Content-Type: application/json
 
 {
-    "name": "Comandante Silva",
-    "email": "cmd.silva.admin.dia1@bombeiros.pe.gov.br", # Email Único
+    "name": "Comandante geraldo",
+    "email": "cmd.lucas.admin.dia4@bombeiros.pe.gov.br",
     "password": "senhaAdminForte123",
     "profile": "ADMIN",
-    "matricula": "100001-A" # Matrícula Única
+    "matricula": "100001-d"
 }
 
 ### 1.2 - Fazer login como ADMIN
@@ -45,7 +45,7 @@ POST {{hostname}}/api/auth/login
 Content-Type: application/json
 
 {
-    "email": "cmd.silva.admin.dia1@bombeiros.pe.gov.br",
+    "email": "cmd.lucas.admin.dia4@bombeiros.pe.gov.br",
     "password": "senhaAdminForte123"
 }
 
@@ -143,7 +143,7 @@ Content-Type: application/json
 }
 
 ### 3.2 - Login como ANALISTA
-# AÇÃO: Copie o token de resposta para a variável @analistaToken acima.
+# AÇÃO: Execute e copie o token da resposta para a variável @analistaToken acima.
 # @name loginAnalista
 POST {{hostname}}/api/auth/login
 Content-Type: application/json
@@ -245,5 +245,3 @@ Content-Type: application/json
 # Resultado esperado: 204 No Content
 DELETE {{hostname}}/api/grupamentos/{{createGrupamento2.response.body.id_grupamento}}
 Authorization: Bearer {{adminToken}}
-
-
