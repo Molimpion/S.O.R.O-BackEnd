@@ -51,6 +51,20 @@ Content-Type: application/json
 GET {{hostname}}/api/users
 Authorization: Bearer {{adminToken}}
 
+### 1.4 - TESTE: Cadastrar Novo Usuário (Admin) - Deve Enviar E-mail
+# @name registerTestUserWithEmail
+POST {{hostname}}/api/auth/register
+Authorization: Bearer {{adminToken}} 
+Content-Type: application/json
+
+{
+    "name": "Usuario Teste Email",
+    "email": "SEU_EMAIL_DE_TESTE_REAL@exemplo.com", // <-- SUBSTITUA AQUI
+    // "password": "SENHA_REMOVIDA", // <-- NÃO ENVIAR MAIS
+    "profile": "ANALISTA",
+    "matricula": "999999-9", // <-- Use uma matrícula nova
+    "id_unidade_operacional_fk": "{{createUnidade.response.body.id_unidade}}" // Reutiliza a unidade criada antes
+}
 
 
 # ===================================================================
