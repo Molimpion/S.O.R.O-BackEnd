@@ -35,3 +35,20 @@ export const checkAdmin = (req: AuthRequest, res: Response, next: NextFunction) 
 
   next();
 };
+
+export const checkChefe = (req: AuthRequest, res: Response, next: NextFunction) => {
+  if (!req.user) {
+    return res.status(401).json({ error: 'Acesso negado.' });
+  }
+
+  // Verifica se o perfil é CHEFE
+  if (req.user.profile !== 'CHEFE') {
+    // Permite que ADMINS também executem ações de CHEFE, se necessário.
+    // Se a regra for ESTRITAMENTE CHEFE, remova '&& req.user.profile !== 'ADMIN''
+    if (req.user.profile !== 'ADMIN') {
+       return res.status(403).json({ error: 'Acesso negado: rota exclusiva para Chefes de Operação.' });
+    }
+  }
+
+  next();
+};

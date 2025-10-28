@@ -7,10 +7,8 @@
 @hostname = https://api-bombeiros-s-o-r-o.onrender.com
 # @hostname = http://localhost:3000
 
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0Y2ZlNGRjNi1kZjhjLTRlNjYtYTE1YS0zNDI5ZjU4ZTE2OGQiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjExMzUzNzksImV4cCI6MTc2MTE2NDE3OX0.F3LYxrm277bWYtDB6zp9z1RaaDuuZtKigssKLyrnDSI
-@analistaToken = # Copie o token do teste 3.2 aqui
-@bairroId =
-@naturezaId =
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZThjYmYzYy1jYmUxLTQ5ZjgtODllNi1hOWI1YjhlMjkzNzQiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjE1NzE5OTgsImV4cCI6MTc2MTYwMDc5OH0.fhzCKcOJZlPuY_lEEDRKFoPB0DvtxGxNFiajSeQPTQ4
+@analistaToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmI4NjVjYS0zNGZlLTQ4MjMtODJkNS1jYTNiYWYxZjg5M2QiLCJwcm9maWxlIjoiQU5BTElTVEEiLCJpYXQiOjE3NjE1NzQzNzEsImV4cCI6MTc2MTYwMzE3MX0.-PcBACKKkNk2kMT2RVQDplh0GBHAXI2CYzetnhHtEvA
 @grupoId =
 @subgrupoId =
 @formaAcervoId =
@@ -45,7 +43,7 @@ POST {{hostname}}/api/auth/login
 Content-Type: application/json
 
 {
-    "email": "cmd.lucas.admin.dia4@bombeiros.pe.gov.br",
+    "email": "cmt.murilo@bombeiros.pe.gov.br",
     "password": "senhaAdminForte123"
 }
 
@@ -54,11 +52,12 @@ GET {{hostname}}/api/users
 Authorization: Bearer {{adminToken}}
 
 
+
 # ===================================================================
 # FASE 2: CRIAÇÃO DE DADOS MÍNIMOS DE DEPENDÊNCIA (ADMIN)
 # ===================================================================
 
-### 2.1 - POST: Criar Grupamento (Ex: Metropolitano)
+### 2.1 - POST: Criar Grupamento (Ex: Metropolitano / Comando)
 # @name createGrupamento
 POST {{hostname}}/api/grupamentos
 Authorization: Bearer {{adminToken}}
@@ -66,16 +65,132 @@ Content-Type: application/json
 
 { "nome_grupamento": "Grupamento de Bombeiros Metropolitano", "sigla": "GBM" }
 
-### 2.2 - POST: Criar Unidade Operacional (Ex: Quartel Central)
+### GET: Listar todos os grupamentos (Para encontrar o ID)
+GET {{hostname}}/api/grupamentos
+Authorization: Bearer {{adminToken}}
+
+### POST: Criar a Unidade QCG (Corretamente)
 # @name createUnidade
 POST {{hostname}}/api/unidades-operacionais
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-    "nome_unidade": "Quartel Central do Recife",
+    "nome_unidade": "Quartel Central do Recife (QCG)",
+    "endereco_base": "Av. João de Barros, 399 - Soledade, Recife - PE",
     "id_grupamento_fk": "{{createGrupamento.response.body.id_grupamento}}"
 }
+
+# --- ADIÇÕES COM BASE NA NOSSA CONVERSA ---
+
+### 2.2.1 - POST: Criar Unidade (Centro de Manutenção)
+# @name createUnidadeCMan
+POST {{hostname}}/api/unidades-operacionais
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "nome_unidade": "Centro de Manutenção (CMan)",
+    "endereco_base": "Av. Rio Capibaribe, 147 - São José, Recife - PE",
+    "id_grupamento_fk": "bb48ce14-fe3c-45a8-a696-e626cd529ef0"
+}
+
+### 2.2.2 - POST: Criar Unidade (Centro de Atividades Técnicas)
+# @name createUnidadeCAT
+POST {{hostname}}/api/unidades-operacionais
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "nome_unidade": "Centro de Atividades Técnicas (CAT)",
+    "endereco_base": "Av. João de Barros, 399 - Soledade, Recife - PE",
+    "id_grupamento_fk": "bb48ce14-fe3c-45a8-a696-e626cd529ef0"
+}
+
+### 2.2.3 - POST: Criar Grupamento (Incêndio)
+# @name createGrupamentoGBI
+POST {{hostname}}/api/grupamentos
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "nome_grupamento": "Grupamento de Bombeiros de Incêndio", "sigla": "GBI" }
+
+### 2.2.3.1 - POST: Criar Unidade-Sede do GBI
+# @name createUnidadeGBI
+POST {{hostname}}/api/unidades-operacionais
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "nome_unidade": "Sede do GBI - Prazeres",
+    "endereco_base": "Estrada da Batalha, S/N - Prazeres, Jaboatão dos Guararapes - PE",
+    "id_grupamento_fk": "{{createGrupamentoGBI.response.body.id_grupamento}}"
+}
+
+### 2.2.4 - POST: Criar Grupamento (Atendimento Pré-Hospitalar)
+# @name createGrupamentoGBAPH
+POST {{hostname}}/api/grupamentos
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "nome_grupamento": "Grupamento de Atendimento Pré-Hospitalar", "sigla": "GBAPH" }
+
+### 2.2.4.1 - POST: Criar Unidade-Sede do GBAPH
+# @name createUnidadeGBAPH
+POST {{hostname}}/api/unidades-operacionais
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "nome_unidade": "Sede do GBAPH (Resgate) - Varadouro",
+    "endereco_base": "Av. Presidente Kennedy, S/N - Varadouro, Olinda - PE",
+    "id_grupamento_fk": "{{createGrupamentoGBAPH.response.body.id_grupamento}}"
+}
+
+
+### 2.2.5 - POST: Criar Grupamento (Salvamento)
+# @name createGrupamentoGBS
+POST {{hostname}}/api/grupamentos
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "nome_grupamento": "Grupamento de Bombeiros de Salvamento", "sigla": "GBS" }
+
+### 2.2.5.1 - POST: Criar Unidade-Sede do GBS
+# @name createUnidadeGBS
+POST {{hostname}}/api/unidades-operacionais
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "nome_unidade": "Sede do GBS - Abreu e Lima",
+    "endereco_base": "Av. Dr. Reinaldo Pinho Alves, S/N - Distrito Industrial, Abreu e Lima - PE",
+    "id_grupamento_fk": "{{createGrupamentoGBS.response.body.id_grupamento}}"
+}
+
+
+### 2.2.6 - POST: Criar Grupamento (Marítimo)
+# @name createGrupamentoGBMar
+POST {{hostname}}/api/grupamentos
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "nome_grupamento": "Grupamento de Bombeiros Marítimos", "sigla": "GBMar" }
+
+### 2.2.6.1 - POST: Criar Unidade-Sede do GBMar
+# @name createUnidadeGBMar
+POST {{hostname}}/api/unidades-operacionais
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "nome_unidade": "Sede do GBMar - Piedade",
+    "endereco_base": "Avenida Beira Mar, 606A - Piedade, Jaboatão dos Guararapes - PE",
+    "id_grupamento_fk": "{{createGrupamentoGBMar.response.body.id_grupamento}}"
+}
+
+# --- FIM DAS ADIÇÕES ---
+
 
 ### 2.3 - POST: Criar Natureza (Ex: Incêndio)
 # @name createNatureza
@@ -107,13 +222,6 @@ Content-Type: application/json
     "id_grupo_fk": "{{createGrupo.response.body.id_grupo}}"
 }
 
-### 2.6 - POST: Criar Bairro (Ex: Boa Vista)
-# @name createBairro
-POST {{hostname}}/api/bairros
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-
-{ "nome_bairro": "BOA VISTA", "regiao": "Central" }
 
 ### 2.7 - POST: Criar Forma Acervo (Ex: Telefone 193)
 # @name createFormaAcervo
@@ -125,21 +233,105 @@ Content-Type: application/json
 
 
 # ===================================================================
-# FASE 3: OCORRÊNCIAS E TESTES OPERACIONAIS
+# FASE 3: CRIAÇÃO EM LOTE DE ANALISTAS POR UNIDADE
 # ===================================================================
 
-### 3.1 - Cadastrar Usuário ANALISTA (Ex: Operador Oliveira)
-# @name createAnalista
+### 3.1.1 - Cadastrar Analista (Quartel Central do Recife - QCG)
+# @name createAnalistaQCG
 POST {{hostname}}/api/auth/register
 Content-Type: application/json
 
 {
-    "name": "Operador Oliveira",
-    "email": "op.oliveira.analista.dia1@bombeiros.pe.gov.br", # Email Único
+    "name": "Operador Silva (QCG)",
+    "email": "op.silva.qcg@bombeiros.pe.gov.br",
     "password": "senhaAnalistaSegura456",
     "profile": "ANALISTA",
-    "matricula": "200002-B", # Matrícula Única
-    "id_unidade_operacional_fk": "{{createUnidade.response.body.id_unidade}}"
+    "matricula": "200003-C",
+    "id_unidade_operacional_fk": "00f8e2cb-c30b-45ce-8897-cbacbc7c8b84"
+}
+
+### 3.1.2 - Cadastrar Analista (Centro de Atividades Técnicas - CAT)
+# @name createAnalistaCAT
+POST {{hostname}}/api/auth/register
+Content-Type: application/json
+
+{
+    "name": "Analista Barbosa (CAT)",
+    "email": "ana.barbosa.cat@bombeiros.pe.gov.br",
+    "password": "senhaAnalistaSegura456",
+    "profile": "ANALISTA",
+    "matricula": "200004-D",
+    "id_unidade_operacional_fk": "c1c75230-bf34-4cc7-b81d-859e5f69484d"
+}
+
+### 3.1.3 - Cadastrar Analista (Centro de Manutenção - CMan)
+# @name createAnalistaCMan
+POST {{hostname}}/api/auth/register
+Content-Type: application/json
+
+{
+    "name": "Operador Rocha (CMan)",
+    "email": "op.rocha.cman@bombeiros.pe.gov.br",
+    "password": "senhaAnalistaSegura456",
+    "profile": "ANALISTA",
+    "matricula": "200005-E",
+    "id_unidade_operacional_fk": "388300ee-2f89-4377-a3e4-ea3a4b8780ce"
+}
+
+### 3.1.4 - Cadastrar Analista (Sede do GBI - Incêndio)
+# @name createAnalistaGBI
+POST {{hostname}}/api/auth/register
+Content-Type: application/json
+
+{
+    "name": "Operador Souza (GBI)",
+    "email": "op.souza.gbi@bombeiros.pe.gov.br",
+    "password": "senhaAnalistaSegura456",
+    "profile": "ANALISTA",
+    "matricula": "200006-F",
+    "id_unidade_operacional_fk": "4fcc7fc6-fe96-4bb0-b699-a4e23c24e68e"
+}
+
+### 3.1.5 - Cadastrar Analista (Sede do GBAPH - Resgate)
+# @name createAnalistaGBAPH
+POST {{hostname}}/api/auth/register
+Content-Type: application/json
+
+{
+    "name": "Operadora Lima (GBAPH)",
+    "email": "op.lima.gbaph@bombeiros.pe.gov.br",
+    "password": "senhaAnalistaSegura456",
+    "profile": "ANALISTA",
+    "matricula": "200007-G",
+    "id_unidade_operacional_fk": "50c88aad-a5b7-4190-bddf-e1a4a7abc0ca"
+}
+
+### 3.1.6 - Cadastrar Analista (Sede do GBS - Salvamento)
+# @name createAnalistaGBS
+POST {{hostname}}/api/auth/register
+Content-Type: application/json
+
+{
+    "name": "Operador Pereira (GBS)",
+    "email": "op.pereira.gbs@bombeiros.pe.gov.br",
+    "password": "senhaAnalistaSegura456",
+    "profile": "ANALISTA",
+    "matricula": "200008-H",
+    "id_unidade_operacional_fk": "7be541a9-a0f8-4547-8b0c-245d5b658dfb"
+}
+
+### 3.1.7 - Cadastrar Analista (Sede do GBMar - Marítimo)
+# @name createAnalistaGBMar
+POST {{hostname}}/api/auth/register
+Content-Type: application/json
+
+{
+    "name": "Operadora Alves (GBMar)",
+    "email": "op.alves.gbmar@bombeiros.pe.gov.br",
+    "password": "senhaAnalistaSegura456",
+    "profile": "ANALISTA",
+    "matricula": "200009-I",
+    "id_unidade_operacional_fk": "f73c5419-1e4c-4f2f-9c10-099a4d246529"
 }
 
 ### 3.2 - Login como ANALISTA
@@ -149,7 +341,7 @@ POST {{hostname}}/api/auth/login
 Content-Type: application/json
 
 {
-    "email": "op.oliveira.analista.dia1@bombeiros.pe.gov.br",
+    "email": "op.alves.gbmar@bombeiros.pe.gov.br",
     "password": "senhaAnalistaSegura456"
 }
 
@@ -160,9 +352,9 @@ Authorization: Bearer {{analistaToken}}
 Content-Type: application/json
 
 {
-    "data_acionamento": "2025-10-21T10:15:00Z", # Data/Hora do acionamento
+    "data_acionamento": "2025-10-21T10:15:00Z",
     "hora_acionamento": "2025-10-21T10:15:00Z",
-    "nr_aviso": "AV-DIA1-001", # Número de aviso do Dia 1
+    "nr_aviso": "AV-DIA1-001",
     "id_subgrupo_fk": "{{createSubgrupo.response.body.id_subgrupo}}",
     "id_bairro_fk": "{{createBairro.response.body.id_bairro}}",
     "id_forma_acervo_fk": "{{createFormaAcervo.response.body.id_forma_acervo}}"
@@ -198,50 +390,14 @@ Authorization: Bearer {{adminToken}}
 GET {{hostname}}/api/relatorios?type=pdf&dataInicio=2025-10-21T00:00:00Z
 Authorization: Bearer {{adminToken}}
 
-
-# ===================================================================
-# FASE 5: TESTES CRUD COMPLETO (PUT & DELETE - ADMIN)
-# ===================================================================
-
-### 5.1 - PUT: Atualizar Bairro (Adicionar AIS)
-# @name updateBairro
-PUT {{hostname}}/api/bairros/{{createBairro.response.body.id_bairro}}
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-
-{ "nome_bairro": "BOA VISTA", "regiao": "Central", "ais": "AIS 1" }
-
-### 5.2 - PUT: Atualizar Usuário (Adicionar Posto/Grad)
-PUT {{hostname}}/api/users/{{createAnalista.response.body.data.id}}
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-
-{ "posto_grad": "3º SGT" }
-
-
-# ===================================================================
-# FASE 6: TESTES DE CONFLITO E LIMPEZA (DELETE - ADMIN)
-# ===================================================================
-
-### 6.1 - DELETE: Tentar excluir Subgrupo em uso pela ocorrência 3.3
-# Resultado esperado: 409 Conflict
-DELETE {{hostname}}/api/subgrupos/{{createSubgrupo.response.body.id_subgrupo}}
+### GET: Listar todas as naturezas (Para pegar os IDs)
+GET {{hostname}}/api/naturezas
 Authorization: Bearer {{adminToken}}
 
-### 6.2 - DELETE: Tentar excluir Bairro em uso pela ocorrência 3.3
-# Resultado esperado: 409 Conflict
-DELETE {{hostname}}/api/bairros/{{createBairro.response.body.id_bairro}}
+### GET: Listar todos os Grupos (Para pegar os IDs)
+GET {{hostname}}/api/grupos
 Authorization: Bearer {{adminToken}}
 
-### 6.3 - POST: Criar Grupamento Secundário (Ex: Agreste)
-# @name createGrupamento2
-POST {{hostname}}/api/grupamentos
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-
-{ "nome_grupamento": "Grupamento de Bombeiros do Agreste", "sigla": "GBA" } # Sigla Única
-
-### 6.4 - DELETE: Deletar Grupamento Secundário (Não está em uso)
-# Resultado esperado: 204 No Content
-DELETE {{hostname}}/api/grupamentos/{{createGrupamento2.response.body.id_grupamento}}
+### GET: Listar todos os Subgrupos (Para pegar os IDs)
+GET {{hostname}}/api/subgrupos
 Authorization: Bearer {{adminToken}}
