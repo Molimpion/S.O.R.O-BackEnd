@@ -1,4 +1,4 @@
-// prisma/schema.prisma (Refatorado: Enums removidos para flexibilidade, Municipio adicionado)
+// prisma/schema.prisma (Refatorado: Relação Bairro <-> Municipio opcional para migração)
 
 generator client {
   provider = "prisma-client-js"
@@ -153,7 +153,6 @@ model FormaAcervo {
   @@map("formas_acervo")
 }
 
-// ++ NOVO MODELO ++
 model Municipio {
   id_municipio   String @id @default(uuid())
   nome_municipio String @unique
@@ -162,7 +161,6 @@ model Municipio {
   @@map("municipios")
 }
 
-// ++ MODELO BAIRRO MODIFICADO ++
 model Bairro {
   id_bairro   String @id @default(uuid())
   nome_bairro String @unique // Era BairrosRecife, agora String
@@ -170,11 +168,11 @@ model Bairro {
   ais         String?
   ocorrencias Ocorrencia[]
 
-  // Relação com Município
-  id_municipio_fk String
-  municipio       Municipio @relation(fields: [id_municipio_fk], references: [id_municipio])
+  // Relação com Município (TORNADA OPCIONAL TEMPORARIAMENTE)
+  id_municipio_fk String?    // <-- MODIFICADO
+  municipio       Municipio? @relation(fields: [id_municipio_fk], references: [id_municipio]) // <-- MODIFICADO
 
-  @@index([id_municipio_fk]) // Adiciona índice para a chave estrangeira
+  @@index([id_municipio_fk])
   @@map("bairros")
 }
 
