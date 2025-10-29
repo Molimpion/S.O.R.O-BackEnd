@@ -11,6 +11,7 @@ import bodyParser from 'body-parser';
 import { errorMiddleware } from './middleware/errorMiddleware';
 import { authenticateToken } from './middleware/authMiddleware';
 
+// Importações das rotas existentes
 import authRoutes from './routes/authRoutes';
 import ocorrenciaRoutes from './routes/ocorrenciaRoutes';
 import userRoutes from './routes/userRoutes';
@@ -25,20 +26,29 @@ import viaturaRoutes from './routes/viaturaRoutes';
 import relatorioRoutes from './routes/relatorioRoutes';
 import dashboardRoutes from './routes/dashboardRoutes';
 
+// ++ NOVA IMPORTAÇÃO ++
+import municipioRoutes from './routes/municipioRoutes'; // <-- Importa as rotas de município
+
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000; // Usa a porta do ambiente ou 3000 como padrão
 
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => { res.send('API está funcionando!') });
-app.use('/api/auth', authRoutes);
+// Rota pública
+app.get('/', (req, res) => { res.send('API S.O.R.O. está funcionando!') });
+app.use('/api/auth', authRoutes); // Rotas de autenticação são públicas
 
+// Middleware de autenticação para as rotas seguintes
 app.use(authenticateToken);
 
+// Rotas protegidas
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/relatorios', relatorioRoutes);
 app.use('/api/ocorrencias', ocorrenciaRoutes);
 app.use('/api/users', userRoutes);
+
+// Rotas administrativas (CRUDs de suporte)
+app.use('/api/municipios', municipioRoutes); // <-- Registra as novas rotas de município
 app.use('/api/bairros', bairroRoutes);
 app.use('/api/naturezas', naturezaRoutes);
 app.use('/api/grupos', grupoRoutes);
@@ -48,6 +58,7 @@ app.use('/api/grupamentos', grupamentoRoutes);
 app.use('/api/unidades-operacionais', unidadeOperacionalRoutes);
 app.use('/api/viaturas', viaturaRoutes);
 
+// Middleware de tratamento de erros (deve ser o último)
 app.use(errorMiddleware);
 
 app.listen(PORT, () => {

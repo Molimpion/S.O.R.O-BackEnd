@@ -1,4 +1,4 @@
-// prisma/schema.prisma (Refatorado: Enums removidos para flexibilidade)
+// prisma/schema.prisma (Refatorado: Enums removidos para flexibilidade, Municipio adicionado)
 
 generator client {
   provider = "prisma-client-js"
@@ -47,24 +47,24 @@ model Ocorrencia {
 }
 
 model User {
-  id                         String             @id @default(uuid())
-  matricula                  String             @unique
-  nome                       String
-  nome_guerra                String?
-  posto_grad                 String?
-  email                      String             @unique
-  senha_hash                 String
-  tipo_perfil                Profile            @default(ANALISTA)
-  createdAt                  DateTime           @default(now())
-  updatedAt                  DateTime           @updatedAt
-  id_unidade_operacional_fk  String?
+  id                        String             @id @default(uuid())
+  matricula                 String             @unique
+  nome                      String
+  nome_guerra               String?
+  posto_grad                String?
+  email                     String             @unique
+  senha_hash                String
+  tipo_perfil               Profile            @default(ANALISTA)
+  createdAt                 DateTime           @default(now())
+  updatedAt                 DateTime           @updatedAt
+  id_unidade_operacional_fk String?
 
-  unidade_operacional          UnidadeOperacional? @relation(fields: [id_unidade_operacional_fk], references: [id_unidade], onDelete: SetNull, onUpdate: Cascade)
+  unidade_operacional         UnidadeOperacional? @relation(fields: [id_unidade_operacional_fk], references: [id_unidade], onDelete: SetNull, onUpdate: Cascade)
 
-  ocorrencias_abertas        Ocorrencia[]       @relation("OcorrenciasAbertas")
-  uploads_midia              Midia[]
-  logs                       AuditLog[]
-  equipes_participadas       OcorrenciaEquipe[]
+  ocorrencias_abertas       Ocorrencia[]       @relation("OcorrenciasAbertas")
+  uploads_midia             Midia[]
+  logs                      AuditLog[]
+  equipes_participadas      OcorrenciaEquipe[]
 
   @@index([id_unidade_operacional_fk])
   @@map("usuarios")
@@ -75,10 +75,10 @@ model User {
 // ===================================================================
 
 model Grupamento {
-  id_grupamento String @id @default(uuid())
+  id_grupamento   String @id @default(uuid())
   nome_grupamento String
-  sigla         String @unique
-  unidades      UnidadeOperacional[]
+  sigla           String @unique
+  unidades        UnidadeOperacional[]
   @@map("grupamentos")
 }
 
@@ -95,8 +95,6 @@ model UnidadeOperacional {
   @@index([id_grupamento_fk])
   @@map("unidades_operacionais")
 }
-
-// REMOVIDO: enum NumeroViatura
 
 model Viatura {
   id_viatura                  String              @id @default(uuid()) // NOVO PK para flexibilidade
@@ -116,8 +114,6 @@ model Viatura {
 // ===================================================================
 // III. ENTIDADES DE CLASSIFICAÇÃO (LOOKUP)
 // ===================================================================
-
-// REMOVIDO: enum TipoNatureza
 
 model Natureza {
   id_natureza String @id @default(uuid())
@@ -157,16 +153,31 @@ model FormaAcervo {
   @@map("formas_acervo")
 }
 
-// REMOVIDO: enum BairrosRecife
+// ++ NOVO MODELO ++
+model Municipio {
+  id_municipio   String @id @default(uuid())
+  nome_municipio String @unique
+  bairros        Bairro[] // Um município pode ter vários bairros
 
+  @@map("municipios")
+}
+
+// ++ MODELO BAIRRO MODIFICADO ++
 model Bairro {
   id_bairro   String @id @default(uuid())
   nome_bairro String @unique // Era BairrosRecife, agora String
   regiao      String?
   ais         String?
   ocorrencias Ocorrencia[]
+
+  // Relação com Município
+  id_municipio_fk String
+  municipio       Municipio @relation(fields: [id_municipio_fk], references: [id_municipio])
+
+  @@index([id_municipio_fk]) // Adiciona índice para a chave estrangeira
   @@map("bairros")
 }
+
 
 // ===================================================================
 // IV. ENTIDADES DE DETALHE E LOGÍSTICA
