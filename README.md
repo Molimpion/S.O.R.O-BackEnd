@@ -56,6 +56,14 @@ O projeto utiliza a especificação **Dev Container** (`.devcontainer`) para def
         ```env
         DATABASE_URL="postgresql://admin:supersecretpassword@postgres-db:5432/bombeiros_pi"
         JWT_SECRET="gere_uma_chave_secreta_forte_e_aleatoria_aqui"
+        
+        # Variáveis de E-mail (Opcionais para dev, mas recomendadas)
+        EMAIL_HOST=
+        EMAIL_PORT=587
+        EMAIL_SECURE=false
+        EMAIL_USER=
+        EMAIL_PASS=
+        EMAIL_FROM=
         ```
     * Abra a pasta do projeto no VS Code. O editor irá sugerir reabrir o projeto num contentor. Aceite.
 
@@ -88,6 +96,12 @@ O script de "build" (`build.sh`) realiza as seguintes ações no ambiente do Ren
 Para que a aplicação funcione em produção, as seguintes variáveis de ambiente devem ser configuradas no painel do serviço no Render:
 - `DATABASE_URL`: Deve ser preenchido com o **Internal Connection URL** fornecido pelo serviço de base de dados do próprio Render.
 - `JWT_SECRET`: Uma chave secreta forte e única para a geração dos tokens JWT em produção.
+- `EMAIL_HOST`: O host SMTP do seu provedor de e-mail (ex: `smtp.gmail.com`).
+- `EMAIL_PORT`: A porta SMTP (ex: `587`).
+- `EMAIL_SECURE`: Use `true` se a porta for 465, ou `false` para outras (como 587).
+- `EMAIL_USER`: O nome de usuário para autenticar no servidor de e-mail.
+- `EMAIL_PASS`: A senha (ou senha de app) para autenticar no servidor de e-mail.
+- `EMAIL_FROM`: O e-mail de remetente (ex: `"Equipe S.O.R.O." <seu.email@exemplo.com>`).
 
 ## 6. Testando a API
 
