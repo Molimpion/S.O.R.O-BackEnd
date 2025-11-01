@@ -22,7 +22,58 @@ const options: swaggerJsdoc.Options = {
         description: 'Servidor de Desenvolvimento Local'
       }
     ],
+    // ======================================================
+    // ==== BLOCO DE TAGS GLOBAIS CENTRALIZADO ====
+    // ======================================================
+    tags: [
+      {
+        name: 'Autenticação',
+        description: 'Endpoints para registro e login de usuários'
+      },
+      {
+        name: 'Ocorrências',
+        description: 'Endpoints para gerenciamento de ocorrências (acessível por Analistas e Admins).'
+      },
+      {
+        name: 'Dashboard',
+        description: 'Endpoints para visualização de KPIs e dados analíticos.'
+      },
+      {
+        name: 'Relatórios',
+        description: '(Admin) Endpoints para exportação de dados em CSV ou PDF.'
+      },
+      {
+        name: 'Gestão de Usuários',
+        description: '(Admin) Endpoints para gerenciar usuários do sistema.'
+      },
+      {
+        name: 'Admin: Municípios',
+        description: '(Admin) Endpoints para gerenciar os municípios.'
+      },
+      {
+        name: 'Admin: Bairros',
+        description: '(Admin) Endpoints para gerenciar os bairros.'
+      },
+      {
+        name: 'Admin: Classificação (Natureza, Grupo, Subgrupo)',
+        description: '(Admin) Endpoints para gerenciar a hierarquia de classificação das ocorrências.'
+      },
+      {
+        name: 'Admin: Formas de Acervo',
+        description: '(Admin) Endpoints para gerenciar as formas de acionamento (ex: 193).'
+      },
+      {
+        name: 'Admin: Organização (Grupamentos e Unidades)',
+        description: '(Admin) Endpoints para gerenciar a estrutura organizacional (Grupamentos e Unidades Operacionais).'
+      },
+      {
+        name: 'Admin: Viaturas',
+        description: '(Admin) Endpoints para gerenciar as viaturas.'
+      }
+    ],
+    // ======================================================
     // 1. COMPONENTES (SCHEMAS) CENTRALIZADOS
+    // ======================================================
     components: {
       // Schemas de Segurança
       securitySchemes: {
@@ -234,8 +285,16 @@ const options: swaggerJsdoc.Options = {
       }
     ]
   },
+  
+  // ======================================================
+  // ==== CORREÇÃO 1: APONTAR PARA .TS E .JS ====
+  // ======================================================
   // Caminho para os arquivos que contêm as anotações JSDoc
-  apis: ['./src/routes/*.ts'], 
+  apis: [
+    './src/routes/*.ts', // Para 'npm run dev'
+    './dist/routes/*.js' // Para 'npm run start' (produção)
+  ], 
+  // ======================================================
 };
 
 const swaggerSpec = swaggerJsdoc(options);

@@ -33,6 +33,12 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error409' }
+ */
+router.post('/', validate(formaAcervoSchema), formaAcervoController.create);
+
+/**
+ * @swagger
+ * /api/formas-acervo:
  * get:
  * summary: Lista todas as Formas de Acervo
  * tags: [Admin: Formas de Acervo]
@@ -45,7 +51,6 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  * type: array
  * items: { $ref: '#/components/schemas/FormaAcervo' }
  */
-router.post('/', validate(formaAcervoSchema), formaAcervoController.create);
 router.get('/', formaAcervoController.getAll);
 
 /**

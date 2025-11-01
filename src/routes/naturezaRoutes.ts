@@ -33,6 +33,12 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error409' }
+ */
+router.post('/', validate(naturezaSchema), naturezaController.create);
+
+/**
+ * @swagger
+ * /api/naturezas:
  * get:
  * summary: Lista todas as Naturezas
  * tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
@@ -45,7 +51,6 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  * type: array
  * items: { $ref: '#/components/schemas/Natureza' }
  */
-router.post('/', validate(naturezaSchema), naturezaController.create);
 router.get('/', naturezaController.getAll);
 
 /**

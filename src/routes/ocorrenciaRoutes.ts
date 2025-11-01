@@ -44,6 +44,16 @@ router.use(authenticateToken); // Requer autenticação para todas as rotas nest
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error404' }
+ */
+router.post(
+  '/',
+  validate(createOcorrenciaSchema),
+  ocorrenciaController.create
+);
+
+/**
+ * @swagger
+ * /api/ocorrencias:
  * get:
  * summary: Lista ocorrências com filtros e paginação
  * tags: [Ocorrências]
@@ -82,11 +92,6 @@ router.use(authenticateToken); // Requer autenticação para todas as rotas nest
  * page: { type: 'integer' }
  * totalPages: { type: 'integer' }
  */
-router.post(
-  '/',
-  validate(createOcorrenciaSchema),
-  ocorrenciaController.create
-);
 router.get('/', validate(listOcorrenciaSchema), ocorrenciaController.getAll);
 
 /**
@@ -112,6 +117,12 @@ router.get('/', validate(listOcorrenciaSchema), ocorrenciaController.getAll);
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error404' }
+ */
+router.get('/:id', ocorrenciaController.getById);
+
+/**
+ * @swagger
+ * /api/ocorrencias/{id}:
  * put:
  * summary: (PUT) Substitui os dados de uma ocorrência
  * tags: [Ocorrências]
@@ -157,6 +168,16 @@ router.get('/', validate(listOcorrenciaSchema), ocorrenciaController.getAll);
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error404' }
+ */
+router.put(
+  '/:id', 
+  validate(putOcorrenciaSchema), 
+  ocorrenciaController.update       
+);
+
+/**
+ * @swagger
+ * /api/ocorrencias/{id}:
  * patch:
  * summary: (PATCH) Atualiza parcialmente uma ocorrência
  * tags: [Ocorrências]
@@ -203,12 +224,6 @@ router.get('/', validate(listOcorrenciaSchema), ocorrenciaController.getAll);
  * application/json:
  * schema: { $ref: '#/components/schemas/Error404' }
  */
-router.get('/:id', ocorrenciaController.getById);
-router.put(
-  '/:id', 
-  validate(putOcorrenciaSchema), 
-  ocorrenciaController.update       
-);
 router.patch(
   '/:id', 
   validate(patchOcorrenciaSchema), 

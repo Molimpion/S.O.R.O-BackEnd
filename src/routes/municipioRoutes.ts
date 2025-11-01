@@ -33,6 +33,12 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error409' }
+ */
+router.post('/', validate(createMunicipioSchema), municipioController.create);
+
+/**
+ * @swagger
+ * /api/municipios:
  * get:
  * summary: Lista todos os municípios
  * tags: [Admin: Municípios]
@@ -45,7 +51,6 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  * type: array
  * items: { $ref: '#/components/schemas/Municipio' }
  */
-router.post('/', validate(createMunicipioSchema), municipioController.create);
 router.get('/', municipioController.getAll);
 
 /**
@@ -71,6 +76,12 @@ router.get('/', municipioController.getAll);
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error404' }
+ */
+router.get('/:id', municipioController.getById);
+
+/**
+ * @swagger
+ * /api/municipios/{id}:
  * put:
  * summary: (PUT) Substitui o nome de um município
  * tags: [Admin: Municípios]
@@ -108,6 +119,12 @@ router.get('/', municipioController.getAll);
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error409' }
+ */
+router.put('/:id', validate(putMunicipioSchema), municipioController.update);
+
+/**
+ * @swagger
+ * /api/municipios/{id}:
  * patch:
  * summary: (PATCH) Atualiza o nome de um município
  * tags: [Admin: Municípios]
@@ -145,6 +162,12 @@ router.get('/', municipioController.getAll);
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error409' }
+ */
+router.patch('/:id', validate(patchMunicipioSchema), municipioController.update);
+
+/**
+ * @swagger
+ * /api/municipios/{id}:
  * delete:
  * summary: Deleta um município
  * tags: [Admin: Municípios]
@@ -171,9 +194,6 @@ router.get('/', municipioController.getAll);
  * application/json:
  * schema: { $ref: '#/components/schemas/Error409' }
  */
-router.get('/:id', municipioController.getById);
-router.put('/:id', validate(putMunicipioSchema), municipioController.update);
-router.patch('/:id', validate(patchMunicipioSchema), municipioController.update);
 router.delete('/:id', municipioController.remove);
 
 export default router;

@@ -38,6 +38,12 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error409' }
+ */
+router.post('/', validate(createViaturaSchema), viaturaController.create);
+
+/**
+ * @swagger
+ * /api/viaturas:
  * get:
  * summary: Lista todas as viaturas
  * tags: [Admin: Viaturas]
@@ -50,7 +56,6 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  * type: array
  * items: { $ref: '#/components/schemas/Viatura' }
  */
-router.post('/', validate(createViaturaSchema), viaturaController.create);
 router.get('/', viaturaController.getAll);
 
 /**
@@ -90,6 +95,12 @@ router.get('/', viaturaController.getAll);
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error409' }
+ */
+router.put('/:id', validate(putViaturaSchema), viaturaController.update);
+
+/**
+ * @swagger
+ * /api/viaturas/{id}:
  * patch:
  * summary: (PATCH) Atualiza parcialmente uma viatura
  * tags: [Admin: Viaturas]
@@ -127,6 +138,12 @@ router.get('/', viaturaController.getAll);
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error409' }
+ */
+router.patch('/:id', validate(patchViaturaSchema), viaturaController.update);
+
+/**
+ * @swagger
+ * /api/viaturas/{id}:
  * delete:
  * summary: Deleta uma viatura
  * tags: [Admin: Viaturas]
@@ -153,8 +170,6 @@ router.get('/', viaturaController.getAll);
  * application/json:
  * schema: { $ref: '#/components/schemas/Error409' }
  */
-router.put('/:id', validate(putViaturaSchema), viaturaController.update);
-router.patch('/:id', validate(patchViaturaSchema), viaturaController.update);
 router.delete('/:id', viaturaController.remove);
 
 export default router;

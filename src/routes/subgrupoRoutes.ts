@@ -33,6 +33,12 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error404' }
+ */
+router.post('/', validate(subgrupoSchema), subgrupoController.create);
+
+/**
+ * @swagger
+ * /api/subgrupos:
  * get:
  * summary: Lista todos os Subgrupos
  * tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
@@ -45,7 +51,6 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  * type: array
  * items: { $ref: '#/components/schemas/Subgrupo' }
  */
-router.post('/', validate(subgrupoSchema), subgrupoController.create);
 router.get('/', subgrupoController.getAll);
 
 /**
