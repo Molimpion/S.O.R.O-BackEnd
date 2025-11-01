@@ -9,13 +9,6 @@ router.use(authenticateToken); // Requer autenticação
 
 /**
  * @swagger
- * tags:
- * name: Dashboard
- * description: Endpoints para visualização de KPIs e dados analíticos.
- */
-
-/**
- * @swagger
  * /api/dashboard/ocorrencias-por-status:
  * get:
  * summary: KPI de Ocorrências por Status

@@ -9,13 +9,6 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
 
 /**
  * @swagger
- * tags:
- * name: Admin: Organização (Grupamentos e Unidades)
- * description: (Admin) Endpoints para gerenciar a estrutura organizacional (Grupamentos e Unidades Operacionais).
- */
-
-/**
- * @swagger
  * /api/grupamentos:
  * post:
  * summary: Cria um novo Grupamento

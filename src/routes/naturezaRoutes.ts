@@ -9,13 +9,6 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
 
 /**
  * @swagger
- * tags:
- * name: Admin: Classificação (Natureza, Grupo, Subgrupo)
- * description: (Admin) Endpoints para gerenciar a hierarquia de classificação das ocorrências.
- */
-
-/**
- * @swagger
  * /api/naturezas:
  * post:
  * summary: Cria uma nova Natureza

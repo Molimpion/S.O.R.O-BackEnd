@@ -9,13 +9,6 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
 
 /**
  * @swagger
- * tags:
- * name: Admin: Viaturas
- * description: (Admin) Endpoints para gerenciar as viaturas.
- */
-
-/**
- * @swagger
  * /api/viaturas:
  * post:
  * summary: Cria uma nova viatura

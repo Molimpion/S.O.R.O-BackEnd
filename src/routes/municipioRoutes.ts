@@ -9,13 +9,6 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
 
 /**
  * @swagger
- * tags:
- * name: Admin: Municípios
- * description: (Admin) Endpoints para gerenciar os municípios.
- */
-
-/**
- * @swagger
  * /api/municipios:
  * post:
  * summary: Cria um novo município

@@ -9,13 +9,6 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
 
 /**
  * @swagger
- * tags:
- * name: Relatórios
- * description: (Admin) Endpoints para exportação de dados em CSV ou PDF.
- */
-
-/**
- * @swagger
  * /api/relatorios:
  * get:
  * summary: Gera um relatório de ocorrências (CSV ou PDF)

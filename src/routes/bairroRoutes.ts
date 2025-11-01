@@ -9,13 +9,6 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
 
 /**
  * @swagger
- * tags:
- * name: Admin: Bairros
- * description: (Admin) Endpoints para gerenciar os bairros.
- */
-
-/**
- * @swagger
  * /api/bairros:
  * post:
  * summary: Cria um novo bairro

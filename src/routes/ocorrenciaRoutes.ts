@@ -18,13 +18,6 @@ router.use(authenticateToken); // Requer autenticação para todas as rotas nest
 
 /**
  * @swagger
- * tags:
- * name: Ocorrências
- * description: Endpoints para gerenciamento de ocorrências (acessível por Analistas e Admins).
- */
-
-/**
- * @swagger
  * /api/ocorrencias:
  * post:
  * summary: Cria uma nova ocorrência

@@ -9,13 +9,6 @@ router.use(authenticateToken, checkAdmin); // Requer Admin para todas as rotas
 
 /**
  * @swagger
- * tags:
- * name: Gestão de Usuários
- * description: (Admin) Endpoints para gerenciar usuários do sistema.
- */
-
-/**
- * @swagger
  * /api/users:
  * get:
  * summary: Lista todos os usuários

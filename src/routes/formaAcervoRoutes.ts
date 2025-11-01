@@ -9,13 +9,6 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
 
 /**
  * @swagger
- * tags:
- * name: Admin: Formas de Acervo
- * description: (Admin) Endpoints para gerenciar as formas de acionamento (ex: 193).
- */
-
-/**
- * @swagger
  * /api/formas-acervo:
  * post:
  * summary: Cria uma nova Forma de Acervo
