@@ -2,54 +2,75 @@ import { Router } from 'express';
 import * as relatorioController from '../controllers/relatorioController';
 import { authenticateToken, checkAdmin } from '../middleware/authMiddleware';
 import { validate } from '../middleware/validate';
-import { reportOcorrenciaSchema } from '../validators/ocorrenciaValidator'; 
+import { reportOcorrenciaSchema } from '../validators/ocorrenciaValidator';
 
 const router = Router();
-router.use(authenticateToken, checkAdmin); // Requer Admin
+
+// Requer autenticação e privilégio de administrador
+router.use(authenticateToken, checkAdmin);
 
 /**
  * @swagger
  * /api/relatorios:
- * get:
- * summary: Gera um relatório de ocorrências (CSV ou PDF)
- * tags: [Relatórios]
- * parameters:
- * - in: query
- * name: type
- * schema: { type: 'string', enum: ['csv', 'pdf'] }
- * required: true
- * description: Formato do arquivo
- * - in: query
- * name: dataInicio
- * schema: { type: 'string', format: 'date-time' }
- * - in: query
- * name: dataFim
- * schema: { type: 'string', format: 'date-time' }
- * - in: query
- * name: status
- * schema: { type: 'string', enum: ['PENDENTE', 'EM_ANDAMENTO', 'CONCLUIDO', 'CANCELADO'] }
- * - in: query
- * name: bairroId
- * schema: { type: 'string', format: 'uuid' }
- * - in: query
- * name: subgrupoId
- * schema: { type: 'string', format: 'uuid' }
- * responses:
- * '200':
- * description: Download do arquivo de relatório
- * content:
- * text/csv:
- * schema:
- * type: string
- * application/pdf:
- * schema:
- * type: string
- * format: binary
- * '400':
- * description: Tipo de exportação inválido
- * content:
- * application/json:
- * schema: { $ref: '#/components/schemas/Error400' }
+ *   get:
+ *     summary: Gera um relatório de ocorrências (CSV ou PDF)
+ *     tags: [Relatórios]
+ *     parameters:
+ *       - in: query
+ *         name: type
+ *         required: true
+ *         description: Formato do arquivo
+ *         schema:
+ *           type: string
+ *           enum: [csv, pdf]
+ *       - in: query
+ *         name: dataInicio
+ *         description: Data inicial do filtro
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *       - in: query
+ *         name: dataFim
+ *         description: Data final do filtro
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *       - in: query
+ *         name: status
+ *         description: Filtrar por status da ocorrência
+ *         schema:
+ *           type: string
+ *           enum: [PENDENTE, EM_ANDAMENTO, CONCLUIDO, CANCELADO]
+ *       - in: query
+ *         name: bairroId
+ *         description: Filtrar por ID do bairro
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: subgrupoId
+ *         description: Filtrar por ID do subgrupo
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       '200':
+ *         description: Download do arquivo de relatório
+ *         content:
+ *           text/csv:
+ *             schema:
+ *               type: string
+ *           application/pdf:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       '400':
+ *         description: Tipo de exportação inválido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error400'
  */
 router.get('/', validate(reportOcorrenciaSchema), relatorioController.exportRelatorio);
+
 export default router;
