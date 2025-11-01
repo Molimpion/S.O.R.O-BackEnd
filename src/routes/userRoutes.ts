@@ -57,12 +57,6 @@ router.get('/', userController.getAll);
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error404' }
- */
-router.get('/:id', userController.getById);
-
-/**
- * @swagger
- * /api/users/{id}:
  * put:
  * summary: (PUT) Substitui os dados de um usuário
  * tags: [Gestão de Usuários]
@@ -102,12 +96,6 @@ router.get('/:id', userController.getById);
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error409' }
- */
-router.put('/:id', validate(putUserSchema), userController.update);
-
-/**
- * @swagger
- * /api/users/{id}:
  * patch:
  * summary: (PATCH) Atualiza parcialmente um usuário
  * tags: [Gestão de Usuários]
@@ -151,12 +139,6 @@ router.put('/:id', validate(putUserSchema), userController.update);
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error409' }
- */
-router.patch('/:id', validate(patchUserSchema), userController.update);
-
-/**
- * @swagger
- * /api/users/{id}:
  * delete:
  * summary: Deleta um usuário
  * tags: [Gestão de Usuários]
@@ -183,6 +165,9 @@ router.patch('/:id', validate(patchUserSchema), userController.update);
  * application/json:
  * schema: { $ref: '#/components/schemas/Error409' }
  */
+router.get('/:id', userController.getById);
+router.put('/:id', validate(putUserSchema), userController.update);
+router.patch('/:id', validate(patchUserSchema), userController.update);
 router.delete('/:id', userController.remove);
 
 export default router;

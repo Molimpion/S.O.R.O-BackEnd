@@ -1,11 +1,8 @@
-// src/routes/ocorrenciaRoutes.ts (COM AS DUAS ROTAS PUT/PATCH)
-
 import { Router } from 'express';
 import * as ocorrenciaController from '../controllers/ocorrenciaController';
 import { authenticateToken } from '../middleware/authMiddleware';
 import { validate } from '../middleware/validate';
 
-// --- ALTERAÇÃO 1: Importar o novo schema ---
 import { 
   createOcorrenciaSchema, 
   listOcorrenciaSchema,
@@ -47,16 +44,6 @@ router.use(authenticateToken); // Requer autenticação para todas as rotas nest
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error404' }
- */
-router.post(
-  '/',
-  validate(createOcorrenciaSchema),
-  ocorrenciaController.create
-);
-
-/**
- * @swagger
- * /api/ocorrencias:
  * get:
  * summary: Lista ocorrências com filtros e paginação
  * tags: [Ocorrências]
@@ -95,6 +82,11 @@ router.post(
  * page: { type: 'integer' }
  * totalPages: { type: 'integer' }
  */
+router.post(
+  '/',
+  validate(createOcorrenciaSchema),
+  ocorrenciaController.create
+);
 router.get('/', validate(listOcorrenciaSchema), ocorrenciaController.getAll);
 
 /**
@@ -120,12 +112,6 @@ router.get('/', validate(listOcorrenciaSchema), ocorrenciaController.getAll);
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error404' }
- */
-router.get('/:id', ocorrenciaController.getById);
-
-/**
- * @swagger
- * /api/ocorrencias/{id}:
  * put:
  * summary: (PUT) Substitui os dados de uma ocorrência
  * tags: [Ocorrências]
@@ -171,16 +157,6 @@ router.get('/:id', ocorrenciaController.getById);
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error404' }
- */
-router.put(
-  '/:id', 
-  validate(putOcorrenciaSchema), 
-  ocorrenciaController.update       
-);
-
-/**
- * @swagger
- * /api/ocorrencias/{id}:
  * patch:
  * summary: (PATCH) Atualiza parcialmente uma ocorrência
  * tags: [Ocorrências]
@@ -227,6 +203,12 @@ router.put(
  * application/json:
  * schema: { $ref: '#/components/schemas/Error404' }
  */
+router.get('/:id', ocorrenciaController.getById);
+router.put(
+  '/:id', 
+  validate(putOcorrenciaSchema), 
+  ocorrenciaController.update       
+);
 router.patch(
   '/:id', 
   validate(patchOcorrenciaSchema), 

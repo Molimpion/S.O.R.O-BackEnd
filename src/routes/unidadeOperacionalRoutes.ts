@@ -33,12 +33,6 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error404' }
- */
-router.post('/', validate(unidadeSchema), unidadeController.create);
-
-/**
- * @swagger
- * /api/unidades-operacionais:
  * get:
  * summary: Lista todas as Unidades Operacionais
  * tags: [Admin: Organização (Grupamentos e Unidades)]
@@ -51,6 +45,7 @@ router.post('/', validate(unidadeSchema), unidadeController.create);
  * type: array
  * items: { $ref: '#/components/schemas/UnidadeOperacional' }
  */
+router.post('/', validate(unidadeSchema), unidadeController.create);
 router.get('/', unidadeController.getAll);
 
 /**
