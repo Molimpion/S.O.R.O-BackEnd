@@ -33,12 +33,6 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error409' }
- */
-router.post('/', validate(grupamentoSchema), grupamentoController.create);
-
-/**
- * @swagger
- * /api/grupamentos:
  * get:
  * summary: Lista todos os Grupamentos
  * tags: [Admin: Organização (Grupamentos e Unidades)]
@@ -51,6 +45,7 @@ router.post('/', validate(grupamentoSchema), grupamentoController.create);
  * type: array
  * items: { $ref: '#/components/schemas/Grupamento' }
  */
+router.post('/', validate(grupamentoSchema), grupamentoController.create);
 router.get('/', grupamentoController.getAll);
 
 /**

@@ -33,12 +33,6 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error404' }
- */
-router.post('/', validate(grupoSchema), grupoController.create);
-
-/**
- * @swagger
- * /api/grupos:
  * get:
  * summary: Lista todos os Grupos
  * tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
@@ -51,6 +45,7 @@ router.post('/', validate(grupoSchema), grupoController.create);
  * type: array
  * items: { $ref: '#/components/schemas/Grupo' }
  */
+router.post('/', validate(grupoSchema), grupoController.create);
 router.get('/', grupoController.getAll);
 
 /**

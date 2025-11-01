@@ -38,12 +38,6 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error409' }
- */
-router.post('/', validate(createBairroSchema), bairroController.create);
-
-/**
- * @swagger
- * /api/bairros:
  * get:
  * summary: Lista todos os bairros
  * tags: [Admin: Bairros]
@@ -61,6 +55,7 @@ router.post('/', validate(createBairroSchema), bairroController.create);
  * properties:
  * municipio: { $ref: '#/components/schemas/Municipio', nullable: true }
  */
+router.post('/', validate(createBairroSchema), bairroController.create);
 router.get('/', bairroController.getAll);
 
 /**
@@ -86,12 +81,6 @@ router.get('/', bairroController.getAll);
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error404' }
- */
-router.get('/:id', bairroController.getById);
-
-/**
- * @swagger
- * /api/bairros/{id}:
  * put:
  * summary: (PUT) Substitui os dados de um bairro
  * tags: [Admin: Bairros]
@@ -126,12 +115,6 @@ router.get('/:id', bairroController.getById);
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error409' }
- */
-router.put('/:id', validate(putBairroSchema), bairroController.update);
-
-/**
- * @swagger
- * /api/bairros/{id}:
  * patch:
  * summary: (PATCH) Atualiza parcialmente um bairro
  * tags: [Admin: Bairros]
@@ -170,12 +153,6 @@ router.put('/:id', validate(putBairroSchema), bairroController.update);
  * content:
  * application/json:
  * schema: { $ref: '#/components/schemas/Error409' }
- */
-router.patch('/:id', validate(patchBairroSchema), bairroController.update);
-
-/**
- * @swagger
- * /api/bairros/{id}:
  * delete:
  * summary: Deleta um bairro
  * tags: [Admin: Bairros]
@@ -202,6 +179,9 @@ router.patch('/:id', validate(patchBairroSchema), bairroController.update);
  * application/json:
  * schema: { $ref: '#/components/schemas/Error409' }
  */
+router.get('/:id', bairroController.getById);
+router.put('/:id', validate(putBairroSchema), bairroController.update);
+router.patch('/:id', validate(patchBairroSchema), bairroController.update);
 router.delete('/:id', bairroController.remove);
 
 export default router;
