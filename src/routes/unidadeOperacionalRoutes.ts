@@ -5,8 +5,6 @@ import { validate } from '../middleware/validate';
 import { unidadeSchema } from '../validators/unidadeOperacionalValidator';
 
 const router = Router();
-
-// Requer autenticação e perfil admin
 router.use(authenticateToken, checkAdmin);
 
 /**
@@ -14,7 +12,8 @@ router.use(authenticateToken, checkAdmin);
  * /api/unidades-operacionais:
  *   post:
  *     summary: Cria uma nova Unidade Operacional
- *     tags: [Admin: Organização (Grupamentos e Unidades)]
+ *     tags:
+ *       - Admin: Organização (Grupamentos e Unidades)
  *     requestBody:
  *       required: true
  *       content:
@@ -23,14 +22,13 @@ router.use(authenticateToken, checkAdmin);
  *             $ref: '#/components/schemas/UnidadeOperacional'
  *     responses:
  *       '201':
- *         description: Unidade criada com sucesso
+ *         description: Unidade criada
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 message:
- *                   type: string
+ *                 message: { type: string }
  *                 data:
  *                   $ref: '#/components/schemas/UnidadeOperacional'
  *       '404':
@@ -39,10 +37,10 @@ router.use(authenticateToken, checkAdmin);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error404'
- *
  *   get:
  *     summary: Lista todas as Unidades Operacionais
- *     tags: [Admin: Organização (Grupamentos e Unidades)]
+ *     tags:
+ *       - Admin: Organização (Grupamentos e Unidades)
  *     responses:
  *       '200':
  *         description: Lista de unidades (com grupamento aninhado)
@@ -61,15 +59,14 @@ router.get('/', unidadeController.getAll);
  * /api/unidades-operacionais/{id}:
  *   delete:
  *     summary: Deleta uma Unidade Operacional
- *     tags: [Admin: Organização (Grupamentos e Unidades)]
+ *     tags:
+ *       - Admin: Organização (Grupamentos e Unidades)
  *     parameters:
  *       - in: path
  *         name: id
+ *         schema: { type: string, format: uuid }
  *         required: true
  *         description: ID da unidade
- *         schema:
- *           type: string
- *           format: uuid
  *     responses:
  *       '200':
  *         description: Unidade deletada com sucesso

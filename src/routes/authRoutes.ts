@@ -10,7 +10,8 @@ const router = Router();
  * /api/auth/register:
  *   post:
  *     summary: Registra um novo usuário
- *     tags: [Autenticação]
+ *     tags:
+ *       - Autenticação
  *     security: []
  *     description: Rota pública para registrar um novo usuário. Se a senha não for fornecida, uma temporária será gerada e enviada por e-mail.
  *     requestBody:
@@ -51,7 +52,8 @@ router.post('/register', validate(registerSchema), authController.register);
  * /api/auth/login:
  *   post:
  *     summary: Realiza login e obtém um token JWT
- *     tags: [Autenticação]
+ *     tags:
+ *       - Autenticação
  *     security: []
  *     description: Rota pública para autenticar e receber um token de acesso.
  *     requestBody:

@@ -5,14 +5,15 @@ import { validate } from '../middleware/validate';
 import { naturezaSchema } from '../validators/naturezaValidator';
 
 const router = Router();
-router.use(authenticateToken, checkAdmin); // Requer Admin
+router.use(authenticateToken, checkAdmin);
 
 /**
  * @swagger
  * /api/naturezas:
  *   post:
  *     summary: Cria uma nova Natureza
- *     tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
+ *     tags:
+ *       - Admin: Classificação (Natureza, Grupo, Subgrupo)
  *     requestBody:
  *       required: true
  *       content:
@@ -27,8 +28,7 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  *             schema:
  *               type: object
  *               properties:
- *                 message:
- *                   type: string
+ *                 message: { type: string }
  *                 data:
  *                   $ref: '#/components/schemas/Natureza'
  *       '409':
@@ -39,7 +39,8 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  *               $ref: '#/components/schemas/Error409'
  *   get:
  *     summary: Lista todas as Naturezas
- *     tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
+ *     tags:
+ *       - Admin: Classificação (Natureza, Grupo, Subgrupo)
  *     responses:
  *       '200':
  *         description: Lista de naturezas
@@ -58,13 +59,12 @@ router.get('/', naturezaController.getAll);
  * /api/naturezas/{id}:
  *   delete:
  *     summary: Deleta uma Natureza
- *     tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
+ *     tags:
+ *       - Admin: Classificação (Natureza, Grupo, Subgrupo)
  *     parameters:
  *       - in: path
  *         name: id
- *         schema:
- *           type: string
- *           format: uuid
+ *         schema: { type: string, format: uuid }
  *         required: true
  *         description: ID da natureza
  *     responses:

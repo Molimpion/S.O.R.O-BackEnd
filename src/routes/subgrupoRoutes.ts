@@ -5,8 +5,6 @@ import { validate } from '../middleware/validate';
 import { subgrupoSchema } from '../validators/subgrupoValidator';
 
 const router = Router();
-
-// Requer autenticação e perfil de administrador
 router.use(authenticateToken, checkAdmin);
 
 /**
@@ -14,7 +12,8 @@ router.use(authenticateToken, checkAdmin);
  * /api/subgrupos:
  *   post:
  *     summary: Cria um novo Subgrupo
- *     tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
+ *     tags:
+ *       - Admin: Classificação (Natureza, Grupo, Subgrupo)
  *     requestBody:
  *       required: true
  *       content:
@@ -23,14 +22,13 @@ router.use(authenticateToken, checkAdmin);
  *             $ref: '#/components/schemas/Subgrupo'
  *     responses:
  *       '201':
- *         description: Subgrupo criado com sucesso
+ *         description: Subgrupo criado
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 message:
- *                   type: string
+ *                 message: { type: string }
  *                 data:
  *                   $ref: '#/components/schemas/Subgrupo'
  *       '404':
@@ -39,10 +37,10 @@ router.use(authenticateToken, checkAdmin);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error404'
- *
  *   get:
  *     summary: Lista todos os Subgrupos
- *     tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
+ *     tags:
+ *       - Admin: Classificação (Natureza, Grupo, Subgrupo)
  *     responses:
  *       '200':
  *         description: Lista de subgrupos (com grupo e natureza aninhados)
@@ -61,15 +59,14 @@ router.get('/', subgrupoController.getAll);
  * /api/subgrupos/{id}:
  *   delete:
  *     summary: Deleta um Subgrupo
- *     tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
+ *     tags:
+ *       - Admin: Classificação (Natureza, Grupo, Subgrupo)
  *     parameters:
  *       - in: path
  *         name: id
+ *         schema: { type: string, format: uuid }
  *         required: true
  *         description: ID do subgrupo
- *         schema:
- *           type: string
- *           format: uuid
  *     responses:
  *       '200':
  *         description: Subgrupo deletado com sucesso

@@ -2,17 +2,18 @@ import { Router } from 'express';
 import * as municipioController from '../controllers/municipioController';
 import { authenticateToken, checkAdmin } from '../middleware/authMiddleware';
 import { validate } from '../middleware/validate';
-import { createMunicipioSchema, putMunicipioSchema, patchMunicipioSchema } from '../validators/municipioValidator'; 
+import { createMunicipioSchema, putMunicipioSchema, patchMunicipioSchema } from '../validators/municipioValidator';
 
 const router = Router();
-router.use(authenticateToken, checkAdmin); // Requer Admin
+router.use(authenticateToken, checkAdmin);
 
 /**
  * @swagger
  * /api/municipios:
  *   post:
  *     summary: Cria um novo município
- *     tags: [Admin: Municípios]
+ *     tags:
+ *       - Admin: Municípios
  *     requestBody:
  *       required: true
  *       content:
@@ -27,8 +28,7 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  *             schema:
  *               type: object
  *               properties:
- *                 message:
- *                   type: string
+ *                 message: { type: string }
  *                 data:
  *                   $ref: '#/components/schemas/Municipio'
  *       '409':
@@ -39,7 +39,8 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  *               $ref: '#/components/schemas/Error409'
  *   get:
  *     summary: Lista todos os municípios
- *     tags: [Admin: Municípios]
+ *     tags:
+ *       - Admin: Municípios
  *     responses:
  *       '200':
  *         description: Lista de municípios
@@ -58,13 +59,12 @@ router.get('/', municipioController.getAll);
  * /api/municipios/{id}:
  *   get:
  *     summary: Obtém detalhes de um município
- *     tags: [Admin: Municípios]
+ *     tags:
+ *       - Admin: Municípios
  *     parameters:
  *       - in: path
  *         name: id
- *         schema:
- *           type: string
- *           format: uuid
+ *         schema: { type: string, format: uuid }
  *         required: true
  *         description: ID do município
  *     responses:
@@ -82,13 +82,12 @@ router.get('/', municipioController.getAll);
  *               $ref: '#/components/schemas/Error404'
  *   put:
  *     summary: (PUT) Substitui o nome de um município
- *     tags: [Admin: Municípios]
+ *     tags:
+ *       - Admin: Municípios
  *     parameters:
  *       - in: path
  *         name: id
- *         schema:
- *           type: string
- *           format: uuid
+ *         schema: { type: string, format: uuid }
  *         required: true
  *         description: ID do município
  *     requestBody:
@@ -98,8 +97,7 @@ router.get('/', municipioController.getAll);
  *           schema:
  *             type: object
  *             properties:
- *               nome_municipio:
- *                 type: string
+ *               nome_municipio: { type: string }
  *     responses:
  *       '200':
  *         description: Município atualizado
@@ -108,8 +106,7 @@ router.get('/', municipioController.getAll);
  *             schema:
  *               type: object
  *               properties:
- *                 message:
- *                   type: string
+ *                 message: { type: string }
  *                 data:
  *                   $ref: '#/components/schemas/Municipio'
  *       '404':
@@ -126,13 +123,12 @@ router.get('/', municipioController.getAll);
  *               $ref: '#/components/schemas/Error409'
  *   patch:
  *     summary: (PATCH) Atualiza o nome de um município
- *     tags: [Admin: Municípios]
+ *     tags:
+ *       - Admin: Municípios
  *     parameters:
  *       - in: path
  *         name: id
- *         schema:
- *           type: string
- *           format: uuid
+ *         schema: { type: string, format: uuid }
  *         required: true
  *         description: ID do município
  *     requestBody:
@@ -142,8 +138,7 @@ router.get('/', municipioController.getAll);
  *           schema:
  *             type: object
  *             properties:
- *               nome_municipio:
- *                 type: string
+ *               nome_municipio: { type: string }
  *     responses:
  *       '200':
  *         description: Município atualizado
@@ -152,8 +147,7 @@ router.get('/', municipioController.getAll);
  *             schema:
  *               type: object
  *               properties:
- *                 message:
- *                   type: string
+ *                 message: { type: string }
  *                 data:
  *                   $ref: '#/components/schemas/Municipio'
  *       '404':
@@ -170,13 +164,12 @@ router.get('/', municipioController.getAll);
  *               $ref: '#/components/schemas/Error409'
  *   delete:
  *     summary: Deleta um município
- *     tags: [Admin: Municípios]
+ *     tags:
+ *       - Admin: Municípios
  *     parameters:
  *       - in: path
  *         name: id
- *         schema:
- *           type: string
- *           format: uuid
+ *         schema: { type: string, format: uuid }
  *         required: true
  *         description: ID do município
  *     responses:

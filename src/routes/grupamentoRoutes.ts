@@ -5,14 +5,15 @@ import { validate } from '../middleware/validate';
 import { grupamentoSchema } from '../validators/grupamentoValidator';
 
 const router = Router();
-router.use(authenticateToken, checkAdmin); // Requer Admin
+router.use(authenticateToken, checkAdmin);
 
 /**
  * @swagger
  * /api/grupamentos:
  *   post:
  *     summary: Cria um novo Grupamento
- *     tags: [Admin: Organização (Grupamentos e Unidades)]
+ *     tags:
+ *       - Admin: Organização (Grupamentos e Unidades)
  *     requestBody:
  *       required: true
  *       content:
@@ -27,8 +28,7 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  *             schema:
  *               type: object
  *               properties:
- *                 message:
- *                   type: string
+ *                 message: { type: string }
  *                 data:
  *                   $ref: '#/components/schemas/Grupamento'
  *       '409':
@@ -39,7 +39,8 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  *               $ref: '#/components/schemas/Error409'
  *   get:
  *     summary: Lista todos os Grupamentos
- *     tags: [Admin: Organização (Grupamentos e Unidades)]
+ *     tags:
+ *       - Admin: Organização (Grupamentos e Unidades)
  *     responses:
  *       '200':
  *         description: Lista de grupamentos
@@ -58,13 +59,12 @@ router.get('/', grupamentoController.getAll);
  * /api/grupamentos/{id}:
  *   delete:
  *     summary: Deleta um Grupamento
- *     tags: [Admin: Organização (Grupamentos e Unidades)]
+ *     tags:
+ *       - Admin: Organização (Grupamentos e Unidades)
  *     parameters:
  *       - in: path
  *         name: id
- *         schema:
- *           type: string
- *           format: uuid
+ *         schema: { type: string, format: uuid }
  *         required: true
  *         description: ID do grupamento
  *     responses:

@@ -9,7 +9,9 @@ import {
 } from '../validators/viaturaValidator';
 
 const router = Router();
-router.use(authenticateToken, checkAdmin); // Requer Admin
+
+// Requer autenticação e admin
+router.use(authenticateToken, checkAdmin);
 
 /**
  * @swagger
@@ -36,7 +38,7 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  *                 data:
  *                   $ref: '#/components/schemas/Viatura'
  *       '404':
- *         description: Unidade Operacional (id_unidade_operacional_fk) não encontrada
+ *         description: Unidade Operacional não encontrada
  *         content:
  *           application/json:
  *             schema:
@@ -47,7 +49,6 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error409'
- *
  *   get:
  *     summary: Lista todas as viaturas
  *     tags: [Admin: Viaturas]
@@ -108,7 +109,6 @@ router.get('/', viaturaController.getAll);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error409'
- *
  *   patch:
  *     summary: (PATCH) Atualiza parcialmente uma viatura
  *     tags: [Admin: Viaturas]
@@ -153,7 +153,6 @@ router.get('/', viaturaController.getAll);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error409'
- *
  *   delete:
  *     summary: Deleta uma viatura
  *     tags: [Admin: Viaturas]

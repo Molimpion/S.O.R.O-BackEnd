@@ -5,8 +5,6 @@ import { validate } from '../middleware/validate';
 import { reportOcorrenciaSchema } from '../validators/ocorrenciaValidator';
 
 const router = Router();
-
-// Requer autenticação e privilégio de administrador
 router.use(authenticateToken, checkAdmin);
 
 /**
@@ -14,56 +12,37 @@ router.use(authenticateToken, checkAdmin);
  * /api/relatorios:
  *   get:
  *     summary: Gera um relatório de ocorrências (CSV ou PDF)
- *     tags: [Relatórios]
+ *     tags:
+ *       - Relatórios
  *     parameters:
  *       - in: query
  *         name: type
+ *         schema: { type: string, enum: ['csv', 'pdf'] }
  *         required: true
  *         description: Formato do arquivo
- *         schema:
- *           type: string
- *           enum: [csv, pdf]
  *       - in: query
  *         name: dataInicio
- *         description: Data inicial do filtro
- *         schema:
- *           type: string
- *           format: date-time
+ *         schema: { type: string, format: date-time }
  *       - in: query
  *         name: dataFim
- *         description: Data final do filtro
- *         schema:
- *           type: string
- *           format: date-time
+ *         schema: { type: string, format: date-time }
  *       - in: query
  *         name: status
- *         description: Filtrar por status da ocorrência
- *         schema:
- *           type: string
- *           enum: [PENDENTE, EM_ANDAMENTO, CONCLUIDO, CANCELADO]
+ *         schema: { type: string, enum: ['PENDENTE','EM_ANDAMENTO','CONCLUIDO','CANCELADO'] }
  *       - in: query
  *         name: bairroId
- *         description: Filtrar por ID do bairro
- *         schema:
- *           type: string
- *           format: uuid
+ *         schema: { type: string, format: uuid }
  *       - in: query
  *         name: subgrupoId
- *         description: Filtrar por ID do subgrupo
- *         schema:
- *           type: string
- *           format: uuid
+ *         schema: { type: string, format: uuid }
  *     responses:
  *       '200':
  *         description: Download do arquivo de relatório
  *         content:
  *           text/csv:
- *             schema:
- *               type: string
+ *             schema: { type: string }
  *           application/pdf:
- *             schema:
- *               type: string
- *               format: binary
+ *             schema: { type: string, format: binary }
  *       '400':
  *         description: Tipo de exportação inválido
  *         content:

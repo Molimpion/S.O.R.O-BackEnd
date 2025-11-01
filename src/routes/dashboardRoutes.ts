@@ -5,30 +5,25 @@ import { validate } from '../middleware/validate';
 import { listOcorrenciaSchema } from '../validators/ocorrenciaValidator';
 
 const router = Router();
-router.use(authenticateToken); // Requer autenticação
+router.use(authenticateToken);
 
 /**
  * @swagger
  * /api/dashboard/ocorrencias-por-status:
  *   get:
  *     summary: KPI de Ocorrências por Status
- *     tags: [Dashboard]
+ *     tags:
+ *       - Dashboard
  *     parameters:
  *       - in: query
  *         name: dataInicio
- *         schema:
- *           type: string
- *           format: date-time
+ *         schema: { type: string, format: date-time }
  *       - in: query
  *         name: dataFim
- *         schema:
- *           type: string
- *           format: date-time
+ *         schema: { type: string, format: date-time }
  *       - in: query
  *         name: bairroId
- *         schema:
- *           type: string
- *           format: uuid
+ *         schema: { type: string, format: uuid }
  *     responses:
  *       '200':
  *         description: Contagem de ocorrências por status
@@ -37,14 +32,10 @@ router.use(authenticateToken); // Requer autenticação
  *             schema:
  *               type: object
  *               properties:
- *                 PENDENTE:
- *                   type: integer
- *                 EM_ANDAMENTO:
- *                   type: integer
- *                 CONCLUIDO:
- *                   type: integer
- *                 CANCELADO:
- *                   type: integer
+ *                 PENDENTE: { type: integer }
+ *                 EM_ANDAMENTO: { type: integer }
+ *                 CONCLUIDO: { type: integer }
+ *                 CANCELADO: { type: integer }
  */
 router.get(
   '/ocorrencias-por-status',
@@ -57,18 +48,15 @@ router.get(
  * /api/dashboard/ocorrencias-por-tipo:
  *   get:
  *     summary: KPI de Ocorrências por Tipo (Subgrupo)
- *     tags: [Dashboard]
+ *     tags:
+ *       - Dashboard
  *     parameters:
  *       - in: query
  *         name: dataInicio
- *         schema:
- *           type: string
- *           format: date-time
+ *         schema: { type: string, format: date-time }
  *       - in: query
  *         name: dataFim
- *         schema:
- *           type: string
- *           format: date-time
+ *         schema: { type: string, format: date-time }
  *     responses:
  *       '200':
  *         description: Lista de totais por subgrupo
@@ -79,10 +67,8 @@ router.get(
  *               items:
  *                 type: object
  *                 properties:
- *                   nome:
- *                     type: string
- *                   total:
- *                     type: integer
+ *                   nome: { type: string }
+ *                   total: { type: integer }
  */
 router.get(
   '/ocorrencias-por-tipo',
@@ -95,18 +81,15 @@ router.get(
  * /api/dashboard/ocorrencias-por-bairro:
  *   get:
  *     summary: KPI de Ocorrências por Bairro
- *     tags: [Dashboard]
+ *     tags:
+ *       - Dashboard
  *     parameters:
  *       - in: query
  *         name: dataInicio
- *         schema:
- *           type: string
- *           format: date-time
+ *         schema: { type: string, format: date-time }
  *       - in: query
  *         name: dataFim
- *         schema:
- *           type: string
- *           format: date-time
+ *         schema: { type: string, format: date-time }
  *     responses:
  *       '200':
  *         description: Lista de totais por bairro
@@ -117,10 +100,8 @@ router.get(
  *               items:
  *                 type: object
  *                 properties:
- *                   nome:
- *                     type: string
- *                   total:
- *                     type: integer
+ *                   nome: { type: string }
+ *                   total: { type: integer }
  */
 router.get(
   '/ocorrencias-por-bairro',

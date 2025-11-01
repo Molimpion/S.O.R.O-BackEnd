@@ -11,7 +11,7 @@ import {
 
 const router = Router();
 
-// Requer autenticação para todas as rotas
+// Todas as rotas requerem autenticação
 router.use(authenticateToken);
 
 /**
@@ -39,17 +39,9 @@ router.use(authenticateToken);
  *                 data:
  *                   $ref: '#/components/schemas/Ocorrencia'
  *       '400':
- *         description: Dados inválidos
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error400'
+ *         $ref: '#/components/schemas/Error400'
  *       '404':
- *         description: Recurso relacionado (bairro, subgrupo, etc) não encontrado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error404'
+ *         $ref: '#/components/schemas/Error404'
  *   get:
  *     summary: Lista ocorrências com filtros e paginação
  *     tags: [Ocorrências]
@@ -127,137 +119,61 @@ router.get('/', validate(listOcorrenciaSchema), ocorrenciaController.getAll);
  *           format: uuid
  *     responses:
  *       '200':
- *         description: Detalhes da ocorrência (incluindo relações)
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Ocorrencia'
+ *         $ref: '#/components/schemas/Ocorrencia'
  *       '404':
- *         description: Ocorrência não encontrada
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error404'
+ *         $ref: '#/components/schemas/Error404'
  *   put:
- *     summary: (PUT) Substitui os dados de uma ocorrência
+ *     summary: Substitui os dados de uma ocorrência (PUT)
  *     tags: [Ocorrências]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID da ocorrência
  *         schema:
  *           type: string
  *           format: uuid
+ *         description: ID da ocorrência
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               status_situacao:
- *                 type: string
- *                 enum: [PENDENTE, EM_ANDAMENTO, CONCLUIDO, CANCELADO]
- *               data_execucao_servico:
- *                 type: string
- *                 format: date-time
- *                 nullable: true
- *               relacionado_eleicao:
- *                 type: boolean
- *               nr_aviso:
- *                 type: string
- *                 nullable: true
+ *             $ref: '#/components/schemas/OcorrenciaInput'
  *     responses:
  *       '200':
- *         description: Ocorrência atualizada
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 data:
- *                   $ref: '#/components/schemas/Ocorrencia'
+ *         $ref: '#/components/schemas/Ocorrencia'
  *       '400':
- *         description: Dados inválidos (requer todos os campos)
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error400'
+ *         $ref: '#/components/schemas/Error400'
  *       '403':
- *         description: Acesso negado (usuário não é o dono da ocorrência)
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error403'
+ *         $ref: '#/components/schemas/Error403'
  *       '404':
- *         description: Ocorrência não encontrada
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error404'
+ *         $ref: '#/components/schemas/Error404'
  *   patch:
- *     summary: (PATCH) Atualiza parcialmente uma ocorrência
+ *     summary: Atualiza parcialmente uma ocorrência (PATCH)
  *     tags: [Ocorrências]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID da ocorrência
  *         schema:
  *           type: string
  *           format: uuid
+ *         description: ID da ocorrência
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               status_situacao:
- *                 type: string
- *                 enum: [PENDENTE, EM_ANDAMENTO, CONCLUIDO, CANCELADO]
- *               data_execucao_servico:
- *                 type: string
- *                 format: date-time
- *                 nullable: true
- *               relacionado_eleicao:
- *                 type: boolean
- *               nr_aviso:
- *                 type: string
- *                 nullable: true
+ *             $ref: '#/components/schemas/OcorrenciaPatchInput'
  *     responses:
  *       '200':
- *         description: Ocorrência atualizada
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 data:
- *                   $ref: '#/components/schemas/Ocorrencia'
+ *         $ref: '#/components/schemas/Ocorrencia'
  *       '400':
- *         description: Dados inválidos (campos opcionais)
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error400'
+ *         $ref: '#/components/schemas/Error400'
  *       '403':
- *         description: Acesso negado (usuário não é o dono da ocorrência)
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error403'
+ *         $ref: '#/components/schemas/Error403'
  *       '404':
- *         description: Ocorrência não encontrada
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error404'
+ *         $ref: '#/components/schemas/Error404'
  */
 router.get('/:id', ocorrenciaController.getById);
 router.put('/:id', validate(putOcorrenciaSchema), ocorrenciaController.update);

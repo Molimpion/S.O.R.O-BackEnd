@@ -5,14 +5,15 @@ import { validate } from '../middleware/validate';
 import { formaAcervoSchema } from '../validators/formaAcervoValidator';
 
 const router = Router();
-router.use(authenticateToken, checkAdmin); // Requer Admin
+router.use(authenticateToken, checkAdmin);
 
 /**
  * @swagger
  * /api/formas-acervo:
  *   post:
  *     summary: Cria uma nova Forma de Acervo
- *     tags: [Admin: Formas de Acervo]
+ *     tags:
+ *       - Admin: Formas de Acervo
  *     requestBody:
  *       required: true
  *       content:
@@ -27,19 +28,19 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  *             schema:
  *               type: object
  *               properties:
- *                 message:
- *                   type: string
+ *                 message: { type: string }
  *                 data:
  *                   $ref: '#/components/schemas/FormaAcervo'
  *       '409':
- *         description: Descrição já existe (se for unique)
+ *         description: Descrição já existe (unique)
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error409'
  *   get:
  *     summary: Lista todas as Formas de Acervo
- *     tags: [Admin: Formas de Acervo]
+ *     tags:
+ *       - Admin: Formas de Acervo
  *     responses:
  *       '200':
  *         description: Lista de formas de acervo
@@ -58,13 +59,12 @@ router.get('/', formaAcervoController.getAll);
  * /api/formas-acervo/{id}:
  *   delete:
  *     summary: Deleta uma Forma de Acervo
- *     tags: [Admin: Formas de Acervo]
+ *     tags:
+ *       - Admin: Formas de Acervo
  *     parameters:
  *       - in: path
  *         name: id
- *         schema:
- *           type: string
- *           format: uuid
+ *         schema: { type: string, format: uuid }
  *         required: true
  *         description: ID da forma de acervo
  *     responses:

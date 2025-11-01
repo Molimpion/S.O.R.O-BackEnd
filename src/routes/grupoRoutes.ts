@@ -5,14 +5,15 @@ import { validate } from '../middleware/validate';
 import { grupoSchema } from '../validators/grupoValidator';
 
 const router = Router();
-router.use(authenticateToken, checkAdmin); // Requer Admin
+router.use(authenticateToken, checkAdmin);
 
 /**
  * @swagger
  * /api/grupos:
  *   post:
  *     summary: Cria um novo Grupo
- *     tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
+ *     tags:
+ *       - Admin: Classificação (Natureza, Grupo, Subgrupo)
  *     requestBody:
  *       required: true
  *       content:
@@ -27,8 +28,7 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  *             schema:
  *               type: object
  *               properties:
- *                 message:
- *                   type: string
+ *                 message: { type: string }
  *                 data:
  *                   $ref: '#/components/schemas/Grupo'
  *       '404':
@@ -39,7 +39,8 @@ router.use(authenticateToken, checkAdmin); // Requer Admin
  *               $ref: '#/components/schemas/Error404'
  *   get:
  *     summary: Lista todos os Grupos
- *     tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
+ *     tags:
+ *       - Admin: Classificação (Natureza, Grupo, Subgrupo)
  *     responses:
  *       '200':
  *         description: Lista de grupos (com natureza aninhada)
@@ -58,13 +59,12 @@ router.get('/', grupoController.getAll);
  * /api/grupos/{id}:
  *   delete:
  *     summary: Deleta um Grupo
- *     tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
+ *     tags:
+ *       - Admin: Classificação (Natureza, Grupo, Subgrupo)
  *     parameters:
  *       - in: path
  *         name: id
- *         schema:
- *           type: string
- *           format: uuid
+ *         schema: { type: string, format: uuid }
  *         required: true
  *         description: ID do grupo
  *     responses:
