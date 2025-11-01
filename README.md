@@ -7,7 +7,9 @@
 *Projeto Integrador da Turma 44 da Faculdade Senac Pernambuco.*
 *Professores Responsáveis: Danilo Farias, Geraldo Gomes, Marcos Tenorio e Sônia Gomes.*
 
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white) ![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white) ![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white) [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white) ![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white) ![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Zod](https://img.shields.io/badge/Zod-3178C6?style=for-the-badge&logo=zod&logoColor=white) ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white) ![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black) ![Nodemailer](https://img.shields.io/badge/Nodemailer-36A9C2?style=for-the-badge&logo=nodemailer&logoColor=white)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com)
 
 ## 1. Visão Geral
 
@@ -37,7 +39,10 @@ A aplicação segue o padrão de **Monólito com Camadas (Layered Monolith)**. E
 - **ORM:** Prisma
 - **Segurança:** Autenticação via Tokens JWT (`jsonwebtoken`) e criptografia de senhas com `bcrypt`.
 - **Validação:** Validação robusta de dados de entrada com `zod`.
-- **Tratamento de Erros:** Sistema centralizado com Erros Customizados e um Middleware de Erro global.
+- **Documentação da API:** Geração automática de documentação OpenAPI com `swagger-jsdoc` e `swagger-ui-express`.
+- **Envio de E-mail:** Serviço de e-mail transacional (ex: boas-vindas com senha temporária) utilizando `nodemailer`.
+- **Exportação de Relatórios:** Geração de arquivos PDF (`pdfkit`) e CSV (`csv-stringify`) para relatórios administrativos.
+- **Tratamento de Erros:** Sistema centralizado com Erros Customizados (`ApiError`) e um Middleware de Erro global (`express-async-errors`).
 
 ### Ambiente de Desenvolvimento Padronizado
 
@@ -57,13 +62,13 @@ O projeto utiliza a especificação **Dev Container** (`.devcontainer`) para def
         DATABASE_URL="postgresql://admin:supersecretpassword@postgres-db:5432/bombeiros_pi"
         JWT_SECRET="gere_uma_chave_secreta_forte_e_aleatoria_aqui"
         
-        # Variáveis de E-mail (Opcionais para dev, mas recomendadas)
-        EMAIL_HOST=
+        # Variáveis de E-mail (Obrigatórias para o 'emailService' funcionar)
+        EMAIL_HOST=smtp.example.com
         EMAIL_PORT=587
         EMAIL_SECURE=false
-        EMAIL_USER=
-        EMAIL_PASS=
-        EMAIL_FROM=
+        EMAIL_USER=seu-email@example.com
+        EMAIL_PASS=sua-senha-de-app
+        EMAIL_FROM="Equipe S.O.R.O. <seu-email@example.com>"
         ```
     * Abra a pasta do projeto no VS Code. O editor irá sugerir reabrir o projeto num contentor. Aceite.
 
@@ -105,18 +110,22 @@ Para que a aplicação funcione em produção, as seguintes variáveis de ambien
 
 ## 6. Testando a API
 
-O projeto inclui um ficheiro `requests.http` com uma suíte de testes de ponta a ponta.
+O projeto inclui um ficheiro `api-tests/requests.http` com uma suíte de testes de ponta a ponta.
 
 1.  **Pré-requisito:**
     * Instale a extensão **"REST Client"** (por Huachao Mao) no seu VS Code.
 
 2.  **Passos para Testar:**
     * Garanta que o servidor esteja a correr (localmente ou em produção).
-    * Abra o ficheiro `requests.http` e defina a variável `@hostname` para o ambiente que deseja testar (`http://localhost:3000` ou a URL do Render).
+    * Abra o ficheiro `api-tests/requests.http` e defina a variável `@hostname` para o ambiente que deseja testar (`http://localhost:3000` ou a URL do Render).
     * Execute as requisições na ordem apresentada.
     * Após executar os testes de login, copie os tokens `admin` e `analista` para as variáveis `@adminToken` e `@analistaToken` no topo do ficheiro.
 
 ## 7. Documentação da API
+
+A documentação completa da API (OpenAPI/Swagger) é gerada automaticamente e está disponível na rota `/api/docs` da aplicação em execução.
+
+- **Documentação ao vivo:** [https://api-bombeiros-s-o-r-o.onrender.com/api/docs](https://api-bombeiros-s-o-r-o.onrender.com/api/docs)
 
 ### Endpoints Principais
 
@@ -144,19 +153,19 @@ O projeto inclui um ficheiro `requests.http` com uma suíte de testes de ponta a
 #### Relatórios e Dashboard
 | Método | Endpoint | Descrição | Acesso |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/api/relatorios/ocorrencias/csv` | Gera um relatório CSV de ocorrências. | Admin |
-| `GET` | `/api/relatorios/ocorrencias/pdf` | Gera um relatório PDF de ocorrências. | Admin |
+| `GET` | `/api/relatorios` | Gera um relatório CSV ou PDF de ocorrências (via query `?type=csv` ou `?type=pdf`). | Admin |
 | `GET` | `/api/dashboard/ocorrencias-por-status` | Retorna o total de ocorrências por status. | Autenticado |
 | `GET` | `/api/dashboard/ocorrencias-por-tipo` | Retorna o total de ocorrências por tipo (subgrupo). | Autenticado |
 | `GET` | `/api/dashboard/ocorrencias-por-bairro` | Retorna o total de ocorrências por bairro. | Autenticado |
 
 ### Endpoints Administrativos (CRUDs de Suporte)
-A API também inclui endpoints `POST`, `GET` e `DELETE` para que administradores possam gerir as seguintes entidades de suporte:
-- `/api/bairros`
-- `/api/naturezas`
-- `/api/grupos`
-- `/api/subgrupos`
-- `/api/formas-acervo`
-- `/api/grupamentos`
-- `/api/unidades-operacionais`
-- `/api/viaturas`
+A API também inclui endpoints `POST`, `GET`, `PUT`, `PATCH` e `DELETE` para que administradores possam gerir as seguintes entidades de suporte (todos sob `/api/*`):
+- `municipios`
+- `bairros`
+- `naturezas`
+- `grupos`
+- `subgrupos`
+- `formas-acervo`
+- `grupamentos`
+- `unidades-operacionais`
+- `viaturas`
