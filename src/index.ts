@@ -11,6 +11,11 @@ import bodyParser from 'body-parser';
 import { errorMiddleware } from './middleware/errorMiddleware';
 import { authenticateToken } from './middleware/authMiddleware';
 
+// --- Imports para o Swagger ---
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './swaggerConfig'; // Importa nossa configuração
+// --- Fim dos imports do Swagger ---
+
 // Importações das rotas existentes
 import authRoutes from './routes/authRoutes';
 import ocorrenciaRoutes from './routes/ocorrenciaRoutes';
@@ -25,17 +30,19 @@ import unidadeOperacionalRoutes from './routes/unidadeOperacionalRoutes';
 import viaturaRoutes from './routes/viaturaRoutes';
 import relatorioRoutes from './routes/relatorioRoutes';
 import dashboardRoutes from './routes/dashboardRoutes';
-
-// ++ NOVA IMPORTAÇÃO ++
-import municipioRoutes from './routes/municipioRoutes'; // <-- Importa as rotas de município
+import municipioRoutes from './routes/municipioRoutes'; 
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Usa a porta do ambiente ou 3000 como padrão
+const PORT = process.env.PORT || 3000; 
 
 app.use(bodyParser.json());
 
+// --- Rota da Documentação (Swagger) ---
+// Esta rota deve ser pública
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 // Rota pública
-app.get('/', (req, res) => { res.send('API S.O.R.O. está funcionando!') });
+app.get('/', (req, res) => { res.send('API S.O.R.O. está funcionando! Acesse /api/docs para a documentação.') });
 app.use('/api/auth', authRoutes); // Rotas de autenticação são públicas
 
 // Middleware de autenticação para as rotas seguintes
@@ -48,7 +55,7 @@ app.use('/api/ocorrencias', ocorrenciaRoutes);
 app.use('/api/users', userRoutes);
 
 // Rotas administrativas (CRUDs de suporte)
-app.use('/api/municipios', municipioRoutes); // <-- Registra as novas rotas de município
+app.use('/api/municipios', municipioRoutes); 
 app.use('/api/bairros', bairroRoutes);
 app.use('/api/naturezas', naturezaRoutes);
 app.use('/api/grupos', grupoRoutes);
@@ -63,4 +70,5 @@ app.use(errorMiddleware);
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`Documentação da API disponível em http://localhost:${PORT}/api/docs`);
 });
