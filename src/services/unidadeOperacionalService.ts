@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client'; // Importar Prisma
 import { NotFoundError, ConflictError } from '../errors/api-errors';
 
 const prisma = new PrismaClient();
@@ -17,7 +17,16 @@ export async function createUnidade(data: UnidadeData) {
     throw new NotFoundError('Grupamento associado não encontrado.');
   }
 
-  return await prisma.unidadeOperacional.create({ data });
+  try {
+    return await prisma.unidadeOperacional.create({ data });
+  } catch (error) {
+    // Nota: 'nome_unidade' não é unique no schema, mas 'sigla' de grupamento era.
+    // Se 'nome_unidade' se tornar unique, este código tratará.
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+       throw new ConflictError('Já existe uma Unidade Operacional com este nome.');
+    }
+    throw error;
+  }
 };
 
 export async function getAllUnidades() {

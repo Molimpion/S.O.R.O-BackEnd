@@ -3,7 +3,7 @@ import { createGrupamento, getAllGrupamentos, deleteGrupamento } from '../servic
 
 export const create = async (req: Request, res: Response) => {
   const novoGrupamento = await createGrupamento(req.body);
-  res.status(201).json(novoGrupamento);
+  res.status(201).json({ message: 'Grupamento criado com sucesso!', data: novoGrupamento });
 };
 
 export const getAll = async (req: Request, res: Response) => {
@@ -14,5 +14,5 @@ export const getAll = async (req: Request, res: Response) => {
 export const remove = async (req: Request, res: Response) => {
   const { id } = req.params;
   await deleteGrupamento(id);
-  res.status(204).send();
+  res.status(200).json({ message: 'Grupamento deletado com sucesso.' });
 };

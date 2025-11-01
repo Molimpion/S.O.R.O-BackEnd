@@ -4,7 +4,7 @@ import { createFormaAcervo, getAllFormasAcervo, deleteFormaAcervo } from '../ser
 export const create = async (req: Request, res: Response) => {
   const { descricao } = req.body;
   const novaFormaAcervo = await createFormaAcervo(descricao);
-  res.status(201).json(novaFormaAcervo);
+  res.status(201).json({ message: 'Forma de acervo criada com sucesso!', data: novaFormaAcervo });
 };
 
 export const getAll = async (req: Request, res: Response) => {
@@ -15,5 +15,5 @@ export const getAll = async (req: Request, res: Response) => {
 export const remove = async (req: Request, res: Response) => {
   const { id } = req.params;
   await deleteFormaAcervo(id);
-  res.status(204).send();
+  res.status(200).json({ message: 'Forma de acervo deletada com sucesso.' });
 };

@@ -3,7 +3,7 @@ import { createUnidade, getAllUnidades, deleteUnidade } from '../services/unidad
 
 export const create = async (req: Request, res: Response) => {
   const novaUnidade = await createUnidade(req.body);
-  res.status(201).json(novaUnidade);
+  res.status(201).json({ message: 'Unidade Operacional criada com sucesso!', data: novaUnidade });
 };
 
 export const getAll = async (req: Request, res: Response) => {
@@ -14,5 +14,5 @@ export const getAll = async (req: Request, res: Response) => {
 export const remove = async (req: Request, res: Response) => {
   const { id } = req.params;
   await deleteUnidade(id);
-  res.status(204).send();
+  res.status(200).json({ message: 'Unidade Operacional deletada com sucesso.' });
 };

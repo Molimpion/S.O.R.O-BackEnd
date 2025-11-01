@@ -7,9 +7,7 @@
 @hostname = https://api-bombeiros-s-o-r-o.onrender.com
 # @hostname = http://localhost:3000
 
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZThjYmYzYy1jYmUxLTQ5ZjgtODllNi1hOWI1YjhlMjkzNzQiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjE3NDAwODMsImV4cCI6MTc2MTc2ODg4M30.fTlXHuIEXQ2tmZrkn9Q7GDtTVWyAU8VCjpLIn8B9Jhg
-@analistaToken= 
-@grupoId =
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZThjYmYzYy1jYmUxLTQ5ZjgtODllNi1hOWI1YjhlMjkzNzQiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjE5Njk3ODAsImV4cCI6MTc2MTk5ODU4MH0.djLZ34vfstlA98exjyYTSzi1N0SVKKNnri2RZM9FAe8
 @subgrupoId =
 @formaAcervoId =
 @grupamentoId =
@@ -66,37 +64,6 @@ Content-Type: application/json
     "id_unidade_operacional_fk": "{{createUnidade.response.body.id_unidade}}" // Reutiliza a unidade criada antes
 }
 
-# ===================================================================
-# FASE X: ASSOCIAÇÃO DE BAIRROS A MUNICÍPIOS (ADMIN)
-# ===================================================================
-
-### X.1 - POST: Criar o Município de Recife
-# @name createRecifeMunicipio
-POST {{hostname}}/api/municipios
-Authorization: Bearer {{adminToken}} // Precisa ser admin
-Content-Type: application/json
-
-{
-    "nome_municipio": "Recife"
-}
-
-### X.2 - PUT: Atualizar UM Bairro para associar ao Município de Recife
-# AÇÃO: Após executar a requisição X.1, copie o "id_municipio" da resposta.
-#       Cole esse ID no campo "id_municipio_fk" abaixo.
-#       Para associar os outros bairros, copie esta requisição inteira
-#       e troque apenas o ID do bairro na URL (ex: /api/bairros/630fbe1b-...).
-# @name updateBairroAflitos
-PUT {{hostname}}/api/bairros/4ac9ba26-70f7-4b33-962e-6711c4af3ccd HTTP/1.1
-Authorization: Bearer {{adminToken}} // Precisa ser admin
-Content-Type: application/json
-
-{
-    "id_municipio_fk": "{{createRecifeMunicipio.response.body.id_municipio}}" // Usa a variável da requisição anterior
-    // Você pode adicionar outros campos para atualizar se quiser, como regiao ou ais,
-    // mas SÓ o id_municipio_fk é necessário para a associação.
-    // "regiao": "Nova Regiao",
-    // "ais": "Novo AIS"
-}
 
 
 # ===================================================================

@@ -32,17 +32,24 @@ export const reportOcorrenciaSchema = z.object({
   }),
 });
 
-// 4. Schema para ATUALIZAÇÃO (PATCH/PUT)
-export const updateOcorrenciaSchema = z.object({
+export const putOcorrenciaSchema = z.object({
+  body: z.object({
+    status_situacao: z.enum(['PENDENTE', 'EM_ANDAMENTO', 'CONCLUIDO', 'CANCELADO'], { required_error: 'O status é obrigatório.' }),
+    data_execucao_servico: z.string().datetime().nullable(), // Permitir nulo
+    relacionado_eleicao: z.boolean({ required_error: 'O campo de eleição é obrigatório.' }),
+    nr_aviso: z.string().nullable(),
+  }),
+  params: z.object({
+    id: z.string().uuid({ message: "O ID da ocorrência na URL é inválido." }),
+  })
+});
+
+export const patchOcorrenciaSchema = z.object({
   body: z.object({
     status_situacao: z.enum(['PENDENTE', 'EM_ANDAMENTO', 'CONCLUIDO', 'CANCELADO']).optional(),
-    data_execucao_servico: z.string().datetime().optional(),
+    data_execucao_servico: z.string().datetime().nullable().optional(),
     relacionado_eleicao: z.boolean().optional(),
-    nr_aviso: z.string().optional(),
-    
-    // NOTA: Dados de localização, vítimas e viaturas
-    // são mais complexos e podem exigir endpoints/lógicas separadas.
-    // Começamos atualizando a ocorrência principal.
+    nr_aviso: z.string().nullable().optional(),
   }),
   params: z.object({
     id: z.string().uuid({ message: "O ID da ocorrência na URL é inválido." }),
