@@ -1,13 +1,14 @@
-// src/services/authService.ts (COM LÓGICA CONDICIONAL E CHAMADA AO emailService)
+// src/services/authService.ts (COM ROLLBACK E MENSAGEM DE ERRO CUSTOMIZADA)
 import { PrismaClient, Profile } from '@prisma/client';
-import bcrypt from 'bcrypt'; //
-import jwt from 'jsonwebtoken'; //
-import { createLog } from './logService'; //
-import { UnauthorizedError } from '../errors/api-errors'; //
+import bcrypt from 'bcrypt'; 
+import jwt from 'jsonwebtoken'; 
+import { createLog } from './logService'; 
+// --- ALTERAÇÃO 1: Importar ApiError ---
+import { UnauthorizedError, ApiError } from '../errors/api-errors'; 
 import * as crypto from 'crypto'; 
-import { sendWelcomeEmail } from './emailService'; // <-- Importa a função de e-mail
+import { sendWelcomeEmail } from './emailService'; 
 
-const prisma = new PrismaClient(); //
+const prisma = new PrismaClient(); 
 
 // --- FUNÇÃO registerUser MODIFICADA ---
 export const registerUser = async (data: any) => {
@@ -33,81 +34,97 @@ export const registerUser = async (data: any) => {
   // --- FIM DA Lógica Condicional ---
 
   // 3. Faz o hash da senha escolhida
-  const hashedPassword = await bcrypt.hash(passwordToHash, 10); //
+  const hashedPassword = await bcrypt.hash(passwordToHash, 10); 
 
   // 4. Cria o usuário no banco
-  const user = await prisma.user.create({ //
+  const user = await prisma.user.create({ 
     data: {
-      email: data.email, //
-      nome: data.name,  //
-      senha_hash: hashedPassword, //
-      tipo_perfil: data.profile as Profile,  //
-      matricula: data.matricula,  //
-      id_unidade_operacional_fk: data.id_unidade_operacional_fk,  //
+      email: data.email, 
+      nome: data.name,  
+      senha_hash: hashedPassword, 
+      tipo_perfil: data.profile as Profile,  
+      matricula: data.matricula,  
+      id_unidade_operacional_fk: data.id_unidade_operacional_fk,  
     },
   });
 
   // --- Envia e-mail SOMENTE se for senha temporária ---
   if (isTemporaryPassword && tempPasswordForEmail) {
     try {
+      // Tenta enviar o e-mail
       await sendWelcomeEmail(user.email, user.nome, tempPasswordForEmail);
     } catch (emailError) {
-      console.error(`ALERTA: Falha ao enviar e-mail de boas-vindas para ${user.email}. Erro:`, emailError);
+      
+      console.error(`FALHA CRÍTICA: E-mail não enviado para ${user.email}. Iniciando rollback...`, emailError);
+      
+      // Passo 1: Deleta o usuário que acabamos de criar.
+      await prisma.user.delete({
+        where: { id: user.id }
+      });
+      console.log(`Rollback concluído: Usuário ${user.email} deletado.`);
+
+      // --- ALTERAÇÃO 2: Lançar um ApiError específico ---
+      // Isto será capturado pelo errorMiddleware e enviado como JSON.
+      throw new ApiError(
+        'Não foi possível criar o usuário: falha ao enviar o e-mail de confirmação.',
+        500 // 500 (Internal Server Error) ainda é o status correto
+      );
+      // --- FIM DA ALTERAÇÃO 2 ---
     }
   }
   // --- FIM DO Envio Condicional ---
 
   // 6. Cria o log de auditoria
-  await createLog({ //
-    action: 'USER_REGISTERED', //
-    userId: user.id, //
+  await createLog({ 
+    action: 'USER_REGISTERED', 
+    userId: user.id, 
     details: `Novo usuário '${user.nome}' (${user.email}) criado ${isTemporaryPassword ? 'com senha temporária' : 'com senha definida pelo admin'}.`, 
   });
 
   // 7. Retorna o usuário sem a senha hasheada
-  const { senha_hash, ...userWithoutPassword } = user; //
-  return userWithoutPassword; //
+  const { senha_hash, ...userWithoutPassword } = user; 
+  return userWithoutPassword; 
 };
 // --- FIM DA FUNÇÃO registerUser MODIFICADA ---
 
 // --- FUNÇÃO loginUser MANTIDA ORIGINAL ---
-export const loginUser = async (data: any) => { //
-  const user = await prisma.user.findUnique({ //
-    where: { email: data.email }, //
+export const loginUser = async (data: any) => { 
+  const user = await prisma.user.findUnique({ 
+    where: { email: data.email }, 
   });
 
-  if (!user) { //
-    await createLog({ //
-      action: 'USER_LOGIN_FAILURE', //
-      details: `Tentativa de login falhou para o email: ${data.email}. Motivo: Usuário não encontrado.`, //
+  if (!user) { 
+    await createLog({ 
+      action: 'USER_LOGIN_FAILURE', 
+      details: `Tentativa de login falhou para o email: ${data.email}. Motivo: Usuário não encontrado.`, 
     });
-    throw new UnauthorizedError('Email ou senha inválidos'); //
+    throw new UnauthorizedError('Email ou senha inválidos'); 
   }
 
-  const isPasswordValid = await bcrypt.compare(data.password, user.senha_hash); //
+  const isPasswordValid = await bcrypt.compare(data.password, user.senha_hash); 
 
-  if (!isPasswordValid) { //
-    await createLog({ //
-      action: 'USER_LOGIN_FAILURE', //
-      userId: user.id, //
-      details: `Tentativa de login falhou para o usuário '${user.nome}' (${user.email}). Motivo: Senha incorreta.`, //
+  if (!isPasswordValid) { 
+    await createLog({ 
+      action: 'USER_LOGIN_FAILURE', 
+      userId: user.id, 
+      details: `Tentativa de login falhou para o usuário '${user.nome}' (${user.email}). Motivo: Senha incorreta.`, 
     });
-    throw new UnauthorizedError('Email ou senha inválidos'); //
+    throw new UnauthorizedError('Email ou senha inválidos'); 
   }
 
-  await createLog({ //
-    action: 'USER_LOGIN_SUCCESS', //
-    userId: user.id, //
-    details: `Usuário '${user.nome}' (${user.email}) logou com sucesso.`, //
+  await createLog({ 
+    action: 'USER_LOGIN_SUCCESS', 
+    userId: user.id, 
+    details: `Usuário '${user.nome}' (${user.email}) logou com sucesso.`, 
   });
 
-  const token = jwt.sign( //
-    { userId: user.id, profile: user.tipo_perfil }, //
-    process.env.JWT_SECRET as string, //
-    { expiresIn: '8h' } //
+  const token = jwt.sign( 
+    { userId: user.id, profile: user.tipo_perfil }, 
+    process.env.JWT_SECRET as string, 
+    { expiresIn: '8h' } 
   );
 
-  const { senha_hash, ...userWithoutPassword } = user; //
-  return { user: userWithoutPassword, token }; //
+  const { senha_hash, ...userWithoutPassword } = user; 
+  return { user: userWithoutPassword, token }; 
 };
 // --- FIM DA FUNÇÃO loginUser MANTIDA ORIGINAL ---
