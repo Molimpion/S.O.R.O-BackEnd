@@ -92,50 +92,65 @@ O projeto utiliza a especificação **Dev Container** (`.devcontainer`) para def
 
 A aplicação está configurada para "deploy" contínuo na plataforma **Render**. Cada `push` para a "branch" `main` aciona um novo "build" e "deploy" automático.
 
-O script de "build" (`build.sh`) realiza as seguintes ações no ambiente do Render:
-1. Instala as dependências (`npm install`).
-2. Aplica as migrações da base de dados (`npx prisma migrate deploy`).
-3. Compila o código TypeScript para JavaScript (`npm run build`).
+O **Comando de Build** (Build Command) configurado no Render deve ser o script `build` do seu `package.json`:
+
+```bash
+npx prisma migrate deploy && npx prisma generate && tsc
+````
+
+Este comando:
+
+1.  Aplica as migrações pendentes do Prisma (`prisma migrate deploy`).
+2.  Gera o cliente Prisma (`prisma generate`).
+3.  Compila o código TypeScript para JavaScript (`tsc`).
+
+O **Comando de Início** (Start Command) deve ser `npm run start` (que executa `node dist/index.js`).
 
 ### Variáveis de Ambiente no Render
-Para que a aplicação funcione em produção, as seguintes variáveis de ambiente devem ser configuradas no painel do serviço no Render:
-- `DATABASE_URL`: Deve ser preenchido com o **Internal Connection URL** fornecido pelo serviço de base de dados do próprio Render.
-- `JWT_SECRET`: Uma chave secreta forte e única para a geração dos tokens JWT em produção.
-- `EMAIL_HOST`: O host SMTP do seu provedor de e-mail (ex: `smtp.gmail.com`).
-- `EMAIL_PORT`: A porta SMTP (ex: `587`).
-- `EMAIL_SECURE`: Use `true` se a porta for 465, ou `false` para outras (como 587).
-- `EMAIL_USER`: O nome de usuário para autenticar no servidor de e-mail.
-- `EMAIL_PASS`: A senha (ou senha de app) para autenticar no servidor de e-mail.
-- `EMAIL_FROM`: O e-mail de remetente (ex: `"Equipe S.O.R.O." <seu.email@exemplo.com>`).
 
-## 6. Testando a API
+Para que a aplicação funcione em produção, as seguintes variáveis de ambiente devem ser configuradas no painel do serviço no Render:
+
+  - `DATABASE_URL`: Deve ser preenchido com o **Internal Connection URL** fornecido pelo serviço de base de dados do próprio Render.
+  - `JWT_SECRET`: Uma chave secreta forte e única para a geração dos tokens JWT em produção.
+  - `EMAIL_HOST`: O host SMTP do seu provedor de e-mail (ex: `smtp.gmail.com`).
+  - `EMAIL_PORT`: A porta SMTP (ex: `587`).
+  - `EMAIL_SECURE`: Use `true` se a porta for 465, ou `false` para outras (como 587).
+  - `EMAIL_USER`: O nome de usuário para autenticar no servidor de e-mail.
+  - `EMAIL_PASS`: A senha (ou senha de app) para autenticar no servidor de e-mail.
+  - `EMAIL_FROM`: O e-mail de remetente (ex: `"Equipe S.O.R.O." <seu.email@exemplo.com>`).
+
+## 6\. Testando a API
 
 O projeto inclui um ficheiro `api-tests/requests.http` com uma suíte de testes de ponta a ponta.
 
 1.  **Pré-requisito:**
-    * Instale a extensão **"REST Client"** (por Huachao Mao) no seu VS Code.
+
+      * Instale a extensão **"REST Client"** (por Huachao Mao) no seu VS Code.
 
 2.  **Passos para Testar:**
-    * Garanta que o servidor esteja a correr (localmente ou em produção).
-    * Abra o ficheiro `api-tests/requests.http` e defina a variável `@hostname` para o ambiente que deseja testar (`http://localhost:3000` ou a URL do Render).
-    * Execute as requisições na ordem apresentada.
-    * Após executar os testes de login, copie os tokens `admin` e `analista` para as variáveis `@adminToken` e `@analistaToken` no topo do ficheiro.
 
-## 7. Documentação da API
+      * Garanta que o servidor esteja a correr (localmente ou em produção).
+      * Abra o ficheiro `api-tests/requests.http` e defina a variável `@hostname` para o ambiente que deseja testar (`http://localhost:3000` ou a URL do Render).
+      * Execute as requisições na ordem apresentada.
+      * Após executar os testes de login, copie os tokens `admin` e `analista` para as variáveis `@adminToken` e `@analistaToken` no topo do ficheiro.
+
+## 7\. Documentação da API
 
 A documentação completa da API (OpenAPI/Swagger) é gerada automaticamente e está disponível na rota `/api/docs` da aplicação em execução.
 
-- **Documentação ao vivo:** [https://api-bombeiros-s-o-r-o.onrender.com/api/docs](https://api-bombeiros-s-o-r-o.onrender.com/api/docs)
+  - **Documentação ao vivo:** [https://api-bombeiros-s-o-r-o.onrender.com/api/docs](https://www.google.com/search?q=https://api-bombeiros-s-o-r-o.onrender.com/api/docs)
 
 ### Endpoints Principais
 
 #### Autenticação (`/api/auth`)
+
 | Método | Endpoint | Descrição | Acesso |
 | :--- | :--- | :--- | :--- |
 | `POST` | `/register` | Regista um novo utilizador. | Público |
 | `POST` | `/login` | Autentica um utilizador e retorna um token JWT. | Público |
 
 #### Ocorrências (`/api/ocorrencias`)
+
 | Método | Endpoint | Descrição | Acesso |
 | :--- | :--- | :--- | :--- |
 | `POST` | `/` | Cria uma nova ocorrência. | Autenticado |
@@ -143,6 +158,7 @@ A documentação completa da API (OpenAPI/Swagger) é gerada automaticamente e e
 | `GET` | `/:id` | Obtém os detalhes de uma ocorrência específica. | Autenticado |
 
 #### Gestão de Utilizadores (`/api/users`)
+
 | Método | Endpoint | Descrição | Acesso |
 | :--- | :--- | :--- | :--- |
 | `GET` | `/` | Lista todos os utilizadores. | Admin |
@@ -151,6 +167,7 @@ A documentação completa da API (OpenAPI/Swagger) é gerada automaticamente e e
 | `DELETE`| `/:id` | Deleta um utilizador. | Admin |
 
 #### Relatórios e Dashboard
+
 | Método | Endpoint | Descrição | Acesso |
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/relatorios` | Gera um relatório CSV ou PDF de ocorrências (via query `?type=csv` ou `?type=pdf`). | Admin |
@@ -159,13 +176,20 @@ A documentação completa da API (OpenAPI/Swagger) é gerada automaticamente e e
 | `GET` | `/api/dashboard/ocorrencias-por-bairro` | Retorna o total de ocorrências por bairro. | Autenticado |
 
 ### Endpoints Administrativos (CRUDs de Suporte)
+
 A API também inclui endpoints `POST`, `GET`, `PUT`, `PATCH` e `DELETE` para que administradores possam gerir as seguintes entidades de suporte (todos sob `/api/*`):
-- `municipios`
-- `bairros`
-- `naturezas`
-- `grupos`
-- `subgrupos`
-- `formas-acervo`
-- `grupamentos`
-- `unidades-operacionais`
-- `viaturas`
+
+  - `municipios`
+  - `bairros`
+  - `naturezas`
+  - `grupos`
+  - `subgrupos`
+  - `formas-acervo`
+  - `grupamentos`
+  - `unidades-operacionais`
+  - `viaturas`
+
+<!-- end list -->
+
+```
+```
