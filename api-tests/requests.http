@@ -21,16 +21,17 @@
 # FASE 1: SETUP INICIAL E AUTENTICAÇÃO
 # ===================================================================
 
-### 1.1 - Cadastrar o usuário ADMIN (Ex: Comandante Silva)
-# @name createAdmin
+### 1.1 - Cadastrar o usuário ADMIN (Com Senha Definida)
+# @name createVictoriaAdminComSenha
 POST {{hostname}}/api/auth/register
 Content-Type: application/json
 
 {
     "name": "Comandante Victoria",
     "email": "vickgzambom@gmail.com",
+    "password": "senhaForte123!",
     "profile": "ADMIN",
-    "matricula": "100002-H"
+    "matricula": "100001-z" 
 }
 
 ### 1.2 - Fazer login como ADMIN
@@ -46,7 +47,7 @@ Content-Type: application/json
 
 ### Deletar o usuário Comandante Victoria
 # @name deleteVictoria
-DELETE {{hostname}}/api/users/773463fd-5e8b-4715-b876-5c736fdb175f
+DELETE {{hostname}}/api/users/ffd25e5c-ba3e-4938-b34a-3d2069ca12c3
 Authorization: Bearer {{adminToken}}
 
 ### 1.3 - Testar Acesso Admin (Listar Usuários)

@@ -38,32 +38,38 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
 // --- Rota da Documentação (Swagger) ---
-// Esta rota deve ser pública
+// Esta rota (e a raiz) permanecem públicas e sem versão
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-// Rota pública
 app.get('/', (req, res) => { res.send('API S.O.R.O. está funcionando! Acesse /api/docs para a documentação.') });
-app.use('/api/auth', authRoutes); // Rotas de autenticação são públicas
+
+
+// --- INÍCIO DA MODIFICAÇÃO (VERSIONAMENTO) ---
+
+// Rotas de autenticação (agora com /v1/)
+app.use('/api/v1/auth', authRoutes); 
 
 // Middleware de autenticação para as rotas seguintes
 app.use(authenticateToken);
 
-// Rotas protegidas
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/relatorios', relatorioRoutes);
-app.use('/api/ocorrencias', ocorrenciaRoutes);
-app.use('/api/users', userRoutes);
+// Rotas protegidas (agora com /v1/)
+app.use('/api/v1/dashboard', dashboardRoutes);
+app.use('/api/v1/relatorios', relatorioRoutes);
+app.use('/api/v1/ocorrencias', ocorrenciaRoutes);
+app.use('/api/v1/users', userRoutes);
 
-// Rotas administrativas (CRUDs de suporte)
-app.use('/api/municipios', municipioRoutes); 
-app.use('/api/bairros', bairroRoutes);
-app.use('/api/naturezas', naturezaRoutes);
-app.use('/api/grupos', grupoRoutes);
-app.use('/api/subgrupos', subgrupoRoutes);
-app.use('/api/formas-acervo', formaAcervoRoutes);
-app.use('/api/grupamentos', grupamentoRoutes);
-app.use('/api/unidades-operacionais', unidadeOperacionalRoutes);
-app.use('/api/viaturas', viaturaRoutes);
+// Rotas administrativas (CRUDs de suporte) (agora com /v1/)
+app.use('/api/v1/municipios', municipioRoutes); 
+app.use('/api/v1/bairros', bairroRoutes);
+app.use('/api/v1/naturezas', naturezaRoutes);
+app.use('/api/v1/grupos', grupoRoutes);
+app.use('/api/v1/subgrupos', subgrupoRoutes);
+app.use('/api/v1/formas-acervo', formaAcervoRoutes);
+app.use('/api/v1/grupamentos', grupamentoRoutes);
+app.use('/api/v1/unidades-operacionais', unidadeOperacionalRoutes);
+app.use('/api/v1/viaturas', viaturaRoutes);
+
+// --- FIM DA MODIFICAÇÃO ---
+
 
 // Middleware de tratamento de erros (deve ser o último)
 app.use(errorMiddleware);
