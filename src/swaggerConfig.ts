@@ -13,20 +13,20 @@ const options: swaggerJsdoc.Options = {
       }
     },
     // ======================================================
-    // ==== CORREÇÃO AQUI: ADICIONAR /API/V1 AO URL ====
+    // ==== CORREÇÃO (REVERTIDA): O PREFIXO VAI PARA O JSDOC ====
     // ======================================================
     servers: [
       {
-        url: 'https://api-bombeiros-s-o-r-o.onrender.com/api/v1', // <-- CORRIGIDO
+        url: 'https://api-bombeiros-s-o-r-o.onrender.com', // <-- URL base sem prefixo /api/v1
         description: 'Servidor de Produção (Render)'
       },
       {
-        url: 'http://localhost:3000/api/v1', // <-- CORRIGIDO
+        url: 'http://localhost:3000', // <-- URL base sem prefixo /api/v1
         description: 'Servidor de Desenvolvimento Local'
       }
     ],
     // ======================================================
-    // ==== BLOCO DE TAGS GLOBAIS CENTRALIZADO (MANTIDO) ====
+    // ==== BLOCO DE TAGS GLOBAIS CENTRALIZADO ====
     // ======================================================
     tags: [
       {
@@ -75,7 +75,7 @@ const options: swaggerJsdoc.Options = {
       }
     ],
     // ======================================================
-    // 1. COMPONENTES (SCHEMAS) CENTRALIZADOS (MANTIDO)
+    // 1. COMPONENTES (SCHEMAS) CENTRALIZADOS
     // ======================================================
     components: {
       // Schemas de Segurança
