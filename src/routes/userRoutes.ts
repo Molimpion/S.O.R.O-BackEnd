@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { authenticateAdmin } from '../middleware/authMiddleware'; 
-import { getAll, getById, update, remove } from '../controllers/userController'; // CORRIGIDO: Importação nomeada
+import { authenticateAdmin } from '../middleware/authMiddleware';
+import { getAll, getById, update, remove } from '../controllers/userController';
 import { validate } from '../middleware/validate';
-import { putUserSchema } from '../validators/authValidator'; // CORRIGIDO
+import { putUserSchema } from '../validators/authValidator';
 
 const router = Router();
 
@@ -13,13 +13,12 @@ const router = Router();
 /**
  * @swagger
  * tags:
- *   - name: Admin: Usuários
+ *   - name: "Admin: Usuários"
  *     description: (Admin) Endpoints para gerenciar os usuários.
- *
  * /api/v1/users:
  *   get:
  *     summary: Lista todos os usuários (apenas Admin)
- *     tags: [Admin: Usuários]
+ *     tags: ["Admin: Usuários"]
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -27,11 +26,10 @@ const router = Router();
  *         description: Lista de usuários.
  *       403:
  *         description: Acesso negado (não é Admin).
- *
  * /api/v1/users/{id}:
  *   get:
  *     summary: Obtém um usuário pelo ID (apenas Admin)
- *     tags: [Admin: Usuários]
+ *     tags: ["Admin: Usuários"]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -47,10 +45,9 @@ const router = Router();
  *         description: Detalhes do usuário.
  *       404:
  *         description: Usuário não encontrado.
- *
  *   put:
  *     summary: Atualiza um usuário pelo ID (apenas Admin)
- *     tags: [Admin: Usuários]
+ *     tags: ["Admin: Usuários"]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -76,10 +73,9 @@ const router = Router();
  *         description: Acesso negado (não é Admin).
  *       404:
  *         description: Usuário não encontrado.
- *
  *   delete:
  *     summary: Deleta um usuário pelo ID (apenas Admin)
- *     tags: [Admin: Usuários]
+ *     tags: ["Admin: Usuários"]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -103,7 +99,7 @@ router.use(authenticateAdmin);
 
 router.get('/', getAll);
 router.get('/:id', getById);
-router.put('/:id', validate(putUserSchema), update); // CORRIGIDO
+router.put('/:id', validate(putUserSchema), update);
 router.delete('/:id', remove);
 
 export default router;
