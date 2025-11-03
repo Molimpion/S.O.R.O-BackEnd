@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { create, getAll, remove } from '../controllers/viaturaController'; // CORRIGIDO: Importação nomeada
 import { authenticateAdmin } from '../middleware/authMiddleware'; 
 import { validate } from '../middleware/validate';
-import { viaturaSchema } from '../validators/viaturaValidator'; // CORRIGIDO: viaturaSchema é o nome correto
+import { createViaturaSchema } from '../validators/viaturaValidator'; // CORRIGIDO
 
 const router = Router();
 
@@ -77,7 +77,7 @@ const router = Router();
 
 router.use(authenticateAdmin);
 
-router.post('/', validate(viaturaSchema), create);
+router.post('/', validate(createViaturaSchema), create); // CORRIGIDO
 router.get('/', getAll);
 router.delete('/:id', remove);
 
