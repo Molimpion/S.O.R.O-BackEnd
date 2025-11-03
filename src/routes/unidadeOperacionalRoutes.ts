@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { create, getAll, remove } from '../controllers/unidadeOperacionalController'; // CORRIGIDO: Importação nomeada
-import { authenticateAdmin } from '../middleware/authMiddleware'; // CORRIGIDO: Middleware
+import { authenticateAdmin } from '../middleware/authMiddleware'; 
 import { validate } from '../middleware/validate';
 import { unidadeSchema } from '../validators/unidadeOperacionalValidator'; // CORRIGIDO: Nome do schema
 
@@ -15,7 +15,7 @@ const router = Router();
  * tags:
  * name: Admin: Unidades Operacionais
  * description: (Admin) Endpoints para gerenciar as unidades operacionais.
- * /api/v1/unidades-operacionais: # CORRIGIDO: Prefix /v1 adicionado
+ * /api/v1/unidades-operacionais: 
  * post:
  * summary: Cria uma nova unidade operacional (apenas Admin)
  * tags: [Admin: Unidades Operacionais]
@@ -52,7 +52,7 @@ const router = Router();
  * $ref: '#/components/schemas/UnidadeOperacional'
  * 401:
  * description: Não autorizado.
- * /api/v1/unidades-operacionais/{id}: # CORRIGIDO: Prefix /v1 adicionado
+ * /api/v1/unidades-operacionais/{id}: 
  * delete:
  * summary: Deleta uma unidade operacional pelo ID (apenas Admin)
  * tags: [Admin: Unidades Operacionais]
