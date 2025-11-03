@@ -1,8 +1,12 @@
 import { Router } from 'express';
-import ocorrenciaController from '../controllers/ocorrenciaController';
+import { create, getAll, getById, update } from '../controllers/ocorrenciaController'; // CORRIGIDO: Importação nomeada
+import { authenticateToken, checkAdmin } from '../middleware/authMiddleware';
 import { validate } from '../middleware/validate';
-import { createOcorrenciaSchema, updateOcorrenciaSchema } from '../validators/ocorrenciaValidator';
-import { authenticateAdmin } from '../middleware/authMiddleware';
+import { 
+  createOcorrenciaSchema, 
+  listOcorrenciaSchema,
+  updateOcorrenciaSchema // CORRIGIDO: Nome do schema
+} from '../validators/ocorrenciaValidator';
 
 const router = Router();
 
@@ -14,8 +18,8 @@ const router = Router();
  * @swagger
  * tags:
  * name: Ocorrências
- * description: Endpoints para gerenciamento de ocorrências (acessível por Analistas e Admins).
- * /api/v1/ocorrencias:  <-- CORRIGIDO
+ * description: Endpoints para gerenciar as ocorrências.
+ * /api/v1/ocorrencias: # CORRIGIDO: Prefix /v1 adicionado
  * post:
  * summary: Cria uma nova ocorrência
  * tags: [Ocorrências]
@@ -26,79 +30,50 @@ const router = Router();
  * content:
  * application/json:
  * schema:
- * $ref: '#/components/schemas/OcorrenciaInput'
+ * $ref: '#/components/schemas/OcorrenciaCreate'
  * responses:
  * 201:
  * description: Ocorrência criada com sucesso.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Ocorrencia'
  * 400:
  * description: Erro de validação.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error400'
  * 401:
  * description: Não autorizado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error401'
  * get:
- * summary: Lista ocorrências com filtros e paginação
+ * summary: Lista todas as ocorrências com filtros opcionais
  * tags: [Ocorrências]
  * security:
  * - bearerAuth: []
  * parameters:
  * - in: query
- * name: status_situacao
+ * name: status
  * schema:
  * type: string
- * enum: [PENDENTE, EM_ANDAMENTO, CONCLUIDO, CANCELADO]
- * description: Filtra por status da ocorrência
+ * enum: [EM_ANDAMENTO, FINALIZADA, CANCELADA]
+ * description: Filtrar por status (opcional)
  * - in: query
- * name: id_subgrupo_fk
+ * name: unidadeOperacionalId
  * schema:
  * type: string
  * format: uuid
- * description: Filtra por Subgrupo de Ocorrência
+ * description: Filtrar por Unidade Operacional (opcional)
  * - in: query
- * name: search
- * schema:
- * type: string
- * description: Busca por Nr. Aviso
- * - in: query
- * name: page
+ * name: skip
  * schema:
  * type: integer
- * default: 1
- * description: Número da página
+ * description: Número de itens para pular (opcional)
  * - in: query
- * name: pageSize
+ * name: take
  * schema:
  * type: integer
- * default: 10
- * description: Tamanho da página
+ * description: Número máximo de itens a retornar (opcional)
  * responses:
  * 200:
  * description: Lista de ocorrências.
- * content:
- * application/json:
- * schema:
- * type: array
- * items:
- * $ref: '#/components/schemas/Ocorrencia'
  * 401:
  * description: Não autorizado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error401'
- * /api/v1/ocorrencias/{id}:  <-- CORRIGIDO
+ * /api/v1/ocorrencias/{id}: # CORRIGIDO: Prefix /v1 adicionado
  * get:
- * summary: Obtém detalhes de uma ocorrência pelo ID
+ * summary: Obtém uma ocorrência pelo ID
  * tags: [Ocorrências]
  * security:
  * - bearerAuth: []
@@ -113,22 +88,8 @@ const router = Router();
  * responses:
  * 200:
  * description: Detalhes da ocorrência.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Ocorrencia'
- * 401:
- * description: Não autorizado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error401'
  * 404:
  * description: Ocorrência não encontrada.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
  * put:
  * summary: Atualiza uma ocorrência pelo ID
  * tags: [Ocorrências]
@@ -147,84 +108,31 @@ const router = Router();
  * content:
  * application/json:
  * schema:
- * $ref: '#/components/schemas/OcorrenciaInput'
+ * $ref: '#/components/schemas/OcorrenciaUpdate'
  * responses:
  * 200:
  * description: Ocorrência atualizada com sucesso.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Ocorrencia'
  * 400:
  * description: Erro de validação.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error400'
- * 401:
- * description: Não autorizado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error401'
- * 403:
- * description: Acesso negado (não é Admin ou criador).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
  * 404:
  * description: Ocorrência não encontrada.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
- * delete:
- * summary: Deleta uma ocorrência pelo ID (apenas Admin)
- * tags: [Ocorrências]
- * security:
- * - bearerAuth: []
- * parameters:
- * - in: path
- * name: id
- * required: true
- * schema:
- * type: string
- * format: uuid
- * description: ID da ocorrência
- * responses:
- * 200:
- * description: Ocorrência deletada com sucesso.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/SuccessDelete'
- * 401:
- * description: Não autorizado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error401'
- * 403:
- * description: Acesso negado (não é Admin).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
- * 404:
- * description: Ocorrência não encontrada.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
  */
 
-router.post('/', validate(createOcorrenciaSchema), ocorrenciaController.create);
-router.get('/', ocorrenciaController.list);
-router.get('/:id', ocorrenciaController.get);
-router.put('/:id', validate(updateOcorrenciaSchema), ocorrenciaController.update);
+router.use(authenticateToken);
 
-// Rotas exclusivas de Admin
-router.delete('/:id', authenticateAdmin, ocorrenciaController.remove);
+router.get('/', validate(listOcorrenciaSchema), getAll);
+router.get('/:id', getById);
+router.post(
+  '/',
+  validate(createOcorrenciaSchema),
+  create
+);
+router.put(
+  '/:id',
+  validate(updateOcorrenciaSchema),
+  update
+);
+// Adicione a rota DELETE se necessário:
+// router.delete('/:id', [authenticateToken, checkAdmin], remove); 
 
 export default router;
