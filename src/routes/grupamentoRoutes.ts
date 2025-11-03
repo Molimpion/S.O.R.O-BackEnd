@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { create, getAll, remove } from '../controllers/grupamentoController'; // CORRIGIDO: Importação nomeada
-import { authenticateAdmin } from '../middleware/authMiddleware'; // CORRIGIDO: Middleware
+import { create, getAll, remove } from '../controllers/grupamentoController';
+import { authenticateAdmin } from '../middleware/authMiddleware';
 import { validate } from '../middleware/validate';
-import { grupamentoSchema } from '../validators/grupamentoValidator'; // CORRIGIDO: Nome do schema
+import { grupamentoSchema } from '../validators/grupamentoValidator';
 
 const router = Router();
 
@@ -13,13 +13,12 @@ const router = Router();
 /**
  * @swagger
  * tags:
- *   - name: Admin: Grupamentos
+ *   - name: "Admin: Grupamentos"
  *     description: (Admin) Endpoints para gerenciar os grupamentos.
- *
  * /api/v1/grupamentos:
  *   post:
  *     summary: Cria um novo grupamento (apenas Admin)
- *     tags: [Admin: Grupamentos]
+ *     tags: ["Admin: Grupamentos"]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -37,10 +36,9 @@ const router = Router();
  *         description: Acesso negado (não é Admin).
  *       409:
  *         description: Conflito (grupamento já existe).
- *
  *   get:
  *     summary: Lista todos os grupamentos
- *     tags: [Admin: Grupamentos]
+ *     tags: ["Admin: Grupamentos"]
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -54,11 +52,10 @@ const router = Router();
  *                 $ref: '#/components/schemas/Grupamento'
  *       401:
  *         description: Não autorizado.
- *
  * /api/v1/grupamentos/{id}:
  *   delete:
  *     summary: Deleta um grupamento pelo ID (apenas Admin)
- *     tags: [Admin: Grupamentos]
+ *     tags: ["Admin: Grupamentos"]
  *     security:
  *       - bearerAuth: []
  *     parameters:
