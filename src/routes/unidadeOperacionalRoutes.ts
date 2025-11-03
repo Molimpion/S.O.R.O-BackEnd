@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { create, getAll, remove } from '../controllers/unidadeOperacionalController'; // CORRIGIDO: Importação nomeada
-import { authenticateAdmin } from '../middleware/authMiddleware'; 
+import { create, getAll, remove } from '../controllers/unidadeOperacionalController';
+import { authenticateAdmin } from '../middleware/authMiddleware';
 import { validate } from '../middleware/validate';
-import { unidadeSchema } from '../validators/unidadeOperacionalValidator'; // CORRIGIDO: Nome do schema
+import { unidadeSchema } from '../validators/unidadeOperacionalValidator';
 
 const router = Router();
 
@@ -13,13 +13,12 @@ const router = Router();
 /**
  * @swagger
  * tags:
- *   - name: Admin: Unidades Operacionais
+ *   - name: "Admin: Unidades Operacionais"
  *     description: (Admin) Endpoints para gerenciar as unidades operacionais.
- *
  * /api/v1/unidades-operacionais:
  *   post:
  *     summary: Cria uma nova unidade operacional (apenas Admin)
- *     tags: [Admin: Unidades Operacionais]
+ *     tags: ["Admin: Unidades Operacionais"]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -37,10 +36,9 @@ const router = Router();
  *         description: Acesso negado (não é Admin).
  *       409:
  *         description: Conflito (unidade já existe).
- *
  *   get:
  *     summary: Lista todas as unidades operacionais
- *     tags: [Admin: Unidades Operacionais]
+ *     tags: ["Admin: Unidades Operacionais"]
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -54,11 +52,10 @@ const router = Router();
  *                 $ref: '#/components/schemas/UnidadeOperacional'
  *       401:
  *         description: Não autorizado.
- *
  * /api/v1/unidades-operacionais/{id}:
  *   delete:
  *     summary: Deleta uma unidade operacional pelo ID (apenas Admin)
- *     tags: [Admin: Unidades Operacionais]
+ *     tags: ["Admin: Unidades Operacionais"]
  *     security:
  *       - bearerAuth: []
  *     parameters:
