@@ -71,4 +71,14 @@ const router = Router();
  *         description: Grupo deletado com sucesso.
  *       403:
  *         description: Acesso negado (não é Admin).
- *       404*
+ *       404:
+ *         description: Grupo não encontrado.
+ */
+
+router.use(authenticateAdmin);
+
+router.post('/', validate(grupoSchema), create);
+router.get('/', getAll);
+router.delete('/:id', remove);
+
+export default router;
