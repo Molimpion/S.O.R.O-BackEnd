@@ -7,7 +7,7 @@ import { validate } from '../middleware/validate';
 import { 
   createOcorrenciaSchema, 
   listOcorrenciaSchema,
-  updateOcorrenciaSchema // CORRIGIDO: updateOcorrenciaSchema é o nome correto
+  putOcorrenciaSchema // CORRIGIDO
 } from '../validators/ocorrenciaValidator'; 
 
 const router = Router();
@@ -131,7 +131,7 @@ router.post(
 );
 router.put(
   '/:id',
-  validate(updateOcorrenciaSchema), // CORRIGIDO: Nome do schema
+  validate(putOcorrenciaSchema), // CORRIGIDO
   update
 );
 // Adicione a rota DELETE se necessário:
