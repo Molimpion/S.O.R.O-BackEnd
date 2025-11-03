@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import bairroController from '../controllers/bairroController';
+import { create, getAll, getById, update, remove } from '../controllers/bairroController'; // CORRIGIDO: Importação nomeada
+import { authenticateAdmin } from '../middleware/authMiddleware'; // CORRIGIDO: Middleware
 import { validate } from '../middleware/validate';
-import { createBairroSchema, updateBairroSchema } from '../validators/bairroValidator';
-import { authenticateAdmin } from '../middleware/authMiddleware';
+import { bairroSchema } from '../validators/bairroValidator'; // CORRIGIDO: Nome do schema
 
 const router = Router();
 
@@ -15,7 +15,7 @@ const router = Router();
  * tags:
  * name: Admin: Bairros
  * description: (Admin) Endpoints para gerenciar os bairros.
- * /api/v1/bairros:  <-- CORRIGIDO
+ * /api/v1/bairros: # CORRIGIDO: Prefix /v1 adicionado
  * post:
  * summary: Cria um novo bairro (apenas Admin)
  * tags: [Admin: Bairros]
@@ -72,7 +72,7 @@ const router = Router();
  * application/json:
  * schema:
  * $ref: '#/components/schemas/Error401'
- * /api/v1/bairros/{id}:  <-- CORRIGIDO
+ * /api/v1/bairros/{id}: # CORRIGIDO: Prefix /v1 adicionado
  * get:
  * summary: Obtém um bairro pelo ID
  * tags: [Admin: Bairros]
@@ -177,15 +177,12 @@ const router = Router();
  * $ref: '#/components/schemas/Error404'
  */
 
-// Rotas públicas (GET)
-router.get('/', bairroController.list);
-router.get('/:id', bairroController.get);
-
-// Rotas exclusivas de Admin (POST, PUT, DELETE)
 router.use(authenticateAdmin);
 
-router.post('/', validate(createBairroSchema), bairroController.create);
-router.put('/:id', validate(updateBairroSchema), bairroController.update);
-router.delete('/:id', bairroController.remove);
+router.post('/', validate(bairroSchema), create);
+router.get('/', getAll);
+router.get('/:id', getById);
+router.put('/:id', validate(bairroSchema), update);
+router.delete('/:id', remove);
 
 export default router;
