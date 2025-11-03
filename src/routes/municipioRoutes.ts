@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import municipioController from '../controllers/municipioController';
+import { create, getAll, getById, update, remove } from '../controllers/municipioController'; // CORRIGIDO: Importação nomeada
+import { authenticateAdmin } from '../middleware/authMiddleware'; // CORRIGIDO: Middleware
 import { validate } from '../middleware/validate';
-import { createMunicipioSchema } from '../validators/municipioValidator';
-import { authenticateAdmin } from '../middleware/authMiddleware';
+import { createMunicipioSchema, updateMunicipioSchema } from '../validators/municipioValidator';
 
 const router = Router();
 
@@ -15,7 +15,7 @@ const router = Router();
  * tags:
  * name: Admin: Municípios
  * description: (Admin) Endpoints para gerenciar os municípios.
- * /api/v1/municipios:  <-- CORRIGIDO
+ * /api/v1/municipios: # CORRIGIDO: Prefix /v1 adicionado
  * post:
  * summary: Cria um novo município (apenas Admin)
  * tags: [Admin: Municípios]
@@ -26,32 +26,16 @@ const router = Router();
  * content:
  * application/json:
  * schema:
- * $ref: '#/components/schemas/Municipio'
+ * $ref: '#/components/schemas/MunicipioCreate'
  * responses:
  * 201:
  * description: Município criado com sucesso.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Municipio'
  * 400:
  * description: Erro de validação.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error400'
  * 403:
  * description: Acesso negado (não é Admin).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
  * 409:
  * description: Conflito (município já existe).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error409'
  * get:
  * summary: Lista todos os municípios
  * tags: [Admin: Municípios]
@@ -68,11 +52,7 @@ const router = Router();
  * $ref: '#/components/schemas/Municipio'
  * 401:
  * description: Não autorizado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error401'
- * /api/v1/municipios/{id}:  <-- CORRIGIDO
+ * /api/v1/municipios/{id}: # CORRIGIDO: Prefix /v1 adicionado
  * get:
  * summary: Obtém um município pelo ID
  * tags: [Admin: Municípios]
@@ -89,16 +69,8 @@ const router = Router();
  * responses:
  * 200:
  * description: Detalhes do município.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Municipio'
  * 404:
  * description: Município não encontrado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
  * put:
  * summary: Atualiza um município pelo ID (apenas Admin)
  * tags: [Admin: Municípios]
@@ -117,32 +89,16 @@ const router = Router();
  * content:
  * application/json:
  * schema:
- * $ref: '#/components/schemas/Municipio'
+ * $ref: '#/components/schemas/MunicipioUpdate'
  * responses:
  * 200:
  * description: Município atualizado com sucesso.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Municipio'
  * 400:
  * description: Erro de validação.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error400'
  * 403:
  * description: Acesso negado (não é Admin).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
  * 404:
  * description: Município não encontrado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
  * delete:
  * summary: Deleta um município pelo ID (apenas Admin)
  * tags: [Admin: Municípios]
@@ -159,33 +115,18 @@ const router = Router();
  * responses:
  * 200:
  * description: Município deletado com sucesso.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/SuccessDelete'
  * 403:
  * description: Acesso negado (não é Admin).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
  * 404:
  * description: Município não encontrado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
  */
 
-// Rotas públicas (GET)
-router.get('/', municipioController.list);
-router.get('/:id', municipioController.get);
-
-// Rotas exclusivas de Admin (POST, PUT, DELETE)
 router.use(authenticateAdmin);
 
-router.post('/', validate(createMunicipioSchema), municipioController.create);
-router.put('/:id', validate(createMunicipioSchema), municipioController.update);
-router.delete('/:id', municipioController.remove);
+router.post('/', validate(createMunicipioSchema), create);
+router.get('/', getAll);
+router.get('/:id', getById);
+router.put('/:id', validate(updateMunicipioSchema), update);
+router.delete('/:id', remove);
 
 export default router;
