@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { create, getAll, remove } from '../controllers/viaturaController'; // CORRIGIDO: Importação nomeada
-import { authenticateAdmin } from '../middleware/authMiddleware'; 
+import { create, getAll, remove } from '../controllers/viaturaController';
+import { authenticateAdmin } from '../middleware/authMiddleware';
 import { validate } from '../middleware/validate';
-import { createViaturaSchema } from '../validators/viaturaValidator'; // CORRIGIDO
+import { createViaturaSchema } from '../validators/viaturaValidator';
 
 const router = Router();
 
@@ -13,13 +13,12 @@ const router = Router();
 /**
  * @swagger
  * tags:
- *   - name: Admin: Viaturas
+ *   - name: "Admin: Viaturas"
  *     description: (Admin) Endpoints para gerenciar as viaturas.
- *
  * /api/v1/viaturas:
  *   post:
  *     summary: Cria uma nova viatura (apenas Admin)
- *     tags: [Admin: Viaturas]
+ *     tags: ["Admin: Viaturas"]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -37,10 +36,9 @@ const router = Router();
  *         description: Acesso negado (não é Admin).
  *       409:
  *         description: Conflito (viatura já existe).
- *
  *   get:
  *     summary: Lista todas as viaturas
- *     tags: [Admin: Viaturas]
+ *     tags: ["Admin: Viaturas"]
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -54,11 +52,10 @@ const router = Router();
  *                 $ref: '#/components/schemas/Viatura'
  *       401:
  *         description: Não autorizado.
- *
  * /api/v1/viaturas/{id}:
  *   delete:
  *     summary: Deleta uma viatura pelo ID (apenas Admin)
- *     tags: [Admin: Viaturas]
+ *     tags: ["Admin: Viaturas"]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -80,7 +77,7 @@ const router = Router();
 
 router.use(authenticateAdmin);
 
-router.post('/', validate(createViaturaSchema), create); // CORRIGIDO
+router.post('/', validate(createViaturaSchema), create);
 router.get('/', getAll);
 router.delete('/:id', remove);
 
