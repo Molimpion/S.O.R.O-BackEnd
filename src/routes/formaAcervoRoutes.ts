@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { create, getAll, remove } from '../controllers/formaAcervoController'; // CORRIGIDO: Importação nomeada
-import { authenticateAdmin } from '../middleware/authMiddleware'; // CORRIGIDO: Middleware
+import { create, getAll, remove } from '../controllers/formaAcervoController';
+import { authenticateAdmin } from '../middleware/authMiddleware';
 import { validate } from '../middleware/validate';
-import { formaAcervoSchema } from '../validators/formaAcervoValidator'; // CORRIGIDO: Nome do schema
+import { formaAcervoSchema } from '../validators/formaAcervoValidator';
 
 const router = Router();
 
@@ -13,13 +13,12 @@ const router = Router();
 /**
  * @swagger
  * tags:
- *   - name: Admin: Formas de Acervo
+ *   - name: "Admin: Formas de Acervo"
  *     description: (Admin) Endpoints para gerenciar as formas de acervo.
- *
  * /api/v1/formas-acervo:
  *   post:
  *     summary: Cria uma nova forma de acervo (apenas Admin)
- *     tags: [Admin: Formas de Acervo]
+ *     tags: ["Admin: Formas de Acervo"]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -41,10 +40,9 @@ const router = Router();
  *         description: Acesso negado (não é Admin).
  *       409:
  *         description: Conflito (forma já existe).
- *
  *   get:
  *     summary: Lista todas as formas de acervo
- *     tags: [Admin: Formas de Acervo]
+ *     tags: ["Admin: Formas de Acervo"]
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -58,11 +56,10 @@ const router = Router();
  *                 $ref: '#/components/schemas/FormaAcervo'
  *       401:
  *         description: Não autorizado.
- *
  * /api/v1/formas-acervo/{id}:
  *   delete:
  *     summary: Deleta uma forma de acervo pelo ID (apenas Admin)
- *     tags: [Admin: Formas de Acervo]
+ *     tags: ["Admin: Formas de Acervo"]
  *     security:
  *       - bearerAuth: []
  *     parameters:
