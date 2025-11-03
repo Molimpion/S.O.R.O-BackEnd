@@ -1,24 +1,24 @@
 import { Router } from 'express';
-import unidadeOperacionalController from '../controllers/unidadeOperacionalController';
+import { create, getAll, remove } from '../controllers/unidadeOperacionalController'; // CORRIGIDO: Importação nomeada
+import { authenticateAdmin } from '../middleware/authMiddleware'; // CORRIGIDO: Middleware
 import { validate } from '../middleware/validate';
-import { createUnidadeOperacionalSchema, updateUnidadeOperacionalSchema } from '../validators/unidadeOperacionalValidator';
-import { authenticateAdmin } from '../middleware/authMiddleware';
+import { unidadeSchema } from '../validators/unidadeOperacionalValidator'; // CORRIGIDO: Nome do schema
 
 const router = Router();
 
 // ======================================================
-// ==== ANOTAÇÕES SWAGGER (JSDoc) - UNIDADES OP. ====
+// ==== ANOTAÇÕES SWAGGER (JSDoc) - UNIDADES OPERACIONAIS ====
 // ======================================================
 
 /**
  * @swagger
  * tags:
- * name: Admin: Organização (Grupamentos e Unidades)
- * description: (Admin) Endpoints para gerenciar a estrutura organizacional (Grupamentos e Unidades Operacionais).
- * /api/v1/unidades-operacionais:  <-- CORRIGIDO
+ * name: Admin: Unidades Operacionais
+ * description: (Admin) Endpoints para gerenciar as unidades operacionais.
+ * /api/v1/unidades-operacionais: # CORRIGIDO: Prefix /v1 adicionado
  * post:
- * summary: Cria uma nova Unidade Operacional (apenas Admin)
- * tags: [Admin: Organização (Grupamentos e Unidades)]
+ * summary: Cria uma nova unidade operacional (apenas Admin)
+ * tags: [Admin: Unidades Operacionais]
  * security:
  * - bearerAuth: []
  * requestBody:
@@ -29,37 +29,21 @@ const router = Router();
  * $ref: '#/components/schemas/UnidadeOperacional'
  * responses:
  * 201:
- * description: Unidade Operacional criada com sucesso.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/UnidadeOperacional'
+ * description: Unidade operacional criada com sucesso.
  * 400:
  * description: Erro de validação.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error400'
  * 403:
  * description: Acesso negado (não é Admin).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
  * 409:
- * description: Conflito (unidade operacional já existe).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error409'
+ * description: Conflito (unidade já existe).
  * get:
- * summary: Lista todas as Unidades Operacionais
- * tags: [Admin: Organização (Grupamentos e Unidades)]
+ * summary: Lista todas as unidades operacionais
+ * tags: [Admin: Unidades Operacionais]
  * security:
  * - bearerAuth: []
  * responses:
  * 200:
- * description: Lista de Unidades Operacionais.
+ * description: Lista de unidades operacionais.
  * content:
  * application/json:
  * schema:
@@ -68,84 +52,10 @@ const router = Router();
  * $ref: '#/components/schemas/UnidadeOperacional'
  * 401:
  * description: Não autorizado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error401'
- * /api/v1/unidades-operacionais/{id}:  <-- CORRIGIDO
- * get:
- * summary: Obtém uma Unidade Operacional pelo ID
- * tags: [Admin: Organização (Grupamentos e Unidades)]
- * security:
- * - bearerAuth: []
- * parameters:
- * - in: path
- * name: id
- * required: true
- * schema:
- * type: string
- * format: uuid
- * description: ID da unidade operacional
- * responses:
- * 200:
- * description: Detalhes da Unidade Operacional.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/UnidadeOperacional'
- * 404:
- * description: Unidade Operacional não encontrada.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
- * put:
- * summary: Atualiza uma Unidade Operacional pelo ID (apenas Admin)
- * tags: [Admin: Organização (Grupamentos e Unidades)]
- * security:
- * - bearerAuth: []
- * parameters:
- * - in: path
- * name: id
- * required: true
- * schema:
- * type: string
- * format: uuid
- * description: ID da unidade operacional
- * requestBody:
- * required: true
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/UnidadeOperacional'
- * responses:
- * 200:
- * description: Unidade Operacional atualizada com sucesso.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/UnidadeOperacional'
- * 400:
- * description: Erro de validação.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error400'
- * 403:
- * description: Acesso negado (não é Admin).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
- * 404:
- * description: Unidade Operacional não encontrada.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
+ * /api/v1/unidades-operacionais/{id}: # CORRIGIDO: Prefix /v1 adicionado
  * delete:
- * summary: Deleta uma Unidade Operacional pelo ID (apenas Admin)
- * tags: [Admin: Organização (Grupamentos e Unidades)]
+ * summary: Deleta uma unidade operacional pelo ID (apenas Admin)
+ * tags: [Admin: Unidades Operacionais]
  * security:
  * - bearerAuth: []
  * parameters:
@@ -158,34 +68,17 @@ const router = Router();
  * description: ID da unidade operacional
  * responses:
  * 200:
- * description: Unidade Operacional deletada com sucesso.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/SuccessDelete'
+ * description: Unidade operacional deletada com sucesso.
  * 403:
  * description: Acesso negado (não é Admin).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
  * 404:
- * description: Unidade Operacional não encontrada.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
+ * description: Unidade operacional não encontrada.
  */
 
-// Rotas públicas (GET)
-router.get('/', unidadeOperacionalController.list);
-router.get('/:id', unidadeOperacionalController.get);
-
-// Rotas exclusivas de Admin (POST, PUT, DELETE)
 router.use(authenticateAdmin);
 
-router.post('/', validate(createUnidadeOperacionalSchema), unidadeOperacionalController.create);
-router.put('/:id', validate(updateUnidadeOperacionalSchema), unidadeOperacionalController.update);
-router.delete('/:id', unidadeOperacionalController.remove);
+router.post('/', validate(unidadeSchema), create);
+router.get('/', getAll);
+router.delete('/:id', remove);
 
 export default router;
