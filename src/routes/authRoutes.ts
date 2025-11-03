@@ -1,71 +1,65 @@
 import { Router } from 'express';
-import authController from '../controllers/authController';
+import { register, login } from '../controllers/authController'; // CORRIGIDO: Importação nomeada
+import { registerSchema, loginSchema } from '../validators/authValidator';
 import { validate } from '../middleware/validate';
-import { loginSchema, registerSchema } from '../validators/authValidator';
 
 const router = Router();
+
+// ======================================================
+// ==== ANOTAÇÕES SWAGGER (JSDoc) - AUTENTICAÇÃO ====
+// ======================================================
 
 /**
  * @swagger
  * tags:
- * name: Autenticação
- * description: Endpoints para registro e login de usuários
- * /api/v1/auth/register:  <-- CORRIGIDO
+ * name: Auth
+ * description: Autenticação de Usuários
+ * /api/v1/auth/register: # CORRIGIDO: Prefix /v1 adicionado
  * post:
- * summary: Registra um novo usuário
- * tags: [Autenticação]
+ * summary: Registra um novo usuário (Admin)
+ * tags: [Auth]
  * requestBody:
  * required: true
  * content:
  * application/json:
  * schema:
- * $ref: '#/components/schemas/UserInput'
+ * $ref: '#/components/schemas/AuthRegister'
  * responses:
  * 201:
- * description: Usuário registrado com sucesso.
+ * description: Usuário criado com sucesso.
  * content:
  * application/json:
  * schema:
- * $ref: '#/components/schemas/User'
+ * $ref: '#/components/schemas/AuthToken'
  * 400:
  * description: Erro de validação.
  * content:
  * application/json:
  * schema:
  * $ref: '#/components/schemas/Error400'
- * /api/v1/auth/login:  <-- CORRIGIDO
+ * 409:
+ * description: Conflito (Usuário já existe).
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error409'
+ * /api/v1/auth/login: # CORRIGIDO: Prefix /v1 adicionado
  * post:
- * summary: Autentica um usuário e retorna um token JWT
- * tags: [Autenticação]
+ * summary: Login de usuário
+ * tags: [Auth]
  * requestBody:
  * required: true
  * content:
  * application/json:
  * schema:
- * type: object
- * required:
- * - email
- * - password
- * properties:
- * email:
- * type: string
- * format: email
- * password:
- * type: string
- * format: password
+ * $ref: '#/components/schemas/AuthLogin'
  * responses:
  * 200:
  * description: Login bem-sucedido.
  * content:
  * application/json:
  * schema:
- * type: object
- * properties:
- * token:
- * type: string
- * description: Token JWT para acesso à API
- * user:
- * $ref: '#/components/schemas/User'
+ * $ref: '#/components/schemas/AuthToken'
  * 401:
  * description: Credenciais inválidas.
  * content:
@@ -73,7 +67,8 @@ const router = Router();
  * schema:
  * $ref: '#/components/schemas/Error401'
  */
-router.post('/register', validate(registerSchema), authController.register);
-router.post('/login', validate(loginSchema), authController.login);
+
+router.post('/register', validate(registerSchema), register);
+router.post('/login', validate(loginSchema), login);
 
 export default router;
