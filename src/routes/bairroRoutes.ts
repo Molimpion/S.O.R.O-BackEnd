@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { create, getAll, getById, update, remove } from '../controllers/bairroController'; 
 import { authenticateAdmin } from '../middleware/authMiddleware'; 
 import { validate } from '../middleware/validate';
-import { bairroSchema } from '../validators/bairroValidator'; // CORRIGIDO: Nome do schema
+import { createBairroSchema, putBairroSchema } from '../validators/bairroValidator'; // CORRIGIDO
 
 const router = Router();
 
@@ -179,10 +179,10 @@ const router = Router();
 
 router.use(authenticateAdmin); 
 
-router.post('/', validate(bairroSchema), create);
+router.post('/', validate(createBairroSchema), create); // CORRIGIDO
 router.get('/', getAll);
 router.get('/:id', getById);
-router.put('/:id', validate(bairroSchema), update); // Usa o único schema de criação/atualização disponível
+router.put('/:id', validate(putBairroSchema), update); // CORRIGIDO
 router.delete('/:id', remove);
 
 export default router;
