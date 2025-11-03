@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { authenticateAdmin } from '../middleware/authMiddleware'; 
 import { getAll, getById, update, remove } from '../controllers/userController'; // CORRIGIDO: Importação nomeada
 import { validate } from '../middleware/validate';
-import { userUpdateSchema } from '../validators/authValidator'; // CORRIGIDO: userUpdateSchema é o nome correto
+import { putUserSchema } from '../validators/authValidator'; // CORRIGIDO
 
 const router = Router();
 
@@ -99,7 +99,7 @@ router.use(authenticateAdmin);
 
 router.get('/', getAll);
 router.get('/:id', getById);
-router.put('/:id', validate(userUpdateSchema), update);
+router.put('/:id', validate(putUserSchema), update); // CORRIGIDO
 router.delete('/:id', remove);
 
 export default router;
