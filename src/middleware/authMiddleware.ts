@@ -1,54 +1,71 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { ApiError } from '../errors/api-errors';
+// import { UserService } from '../services/userService'; // Comentei esta linha se não for usada nas funções abaixo
 
-interface AuthRequest extends Request {
-  user?: { userId: string; profile: string };
+// const userService = new UserService(); // Comentei esta linha se não for usada nas funções abaixo
+
+export interface CustomRequest extends Request {
+  user: {
+    id: string;
+    role: string;
+    unidadeOperacionalId: string | null;
+  };
 }
 
-export const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction) => {
+// 1. Verifica a validade do JWT token
+export const authenticateToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
-  if (!token) {
-    return res.status(401).json({ error: 'Acesso negado: nenhum token fornecido.' });
+  if (token == null) {
+    throw new ApiError('Acesso negado. Nenhum token fornecido.', 401);
   }
 
-  jwt.verify(token, process.env.JWT_SECRET as string, (err, decoded) => {
-    if (err) {
-      return res.status(403).json({ error: 'Token inválido ou expirado.' });
-    }
-    
-    req.user = decoded as { userId: string; profile: string };
+  try {
+    const user = jwt.verify(token, process.env.JWT_SECRET || 'secret') as CustomRequest['user'];
+    (req as CustomRequest).user = user;
     next();
-  });
+  } catch (err) {
+    // Se o token for inválido (expirado, assinatura errada, etc.)
+    throw new ApiError('Token inválido.', 403);
+  }
 };
 
-export const checkAdmin = (req: AuthRequest, res: Response, next: NextFunction) => {
-  if (!req.user) {
-    return res.status(401).json({ error: 'Acesso negado.' });
+// 2. Verifica se o utilizador autenticado é um ADMIN
+export const checkAdmin = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const user = (req as CustomRequest).user;
+
+  if (user.role !== 'ADMIN') {
+    throw new ApiError('Acesso negado. Permissão de administrador necessária.', 403);
   }
-
-
-  if (req.user.profile !== 'ADMIN') {
-    return res.status(403).json({ error: 'Acesso negado: rota exclusiva para administradores.' });
-  }
-
   next();
 };
 
-export const checkChefe = (req: AuthRequest, res: Response, next: NextFunction) => {
-  if (!req.user) {
-    return res.status(401).json({ error: 'Acesso negado.' });
-  }
+// 3. Verifica se o utilizador autenticado é um CHEFE
+export const checkChefe = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const user = (req as CustomRequest).user;
 
-  // Verifica se o perfil é CHEFE
-  if (req.user.profile !== 'CHEFE') {
-    // Permite que ADMINS também executem ações de CHEFE, se necessário.
-    // Se a regra for ESTRITAMENTE CHEFE, remova '&& req.user.profile !== 'ADMIN''
-    if (req.user.profile !== 'ADMIN') {
-       return res.status(403).json({ error: 'Acesso negado: rota exclusiva para Chefes de Operação.' });
-    }
+  if (user.role !== 'CHEFE') {
+    throw new ApiError('Acesso negado. Permissão de chefe necessária.', 403);
   }
-
   next();
 };
+
+// 4. CORREÇÃO: Combina authenticateToken e checkAdmin para uso fácil nas rotas
+/**
+ * Array de middlewares: (1) Garante que o usuário está autenticado, (2) Garante que o usuário é ADMIN.
+ */
+export const authenticateAdmin = [authenticateToken, checkAdmin];
