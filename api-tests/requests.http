@@ -7,7 +7,7 @@
 @hostname = https://api-bombeiros-s-o-r-o.onrender.com
 # @hostname = http://localhost:3000
 
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZThjYmYzYy1jYmUxLTQ5ZjgtODllNi1hOWI1YjhlMjkzNzQiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjIxMTczMjAsImV4cCI6MTc2MjE0NjEyMH0.gzcK_wWKUe3pqLWmhEiHOIzzSZtRVcwBMyFD7Necv3w
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZThjYmYzYy1jYmUxLTQ5ZjgtODllNi1hOWI1YjhlMjkzNzQiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjIxMjgwODgsImV4cCI6MTc2MjE1Njg4OH0.TN2aH3MLheeWJYwiil86gz6I-HAgovkPb-d_LJL2d5w
 @subgrupoId =
 @formaAcervoId =
 @grupamentoId =
