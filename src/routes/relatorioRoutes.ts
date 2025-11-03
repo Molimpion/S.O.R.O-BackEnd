@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { exportRelatorio } from '../controllers/relatorioController'; // CORRIGIDO: Importação nomeada
-import { authenticateAdmin } from '../middleware/authMiddleware'; // CORRIGIDO: Middleware
+import { exportRelatorio } from '../controllers/relatorioController';
+import { authenticateAdmin } from '../middleware/authMiddleware';
 import { validate } from '../middleware/validate';
 import { reportOcorrenciaSchema } from '../validators/ocorrenciaValidator';
 
@@ -13,13 +13,12 @@ const router = Router();
 /**
  * @swagger
  * tags:
- *   - name: Admin: Relatórios
+ *   - name: "Admin: Relatórios"
  *     description: (Admin) Endpoints para exportação de relatórios.
- *
  * /api/v1/relatorios:
  *   get:
  *     summary: Exporta um relatório de ocorrências em formato Excel (apenas Admin)
- *     tags: [Admin: Relatórios]
+ *     tags: ["Admin: Relatórios"]
  *     security:
  *       - bearerAuth: []
  *     parameters:
