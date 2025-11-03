@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { create, getAll, getById, update, remove } from '../controllers/municipioController'; // CORRIGIDO: Importação nomeada
-import { authenticateAdmin } from '../middleware/authMiddleware'; // CORRIGIDO: Middleware
+import { create, getAll, getById, update, remove } from '../controllers/municipioController'; 
+import { authenticateAdmin } from '../middleware/authMiddleware'; 
 import { validate } from '../middleware/validate';
-import { createMunicipioSchema, updateMunicipioSchema } from '../validators/municipioValidator';
+import { createMunicipioSchema, updateMunicipioSchema } from '../validators/municipioValidator'; // CORRIGIDO: updateMunicipioSchema é o nome correto
 
 const router = Router();
 
@@ -15,7 +15,7 @@ const router = Router();
  * tags:
  * name: Admin: Municípios
  * description: (Admin) Endpoints para gerenciar os municípios.
- * /api/v1/municipios: # CORRIGIDO: Prefix /v1 adicionado
+ * /api/v1/municipios: 
  * post:
  * summary: Cria um novo município (apenas Admin)
  * tags: [Admin: Municípios]
@@ -26,16 +26,32 @@ const router = Router();
  * content:
  * application/json:
  * schema:
- * $ref: '#/components/schemas/MunicipioCreate'
+ * $ref: '#/components/schemas/Municipio'
  * responses:
  * 201:
  * description: Município criado com sucesso.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Municipio'
  * 400:
  * description: Erro de validação.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error400'
  * 403:
  * description: Acesso negado (não é Admin).
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error403'
  * 409:
  * description: Conflito (município já existe).
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error409'
  * get:
  * summary: Lista todos os municípios
  * tags: [Admin: Municípios]
@@ -52,7 +68,11 @@ const router = Router();
  * $ref: '#/components/schemas/Municipio'
  * 401:
  * description: Não autorizado.
- * /api/v1/municipios/{id}: # CORRIGIDO: Prefix /v1 adicionado
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error401'
+ * /api/v1/municipios/{id}: 
  * get:
  * summary: Obtém um município pelo ID
  * tags: [Admin: Municípios]
@@ -69,8 +89,16 @@ const router = Router();
  * responses:
  * 200:
  * description: Detalhes do município.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Municipio'
  * 404:
  * description: Município não encontrado.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error404'
  * put:
  * summary: Atualiza um município pelo ID (apenas Admin)
  * tags: [Admin: Municípios]
@@ -89,16 +117,32 @@ const router = Router();
  * content:
  * application/json:
  * schema:
- * $ref: '#/components/schemas/MunicipioUpdate'
+ * $ref: '#/components/schemas/Municipio'
  * responses:
  * 200:
  * description: Município atualizado com sucesso.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Municipio'
  * 400:
  * description: Erro de validação.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error400'
  * 403:
  * description: Acesso negado (não é Admin).
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error403'
  * 404:
  * description: Município não encontrado.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error404'
  * delete:
  * summary: Deleta um município pelo ID (apenas Admin)
  * tags: [Admin: Municípios]
@@ -115,10 +159,22 @@ const router = Router();
  * responses:
  * 200:
  * description: Município deletado com sucesso.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/SuccessDelete'
  * 403:
  * description: Acesso negado (não é Admin).
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error403'
  * 404:
  * description: Município não encontrado.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error404'
  */
 
 router.use(authenticateAdmin);
