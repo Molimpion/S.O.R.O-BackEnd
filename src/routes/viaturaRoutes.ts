@@ -1,191 +1,191 @@
 import { Router } from 'express';
-import * as viaturaController from '../controllers/viaturaController';
-import { authenticateToken, checkAdmin } from '../middleware/authMiddleware';
+import viaturaController from '../controllers/viaturaController';
 import { validate } from '../middleware/validate';
-import {
-  createViaturaSchema,
-  putViaturaSchema,
-  patchViaturaSchema,
-} from '../validators/viaturaValidator';
+import { createViaturaSchema } from '../validators/viaturaValidator';
+import { authenticateAdmin } from '../middleware/authMiddleware';
 
 const router = Router();
 
-// Requer autenticação e admin
-router.use(authenticateToken, checkAdmin);
+// ======================================================
+// ==== ANOTAÇÕES SWAGGER (JSDoc) - VIATURAS ====
+// ======================================================
 
 /**
  * @swagger
- * /api/viaturas:
- *   post:
- *     summary: Cria uma nova viatura
- *     tags: [Admin: Viaturas]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Viatura'
- *     responses:
- *       '201':
- *         description: Viatura criada
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 data:
- *                   $ref: '#/components/schemas/Viatura'
- *       '404':
- *         description: Unidade Operacional não encontrada
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error404'
- *       '409':
- *         description: Viatura com este número já existe
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error409'
- *   get:
- *     summary: Lista todas as viaturas
- *     tags: [Admin: Viaturas]
- *     responses:
- *       '200':
- *         description: Lista de viaturas (com unidade aninhada)
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Viatura'
+ * tags:
+ * name: Admin: Viaturas
+ * description: (Admin) Endpoints para gerenciar as viaturas.
+ * /api/v1/viaturas:  <-- CORRIGIDO
+ * post:
+ * summary: Cria uma nova Viatura (apenas Admin)
+ * tags: [Admin: Viaturas]
+ * security:
+ * - bearerAuth: []
+ * requestBody:
+ * required: true
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Viatura'
+ * responses:
+ * 201:
+ * description: Viatura criada com sucesso.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Viatura'
+ * 400:
+ * description: Erro de validação.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error400'
+ * 403:
+ * description: Acesso negado (não é Admin).
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error403'
+ * 409:
+ * description: Conflito (viatura já existe).
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error409'
+ * get:
+ * summary: Lista todas as Viaturas
+ * tags: [Admin: Viaturas]
+ * security:
+ * - bearerAuth: []
+ * responses:
+ * 200:
+ * description: Lista de Viaturas.
+ * content:
+ * application/json:
+ * schema:
+ * type: array
+ * items:
+ * $ref: '#/components/schemas/Viatura'
+ * 401:
+ * description: Não autorizado.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error401'
+ * /api/v1/viaturas/{id}:  <-- CORRIGIDO
+ * get:
+ * summary: Obtém uma Viatura pelo ID
+ * tags: [Admin: Viaturas]
+ * security:
+ * - bearerAuth: []
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * schema:
+ * type: string
+ * format: uuid
+ * description: ID da viatura
+ * responses:
+ * 200:
+ * description: Detalhes da Viatura.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Viatura'
+ * 404:
+ * description: Viatura não encontrada.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error404'
+ * put:
+ * summary: Atualiza uma Viatura pelo ID (apenas Admin)
+ * tags: [Admin: Viaturas]
+ * security:
+ * - bearerAuth: []
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * schema:
+ * type: string
+ * format: uuid
+ * description: ID da viatura
+ * requestBody:
+ * required: true
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Viatura'
+ * responses:
+ * 200:
+ * description: Viatura atualizada com sucesso.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Viatura'
+ * 400:
+ * description: Erro de validação.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error400'
+ * 403:
+ * description: Acesso negado (não é Admin).
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error403'
+ * 404:
+ * description: Viatura não encontrada.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error404'
+ * delete:
+ * summary: Deleta uma Viatura pelo ID (apenas Admin)
+ * tags: [Admin: Viaturas]
+ * security:
+ * - bearerAuth: []
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * schema:
+ * type: string
+ * format: uuid
+ * description: ID da viatura
+ * responses:
+ * 200:
+ * description: Viatura deletada com sucesso.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/SuccessDelete'
+ * 403:
+ * description: Acesso negado (não é Admin).
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error403'
+ * 404:
+ * description: Viatura não encontrada.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error404'
  */
+
+// Rotas públicas (GET)
+router.get('/', viaturaController.list);
+router.get('/:id', viaturaController.get);
+
+// Rotas exclusivas de Admin (POST, PUT, DELETE)
+router.use(authenticateAdmin);
+
 router.post('/', validate(createViaturaSchema), viaturaController.create);
-router.get('/', viaturaController.getAll);
-
-/**
- * @swagger
- * /api/viaturas/{id}:
- *   put:
- *     summary: (PUT) Substitui os dados de uma viatura
- *     tags: [Admin: Viaturas]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *           format: uuid
- *         required: true
- *         description: ID da viatura
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Viatura'
- *     responses:
- *       '200':
- *         description: Viatura atualizada
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 data:
- *                   $ref: '#/components/schemas/Viatura'
- *       '404':
- *         description: Viatura ou Unidade Operacional não encontrada
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error404'
- *       '409':
- *         description: Conflito (número da viatura já em uso)
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error409'
- *   patch:
- *     summary: (PATCH) Atualiza parcialmente uma viatura
- *     tags: [Admin: Viaturas]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *           format: uuid
- *         required: true
- *         description: ID da viatura
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               tipo_vt:
- *                 type: string
- *     responses:
- *       '200':
- *         description: Viatura atualizada
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 data:
- *                   $ref: '#/components/schemas/Viatura'
- *       '404':
- *         description: Viatura ou Unidade Operacional não encontrada
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error404'
- *       '409':
- *         description: Conflito (número da viatura já em uso)
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error409'
- *   delete:
- *     summary: Deleta uma viatura
- *     tags: [Admin: Viaturas]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *           format: uuid
- *         required: true
- *         description: ID da viatura
- *     responses:
- *       '200':
- *         description: Viatura deletada com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/SuccessDelete'
- *       '404':
- *         description: Viatura não encontrada
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error404'
- *       '409':
- *         description: Conflito (viatura está associada a ocorrências)
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error409'
- */
-router.put('/:id', validate(putViaturaSchema), viaturaController.update);
-router.patch('/:id', validate(patchViaturaSchema), viaturaController.update);
+router.put('/:id', validate(createViaturaSchema), viaturaController.update);
 router.delete('/:id', viaturaController.remove);
 
 export default router;
