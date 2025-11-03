@@ -15,6 +15,8 @@ Este repositório contém o código-fonte do backend para o Painel Web do Projet
 
 **API ao vivo:** [https://api-bombeiros-s-o-r-o.onrender.com](https://api-bombeiros-s-o-r-o.onrender.com)
 
+**Documentação da API:** [https://api-bombeiros-s-o-r-o.onrender.com/api/docs/](https://api-bombeiros-s-o-r-o.onrender.com/api/docs/)
+
 ## 2. Estado do Projeto
 
 A implementação de todos os requisitos funcionais do backend foi **concluída, validada e implementada em produção**.
