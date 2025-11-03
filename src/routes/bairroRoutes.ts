@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { create, getAll, getById, update, remove } from '../controllers/bairroController'; // CORRIGIDO: Importação nomeada
-import { authenticateAdmin } from '../middleware/authMiddleware'; // CORRIGIDO: Middleware
+import { create, getAll, getById, update, remove } from '../controllers/bairroController'; 
+import { authenticateAdmin } from '../middleware/authMiddleware'; 
 import { validate } from '../middleware/validate';
 import { bairroSchema } from '../validators/bairroValidator'; // CORRIGIDO: Nome do schema
 
@@ -15,7 +15,7 @@ const router = Router();
  * tags:
  * name: Admin: Bairros
  * description: (Admin) Endpoints para gerenciar os bairros.
- * /api/v1/bairros: # CORRIGIDO: Prefix /v1 adicionado
+ * /api/v1/bairros: 
  * post:
  * summary: Cria um novo bairro (apenas Admin)
  * tags: [Admin: Bairros]
@@ -72,7 +72,7 @@ const router = Router();
  * application/json:
  * schema:
  * $ref: '#/components/schemas/Error401'
- * /api/v1/bairros/{id}: # CORRIGIDO: Prefix /v1 adicionado
+ * /api/v1/bairros/{id}: 
  * get:
  * summary: Obtém um bairro pelo ID
  * tags: [Admin: Bairros]
@@ -177,12 +177,12 @@ const router = Router();
  * $ref: '#/components/schemas/Error404'
  */
 
-router.use(authenticateAdmin);
+router.use(authenticateAdmin); 
 
 router.post('/', validate(bairroSchema), create);
 router.get('/', getAll);
 router.get('/:id', getById);
-router.put('/:id', validate(bairroSchema), update);
+router.put('/:id', validate(bairroSchema), update); // Usa o único schema de criação/atualização disponível
 router.delete('/:id', remove);
 
 export default router;
