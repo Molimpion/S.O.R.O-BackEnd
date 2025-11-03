@@ -1,12 +1,14 @@
+// src/routes/ocorrenciaRoutes.ts 
+
 import { Router } from 'express';
 import { create, getAll, getById, update } from '../controllers/ocorrenciaController'; // CORRIGIDO: Importação nomeada
-import { authenticateToken, checkAdmin } from '../middleware/authMiddleware';
+import { authenticateToken, checkAdmin } from '../middleware/authMiddleware'; 
 import { validate } from '../middleware/validate';
 import { 
   createOcorrenciaSchema, 
   listOcorrenciaSchema,
-  updateOcorrenciaSchema // CORRIGIDO: Nome do schema
-} from '../validators/ocorrenciaValidator';
+  updateOcorrenciaSchema // CORRIGIDO: updateOcorrenciaSchema é o nome correto
+} from '../validators/ocorrenciaValidator'; 
 
 const router = Router();
 
@@ -19,7 +21,7 @@ const router = Router();
  * tags:
  * name: Ocorrências
  * description: Endpoints para gerenciar as ocorrências.
- * /api/v1/ocorrencias: # CORRIGIDO: Prefix /v1 adicionado
+ * /api/v1/ocorrencias: 
  * post:
  * summary: Cria uma nova ocorrência
  * tags: [Ocorrências]
@@ -71,7 +73,7 @@ const router = Router();
  * description: Lista de ocorrências.
  * 401:
  * description: Não autorizado.
- * /api/v1/ocorrencias/{id}: # CORRIGIDO: Prefix /v1 adicionado
+ * /api/v1/ocorrencias/{id}: 
  * get:
  * summary: Obtém uma ocorrência pelo ID
  * tags: [Ocorrências]
@@ -129,7 +131,7 @@ router.post(
 );
 router.put(
   '/:id',
-  validate(updateOcorrenciaSchema),
+  validate(updateOcorrenciaSchema), // CORRIGIDO: Nome do schema
   update
 );
 // Adicione a rota DELETE se necessário:
