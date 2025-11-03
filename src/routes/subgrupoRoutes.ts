@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { create, getAll, remove } from '../controllers/subgrupoController'; // CORRIGIDO: Importação nomeada
-import { authenticateAdmin } from '../middleware/authMiddleware'; // CORRIGIDO: Middleware
+import { create, getAll, remove } from '../controllers/subgrupoController';
+import { authenticateAdmin } from '../middleware/authMiddleware';
 import { validate } from '../middleware/validate';
-import { subgrupoSchema } from '../validators/subgrupoValidator'; // CORRIGIDO: Nome do schema
+import { subgrupoSchema } from '../validators/subgrupoValidator';
 
 const router = Router();
 
@@ -13,13 +13,12 @@ const router = Router();
 /**
  * @swagger
  * tags:
- *   - name: Admin: Subgrupos
+ *   - name: "Admin: Subgrupos"
  *     description: (Admin) Endpoints para gerenciar os subgrupos.
- *
  * /api/v1/subgrupos:
  *   post:
  *     summary: Cria um novo subgrupo (apenas Admin)
- *     tags: [Admin: Subgrupos]
+ *     tags: ["Admin: Subgrupos"]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -37,10 +36,9 @@ const router = Router();
  *         description: Acesso negado (não é Admin).
  *       409:
  *         description: Conflito (subgrupo já existe).
- *
  *   get:
  *     summary: Lista todos os subgrupos
- *     tags: [Admin: Subgrupos]
+ *     tags: ["Admin: Subgrupos"]
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -54,11 +52,10 @@ const router = Router();
  *                 $ref: '#/components/schemas/Subgrupo'
  *       401:
  *         description: Não autorizado.
- *
  * /api/v1/subgrupos/{id}:
  *   delete:
  *     summary: Deleta um subgrupo pelo ID (apenas Admin)
- *     tags: [Admin: Subgrupos]
+ *     tags: ["Admin: Subgrupos"]
  *     security:
  *       - bearerAuth: []
  *     parameters:
