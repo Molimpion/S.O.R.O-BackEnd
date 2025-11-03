@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { create, getAll, getById, update, remove } from '../controllers/bairroController'; 
 import { authenticateAdmin } from '../middleware/authMiddleware'; 
 import { validate } from '../middleware/validate';
-import { createBairroSchema, putBairroSchema } from '../validators/bairroValidator'; // CORRIGIDO
+import { createBairroSchema, putBairroSchema } from '../validators/bairroValidator'; 
 
 const router = Router();
 
@@ -13,13 +13,12 @@ const router = Router();
 /**
  * @swagger
  * tags:
- *   - name: Admin: Bairros
+ *   - name: "Admin: Bairros"
  *     description: (Admin) Endpoints para gerenciar os bairros.
- *
  * /api/v1/bairros:
  *   post:
  *     summary: Cria um novo bairro (apenas Admin)
- *     tags: [Admin: Bairros]
+ *     tags: ["Admin: Bairros"]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -53,10 +52,9 @@ const router = Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error409'
- *
  *   get:
  *     summary: Lista todos os bairros
- *     tags: [Admin: Bairros]
+ *     tags: ["Admin: Bairros"]
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -74,11 +72,10 @@ const router = Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error401'
- *
  * /api/v1/bairros/{id}:
  *   get:
  *     summary: Obtém um bairro pelo ID
- *     tags: [Admin: Bairros]
+ *     tags: ["Admin: Bairros"]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -102,10 +99,9 @@ const router = Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error404'
- *
  *   put:
  *     summary: Atualiza um bairro pelo ID (apenas Admin)
- *     tags: [Admin: Bairros]
+ *     tags: ["Admin: Bairros"]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -147,10 +143,9 @@ const router = Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error404'
- *
  *   delete:
  *     summary: Deleta um bairro pelo ID (apenas Admin)
- *     tags: [Admin: Bairros]
+ *     tags: ["Admin: Bairros"]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -184,10 +179,10 @@ const router = Router();
 
 router.use(authenticateAdmin); 
 
-router.post('/', validate(createBairroSchema), create); // CORRIGIDO
+router.post('/', validate(createBairroSchema), create);
 router.get('/', getAll);
 router.get('/:id', getById);
-router.put('/:id', validate(putBairroSchema), update); // CORRIGIDO
+router.put('/:id', validate(putBairroSchema), update); 
 router.delete('/:id', remove);
 
 export default router;
