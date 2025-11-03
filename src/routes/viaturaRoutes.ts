@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { create, getAll, remove } from '../controllers/viaturaController'; // CORRIGIDO: Importação nomeada
-import { authenticateAdmin } from '../middleware/authMiddleware'; // CORRIGIDO: Middleware
+import { authenticateAdmin } from '../middleware/authMiddleware'; 
 import { validate } from '../middleware/validate';
-import { viaturaSchema } from '../validators/viaturaValidator'; // CORRIGIDO: Nome do schema
+import { viaturaSchema } from '../validators/viaturaValidator'; // CORRIGIDO: viaturaSchema é o nome correto
 
 const router = Router();
 
@@ -15,7 +15,7 @@ const router = Router();
  * tags:
  * name: Admin: Viaturas
  * description: (Admin) Endpoints para gerenciar as viaturas.
- * /api/v1/viaturas: # CORRIGIDO: Prefix /v1 adicionado
+ * /api/v1/viaturas: 
  * post:
  * summary: Cria uma nova viatura (apenas Admin)
  * tags: [Admin: Viaturas]
@@ -52,7 +52,7 @@ const router = Router();
  * $ref: '#/components/schemas/Viatura'
  * 401:
  * description: Não autorizado.
- * /api/v1/viaturas/{id}: # CORRIGIDO: Prefix /v1 adicionado
+ * /api/v1/viaturas/{id}: 
  * delete:
  * summary: Deleta uma viatura pelo ID (apenas Admin)
  * tags: [Admin: Viaturas]
