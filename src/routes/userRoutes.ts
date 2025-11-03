@@ -1,57 +1,35 @@
 import { Router } from 'express';
-import userController from '../controllers/userController';
+import { authenticateAdmin } from '../middleware/authMiddleware'; // CORRIGIDO: Middleware
+import { getAll, getById, update, remove } from '../controllers/userController'; // CORRIGIDO: Importação nomeada
 import { validate } from '../middleware/validate';
-import { authenticateAdmin } from '../middleware/authMiddleware';
-import { userUpdateSchema } from '../validators/authValidator';
+import { userUpdateSchema } from '../validators/authValidator'; // CORRIGIDO: Nome do schema
 
 const router = Router();
 
 // ======================================================
-// ==== ANOTAÇÕES SWAGGER (JSDoc) - GESTÃO DE USUÁRIOS ====
+// ==== ANOTAÇÕES SWAGGER (JSDoc) - USERS ====
 // ======================================================
 
 /**
  * @swagger
  * tags:
- * name: Gestão de Usuários
- * description: (Admin) Endpoints para gerenciar usuários do sistema.
- * /api/v1/users:  <-- CORRIGIDO
+ * name: Admin: Usuários
+ * description: (Admin) Endpoints para gerenciar os usuários.
+ * /api/v1/users: # CORRIGIDO: Prefix /v1 adicionado
  * get:
- * summary: Lista todos os usuários
- * tags: [Gestão de Usuários]
+ * summary: Lista todos os usuários (apenas Admin)
+ * tags: [Admin: Usuários]
  * security:
  * - bearerAuth: []
- * parameters:
- * - in: query
- * name: search
- * schema:
- * type: string
- * description: Termo de busca (nome, email, matrícula)
  * responses:
  * 200:
  * description: Lista de usuários.
- * content:
- * application/json:
- * schema:
- * type: array
- * items:
- * $ref: '#/components/schemas/User'
- * 401:
- * description: Não autorizado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error401'
  * 403:
- * description: Acesso negado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
- * /api/v1/users/{id}:  <-- CORRIGIDO
+ * description: Acesso negado (não é Admin).
+ * /api/v1/users/{id}: # CORRIGIDO: Prefix /v1 adicionado
  * get:
- * summary: Obtém um usuário pelo ID
- * tags: [Gestão de Usuários]
+ * summary: Obtém um usuário pelo ID (apenas Admin)
+ * tags: [Admin: Usuários]
  * security:
  * - bearerAuth: []
  * parameters:
@@ -65,31 +43,11 @@ const router = Router();
  * responses:
  * 200:
  * description: Detalhes do usuário.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/User'
- * 401:
- * description: Não autorizado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error401'
- * 403:
- * description: Acesso negado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
  * 404:
  * description: Usuário não encontrado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
  * put:
  * summary: Atualiza um usuário pelo ID (apenas Admin)
- * tags: [Gestão de Usuários]
+ * tags: [Admin: Usuários]
  * security:
  * - bearerAuth: []
  * parameters:
@@ -105,41 +63,19 @@ const router = Router();
  * content:
  * application/json:
  * schema:
- * $ref: '#/components/schemas/UserInput'
+ * $ref: '#/components/schemas/UserUpdate'
  * responses:
  * 200:
  * description: Usuário atualizado com sucesso.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/User'
  * 400:
  * description: Erro de validação.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error400'
- * 401:
- * description: Não autorizado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error401'
  * 403:
  * description: Acesso negado (não é Admin).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
  * 404:
  * description: Usuário não encontrado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
  * delete:
  * summary: Deleta um usuário pelo ID (apenas Admin)
- * tags: [Gestão de Usuários]
+ * tags: [Admin: Usuários]
  * security:
  * - bearerAuth: []
  * parameters:
@@ -153,36 +89,17 @@ const router = Router();
  * responses:
  * 200:
  * description: Usuário deletado com sucesso.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/SuccessDelete'
- * 401:
- * description: Não autorizado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error401'
  * 403:
  * description: Acesso negado (não é Admin).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
  * 404:
  * description: Usuário não encontrado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
  */
 
-// Rotas: Acesso de Administrador
 router.use(authenticateAdmin);
 
-router.get('/', userController.list);
-router.get('/:id', userController.get);
-router.put('/:id', validate(userUpdateSchema), userController.update);
-router.delete('/:id', userController.remove);
+router.get('/', getAll);
+router.get('/:id', getById);
+router.put('/:id', validate(userUpdateSchema), update);
+router.delete('/:id', remove);
 
 export default router;
