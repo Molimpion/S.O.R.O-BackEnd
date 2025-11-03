@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import grupoController from '../controllers/grupoController';
+import { create, getAll, remove } from '../controllers/grupoController'; // CORRIGIDO: Importação nomeada
+import { authenticateAdmin } from '../middleware/authMiddleware'; // CORRIGIDO: Middleware
 import { validate } from '../middleware/validate';
-import { createGrupoSchema, updateGrupoSchema } from '../validators/grupoValidator';
-import { authenticateAdmin } from '../middleware/authMiddleware';
+import { grupoSchema } from '../validators/grupoValidator'; // CORRIGIDO: Nome do schema
 
 const router = Router();
 
@@ -13,12 +13,12 @@ const router = Router();
 /**
  * @swagger
  * tags:
- * name: Admin: Classificação (Natureza, Grupo, Subgrupo)
- * description: (Admin) Endpoints para gerenciar a hierarquia de classificação das ocorrências.
- * /api/v1/grupos:  <-- CORRIGIDO
+ * name: Admin: Grupos
+ * description: (Admin) Endpoints para gerenciar os grupos.
+ * /api/v1/grupos: # CORRIGIDO: Prefix /v1 adicionado
  * post:
- * summary: Cria um novo Grupo (apenas Admin)
- * tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
+ * summary: Cria um novo grupo (apenas Admin)
+ * tags: [Admin: Grupos]
  * security:
  * - bearerAuth: []
  * requestBody:
@@ -30,36 +30,20 @@ const router = Router();
  * responses:
  * 201:
  * description: Grupo criado com sucesso.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Grupo'
  * 400:
  * description: Erro de validação.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error400'
  * 403:
  * description: Acesso negado (não é Admin).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
  * 409:
  * description: Conflito (grupo já existe).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error409'
  * get:
- * summary: Lista todos os Grupos
- * tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
+ * summary: Lista todos os grupos
+ * tags: [Admin: Grupos]
  * security:
  * - bearerAuth: []
  * responses:
  * 200:
- * description: Lista de Grupos.
+ * description: Lista de grupos.
  * content:
  * application/json:
  * schema:
@@ -68,84 +52,10 @@ const router = Router();
  * $ref: '#/components/schemas/Grupo'
  * 401:
  * description: Não autorizado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error401'
- * /api/v1/grupos/{id}:  <-- CORRIGIDO
- * get:
- * summary: Obtém um Grupo pelo ID
- * tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
- * security:
- * - bearerAuth: []
- * parameters:
- * - in: path
- * name: id
- * required: true
- * schema:
- * type: string
- * format: uuid
- * description: ID do grupo
- * responses:
- * 200:
- * description: Detalhes do Grupo.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Grupo'
- * 404:
- * description: Grupo não encontrado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
- * put:
- * summary: Atualiza um Grupo pelo ID (apenas Admin)
- * tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
- * security:
- * - bearerAuth: []
- * parameters:
- * - in: path
- * name: id
- * required: true
- * schema:
- * type: string
- * format: uuid
- * description: ID do grupo
- * requestBody:
- * required: true
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Grupo'
- * responses:
- * 200:
- * description: Grupo atualizado com sucesso.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Grupo'
- * 400:
- * description: Erro de validação.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error400'
- * 403:
- * description: Acesso negado (não é Admin).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
- * 404:
- * description: Grupo não encontrado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
+ * /api/v1/grupos/{id}: # CORRIGIDO: Prefix /v1 adicionado
  * delete:
- * summary: Deleta um Grupo pelo ID (apenas Admin)
- * tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
+ * summary: Deleta um grupo pelo ID (apenas Admin)
+ * tags: [Admin: Grupos]
  * security:
  * - bearerAuth: []
  * parameters:
@@ -159,33 +69,16 @@ const router = Router();
  * responses:
  * 200:
  * description: Grupo deletado com sucesso.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/SuccessDelete'
  * 403:
  * description: Acesso negado (não é Admin).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
  * 404:
  * description: Grupo não encontrado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
  */
 
-// Rotas públicas (GET)
-router.get('/', grupoController.list);
-router.get('/:id', grupoController.get);
-
-// Rotas exclusivas de Admin (POST, PUT, DELETE)
 router.use(authenticateAdmin);
 
-router.post('/', validate(createGrupoSchema), grupoController.create);
-router.put('/:id', validate(updateGrupoSchema), grupoController.update);
-router.delete('/:id', grupoController.remove);
+router.post('/', validate(grupoSchema), create);
+router.get('/', getAll);
+router.delete('/:id', remove);
 
 export default router;
