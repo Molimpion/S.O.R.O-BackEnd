@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import subgrupoController from '../controllers/subgrupoController';
+import { create, getAll, remove } from '../controllers/subgrupoController'; // CORRIGIDO: Importação nomeada
+import { authenticateAdmin } from '../middleware/authMiddleware'; // CORRIGIDO: Middleware
 import { validate } from '../middleware/validate';
-import { createSubgrupoSchema, updateSubgrupoSchema } from '../validators/subgrupoValidator';
-import { authenticateAdmin } from '../middleware/authMiddleware';
+import { subgrupoSchema } from '../validators/subgrupoValidator'; // CORRIGIDO: Nome do schema
 
 const router = Router();
 
@@ -13,12 +13,12 @@ const router = Router();
 /**
  * @swagger
  * tags:
- * name: Admin: Classificação (Natureza, Grupo, Subgrupo)
- * description: (Admin) Endpoints para gerenciar a hierarquia de classificação das ocorrências.
- * /api/v1/subgrupos:  <-- CORRIGIDO
+ * name: Admin: Subgrupos
+ * description: (Admin) Endpoints para gerenciar os subgrupos.
+ * /api/v1/subgrupos: # CORRIGIDO: Prefix /v1 adicionado
  * post:
- * summary: Cria um novo Subgrupo (apenas Admin)
- * tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
+ * summary: Cria um novo subgrupo (apenas Admin)
+ * tags: [Admin: Subgrupos]
  * security:
  * - bearerAuth: []
  * requestBody:
@@ -30,36 +30,20 @@ const router = Router();
  * responses:
  * 201:
  * description: Subgrupo criado com sucesso.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Subgrupo'
  * 400:
  * description: Erro de validação.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error400'
  * 403:
  * description: Acesso negado (não é Admin).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
  * 409:
  * description: Conflito (subgrupo já existe).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error409'
  * get:
- * summary: Lista todos os Subgrupos
- * tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
+ * summary: Lista todos os subgrupos
+ * tags: [Admin: Subgrupos]
  * security:
  * - bearerAuth: []
  * responses:
  * 200:
- * description: Lista de Subgrupos.
+ * description: Lista de subgrupos.
  * content:
  * application/json:
  * schema:
@@ -68,84 +52,10 @@ const router = Router();
  * $ref: '#/components/schemas/Subgrupo'
  * 401:
  * description: Não autorizado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error401'
- * /api/v1/subgrupos/{id}:  <-- CORRIGIDO
- * get:
- * summary: Obtém um Subgrupo pelo ID
- * tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
- * security:
- * - bearerAuth: []
- * parameters:
- * - in: path
- * name: id
- * required: true
- * schema:
- * type: string
- * format: uuid
- * description: ID do subgrupo
- * responses:
- * 200:
- * description: Detalhes do Subgrupo.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Subgrupo'
- * 404:
- * description: Subgrupo não encontrado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
- * put:
- * summary: Atualiza um Subgrupo pelo ID (apenas Admin)
- * tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
- * security:
- * - bearerAuth: []
- * parameters:
- * - in: path
- * name: id
- * required: true
- * schema:
- * type: string
- * format: uuid
- * description: ID do subgrupo
- * requestBody:
- * required: true
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Subgrupo'
- * responses:
- * 200:
- * description: Subgrupo atualizado com sucesso.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Subgrupo'
- * 400:
- * description: Erro de validação.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error400'
- * 403:
- * description: Acesso negado (não é Admin).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
- * 404:
- * description: Subgrupo não encontrado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
+ * /api/v1/subgrupos/{id}: # CORRIGIDO: Prefix /v1 adicionado
  * delete:
- * summary: Deleta um Subgrupo pelo ID (apenas Admin)
- * tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
+ * summary: Deleta um subgrupo pelo ID (apenas Admin)
+ * tags: [Admin: Subgrupos]
  * security:
  * - bearerAuth: []
  * parameters:
@@ -159,33 +69,16 @@ const router = Router();
  * responses:
  * 200:
  * description: Subgrupo deletado com sucesso.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/SuccessDelete'
  * 403:
  * description: Acesso negado (não é Admin).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
  * 404:
  * description: Subgrupo não encontrado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
  */
 
-// Rotas públicas (GET)
-router.get('/', subgrupoController.list);
-router.get('/:id', subgrupoController.get);
-
-// Rotas exclusivas de Admin (POST, PUT, DELETE)
 router.use(authenticateAdmin);
 
-router.post('/', validate(createSubgrupoSchema), subgrupoController.create);
-router.put('/:id', validate(updateSubgrupoSchema), subgrupoController.update);
-router.delete('/:id', subgrupoController.remove);
+router.post('/', validate(subgrupoSchema), create);
+router.get('/', getAll);
+router.delete('/:id', remove);
 
 export default router;
