@@ -1,5 +1,8 @@
 import { Router } from 'express';
-import dashboardController from '../controllers/dashboardController';
+import { getKpiOcorrenciasPorStatus, getKpiOcorrenciasPorTipo, getKpiOcorrenciasPorBairro } from '../controllers/dashboardController'; // CORRIGIDO: Importação nomeada
+import { authenticateToken } from '../middleware/authMiddleware';
+import { validate } from '../middleware/validate';
+import { listOcorrenciaSchema } from '../validators/ocorrenciaValidator';
 
 const router = Router();
 
@@ -11,43 +14,74 @@ const router = Router();
  * @swagger
  * tags:
  * name: Dashboard
- * description: Endpoints para visualização de KPIs e dados analíticos.
- * /api/v1/dashboard/kpis:  <-- CORRIGIDO
+ * description: Endpoints para obtenção de KPIs e estatísticas.
+ * /api/v1/dashboard/ocorrencias-por-status: # CORRIGIDO: Prefix /v1 adicionado
  * get:
- * summary: Retorna os principais KPIs para a dashboard
+ * summary: Obtém o número de ocorrências por status
  * tags: [Dashboard]
  * security:
  * - bearerAuth: []
+ * parameters:
+ * - in: query
+ * name: ano
+ * schema:
+ * type: integer
+ * description: Ano para filtrar as ocorrências (opcional)
+ * - in: query
+ * name: mes
+ * schema:
+ * type: integer
+ * description: Mês para filtrar as ocorrências (opcional)
+ * - in: query
+ * name: unidadeOperacionalId
+ * schema:
+ * type: string
+ * format: uuid
+ * description: ID da Unidade Operacional para filtrar (opcional)
  * responses:
  * 200:
- * description: Objeto com os KPIs.
+ * description: Dados de ocorrências por status.
  * content:
  * application/json:
  * schema:
+ * type: array
+ * items:
  * type: object
  * properties:
- * ocorrencias_total:
+ * status:
+ * type: string
+ * example: EM_ANDAMENTO
+ * count:
  * type: integer
- * example: 1500
- * description: Total de ocorrências no período.
- * ocorrencias_concluidas:
- * type: integer
- * example: 1200
- * description: Total de ocorrências concluídas.
- * percentual_conclusao:
- * type: number
- * format: float
- * example: 80.0
- * description: Percentual de ocorrências concluídas.
- * /api/v1/dashboard/ocorrencias-por-natureza:  <-- CORRIGIDO
+ * example: 15
+ * 401:
+ * description: Não autorizado.
+ * /api/v1/dashboard/ocorrencias-por-tipo: # CORRIGIDO: Prefix /v1 adicionado
  * get:
- * summary: Retorna o número de ocorrências agrupadas por natureza (NaturezaPrincipal)
+ * summary: Obtém o número de ocorrências por tipo (Natureza)
  * tags: [Dashboard]
  * security:
  * - bearerAuth: []
+ * parameters:
+ * - in: query
+ * name: ano
+ * schema:
+ * type: integer
+ * description: Ano para filtrar as ocorrências (opcional)
+ * - in: query
+ * name: mes
+ * schema:
+ * type: integer
+ * description: Mês para filtrar as ocorrências (opcional)
+ * - in: query
+ * name: unidadeOperacionalId
+ * schema:
+ * type: string
+ * format: uuid
+ * description: ID da Unidade Operacional para filtrar (opcional)
  * responses:
  * 200:
- * description: Lista de contagens por natureza.
+ * description: Dados de ocorrências por tipo.
  * content:
  * application/json:
  * schema:
@@ -57,19 +91,38 @@ const router = Router();
  * properties:
  * natureza:
  * type: string
- * example: INCENDIO
+ * example: Combate a Incêndio
  * count:
  * type: integer
- * example: 300
- * /api/v1/dashboard/ocorrencias-por-mes:  <-- CORRIGIDO
+ * example: 22
+ * 401:
+ * description: Não autorizado.
+ * /api/v1/dashboard/ocorrencias-por-bairro: # CORRIGIDO: Prefix /v1 adicionado
  * get:
- * summary: Retorna o número de ocorrências agrupadas por mês nos últimos 12 meses
+ * summary: Obtém o número de ocorrências por bairro
  * tags: [Dashboard]
  * security:
  * - bearerAuth: []
+ * parameters:
+ * - in: query
+ * name: ano
+ * schema:
+ * type: integer
+ * description: Ano para filtrar as ocorrências (opcional)
+ * - in: query
+ * name: mes
+ * schema:
+ * type: integer
+ * description: Mês para filtrar as ocorrências (opcional)
+ * - in: query
+ * name: unidadeOperacionalId
+ * schema:
+ * type: string
+ * format: uuid
+ * description: ID da Unidade Operacional para filtrar (opcional)
  * responses:
  * 200:
- * description: Lista de contagens por mês.
+ * description: Dados de ocorrências por bairro.
  * content:
  * application/json:
  * schema:
@@ -77,16 +130,19 @@ const router = Router();
  * items:
  * type: object
  * properties:
- * mes_ano:
+ * bairro:
  * type: string
- * example: '2024-10'
+ * example: Centro
  * count:
  * type: integer
- * example: 150
+ * example: 8
+ * 401:
+ * description: Não autorizado.
  */
 
-router.get('/kpis', dashboardController.getKpis);
-router.get('/ocorrencias-por-natureza', dashboardController.getOcorrenciasPorNatureza);
-router.get('/ocorrencias-por-mes', dashboardController.getOcorrenciasPorMes);
+router.use(authenticateToken);
+router.get('/ocorrencias-por-status', validate(listOcorrenciaSchema), getKpiOcorrenciasPorStatus);
+router.get('/ocorrencias-por-tipo', validate(listOcorrenciaSchema), getKpiOcorrenciasPorTipo);
+router.get('/ocorrencias-por-bairro', validate(listOcorrenciaSchema), getKpiOcorrenciasPorBairro);
 
 export default router;
