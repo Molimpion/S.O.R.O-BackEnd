@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { create, getAll, getById, update, remove } from '../controllers/municipioController'; 
 import { authenticateAdmin } from '../middleware/authMiddleware'; 
 import { validate } from '../middleware/validate';
-import { createMunicipioSchema, updateMunicipioSchema } from '../validators/municipioValidator'; // CORRIGIDO: updateMunicipioSchema é o nome correto
+import { createMunicipioSchema, putMunicipioSchema } from '../validators/municipioValidator'; // CORRIGIDO
 
 const router = Router();
 
@@ -182,7 +182,7 @@ router.use(authenticateAdmin);
 router.post('/', validate(createMunicipioSchema), create);
 router.get('/', getAll);
 router.get('/:id', getById);
-router.put('/:id', validate(updateMunicipioSchema), update);
+router.put('/:id', validate(putMunicipioSchema), update); // CORRIGIDO
 router.delete('/:id', remove);
 
 export default router;
