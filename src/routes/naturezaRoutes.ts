@@ -1,92 +1,191 @@
 import { Router } from 'express';
-import * as naturezaController from '../controllers/naturezaController';
-import { authenticateToken, checkAdmin } from '../middleware/authMiddleware';
+import naturezaController from '../controllers/naturezaController';
 import { validate } from '../middleware/validate';
-import { naturezaSchema } from '../validators/naturezaValidator';
+import { createNaturezaSchema } from '../validators/naturezaValidator';
+import { authenticateAdmin } from '../middleware/authMiddleware';
 
 const router = Router();
-router.use(authenticateToken, checkAdmin);
+
+// ======================================================
+// ==== ANOTAÇÕES SWAGGER (JSDoc) - NATUREZAS ====
+// ======================================================
 
 /**
  * @swagger
- * /api/naturezas:
- *   post:
- *     summary: Cria uma nova Natureza
- *     tags:
- *       - Admin: Classificação (Natureza, Grupo, Subgrupo)
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Natureza'
- *     responses:
- *       '201':
- *         description: Natureza criada
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message: { type: string }
- *                 data:
- *                   $ref: '#/components/schemas/Natureza'
- *       '409':
- *         description: Natureza com esta descrição já existe
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error409'
- *   get:
- *     summary: Lista todas as Naturezas
- *     tags:
- *       - Admin: Classificação (Natureza, Grupo, Subgrupo)
- *     responses:
- *       '200':
- *         description: Lista de naturezas
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Natureza'
+ * tags:
+ * name: Admin: Classificação (Natureza, Grupo, Subgrupo)
+ * description: (Admin) Endpoints para gerenciar a hierarquia de classificação das ocorrências.
+ * /api/v1/naturezas:  <-- CORRIGIDO
+ * post:
+ * summary: Cria uma nova Natureza (apenas Admin)
+ * tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
+ * security:
+ * - bearerAuth: []
+ * requestBody:
+ * required: true
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Natureza'
+ * responses:
+ * 201:
+ * description: Natureza criada com sucesso.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Natureza'
+ * 400:
+ * description: Erro de validação.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error400'
+ * 403:
+ * description: Acesso negado (não é Admin).
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error403'
+ * 409:
+ * description: Conflito (natureza já existe).
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error409'
+ * get:
+ * summary: Lista todas as Naturezas
+ * tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
+ * security:
+ * - bearerAuth: []
+ * responses:
+ * 200:
+ * description: Lista de Naturezas.
+ * content:
+ * application/json:
+ * schema:
+ * type: array
+ * items:
+ * $ref: '#/components/schemas/Natureza'
+ * 401:
+ * description: Não autorizado.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error401'
+ * /api/v1/naturezas/{id}:  <-- CORRIGIDO
+ * get:
+ * summary: Obtém uma Natureza pelo ID
+ * tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
+ * security:
+ * - bearerAuth: []
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * schema:
+ * type: string
+ * format: uuid
+ * description: ID da natureza
+ * responses:
+ * 200:
+ * description: Detalhes da Natureza.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Natureza'
+ * 404:
+ * description: Natureza não encontrada.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error404'
+ * put:
+ * summary: Atualiza uma Natureza pelo ID (apenas Admin)
+ * tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
+ * security:
+ * - bearerAuth: []
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * schema:
+ * type: string
+ * format: uuid
+ * description: ID da natureza
+ * requestBody:
+ * required: true
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Natureza'
+ * responses:
+ * 200:
+ * description: Natureza atualizada com sucesso.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Natureza'
+ * 400:
+ * description: Erro de validação.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error400'
+ * 403:
+ * description: Acesso negado (não é Admin).
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error403'
+ * 404:
+ * description: Natureza não encontrada.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error404'
+ * delete:
+ * summary: Deleta uma Natureza pelo ID (apenas Admin)
+ * tags: [Admin: Classificação (Natureza, Grupo, Subgrupo)]
+ * security:
+ * - bearerAuth: []
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * schema:
+ * type: string
+ * format: uuid
+ * description: ID da natureza
+ * responses:
+ * 200:
+ * description: Natureza deletada com sucesso.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/SuccessDelete'
+ * 403:
+ * description: Acesso negado (não é Admin).
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error403'
+ * 404:
+ * description: Natureza não encontrada.
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Error404'
  */
-router.post('/', validate(naturezaSchema), naturezaController.create);
-router.get('/', naturezaController.getAll);
 
-/**
- * @swagger
- * /api/naturezas/{id}:
- *   delete:
- *     summary: Deleta uma Natureza
- *     tags:
- *       - Admin: Classificação (Natureza, Grupo, Subgrupo)
- *     parameters:
- *       - in: path
- *         name: id
- *         schema: { type: string, format: uuid }
- *         required: true
- *         description: ID da natureza
- *     responses:
- *       '200':
- *         description: Natureza deletada com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/SuccessDelete'
- *       '404':
- *         description: Natureza não encontrada
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error404'
- *       '409':
- *         description: Conflito (natureza está associada a grupos)
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error409'
- */
+// Rotas públicas (GET)
+router.get('/', naturezaController.list);
+router.get('/:id', naturezaController.get);
+
+// Rotas exclusivas de Admin (POST, PUT, DELETE)
+router.use(authenticateAdmin);
+
+router.post('/', validate(createNaturezaSchema), naturezaController.create);
+router.put('/:id', validate(createNaturezaSchema), naturezaController.update);
 router.delete('/:id', naturezaController.remove);
 
 export default router;
