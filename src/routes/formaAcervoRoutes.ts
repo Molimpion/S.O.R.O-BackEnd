@@ -1,23 +1,23 @@
 import { Router } from 'express';
-import formaAcervoController from '../controllers/formaAcervoController';
+import { create, getAll, remove } from '../controllers/formaAcervoController'; // CORRIGIDO: Importação nomeada
+import { authenticateAdmin } from '../middleware/authMiddleware'; // CORRIGIDO: Middleware
 import { validate } from '../middleware/validate';
-import { createFormaAcervoSchema } from '../validators/formaAcervoValidator';
-import { authenticateAdmin } from '../middleware/authMiddleware';
+import { formaAcervoSchema } from '../validators/formaAcervoValidator'; // CORRIGIDO: Nome do schema
 
 const router = Router();
 
 // ======================================================
-// ==== ANOTAÇÕES SWAGGER (JSDoc) - FORMAS DE ACERVO ====
+// ==== ANOTAÇÕES SWAGGER (JSDoc) - FORMAS ACERVO ====
 // ======================================================
 
 /**
  * @swagger
  * tags:
  * name: Admin: Formas de Acervo
- * description: (Admin) Endpoints para gerenciar as formas de acionamento (ex: 193).
- * /api/v1/formas-acervo:  <-- CORRIGIDO
+ * description: (Admin) Endpoints para gerenciar as formas de acervo.
+ * /api/v1/formas-acervo: # CORRIGIDO: Prefix /v1 adicionado
  * post:
- * summary: Cria uma nova Forma de Acervo (apenas Admin)
+ * summary: Cria uma nova forma de acervo (apenas Admin)
  * tags: [Admin: Formas de Acervo]
  * security:
  * - bearerAuth: []
@@ -29,37 +29,25 @@ const router = Router();
  * $ref: '#/components/schemas/FormaAcervo'
  * responses:
  * 201:
- * description: Forma de Acervo criada com sucesso.
+ * description: Forma de acervo criada com sucesso.
  * content:
  * application/json:
  * schema:
  * $ref: '#/components/schemas/FormaAcervo'
  * 400:
  * description: Erro de validação.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error400'
  * 403:
  * description: Acesso negado (não é Admin).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
  * 409:
- * description: Conflito (forma de acervo já existe).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error409'
+ * description: Conflito (forma já existe).
  * get:
- * summary: Lista todas as Formas de Acervo
+ * summary: Lista todas as formas de acervo
  * tags: [Admin: Formas de Acervo]
  * security:
  * - bearerAuth: []
  * responses:
  * 200:
- * description: Lista de Formas de Acervo.
+ * description: Lista de formas de acervo.
  * content:
  * application/json:
  * schema:
@@ -68,83 +56,9 @@ const router = Router();
  * $ref: '#/components/schemas/FormaAcervo'
  * 401:
  * description: Não autorizado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error401'
- * /api/v1/formas-acervo/{id}:  <-- CORRIGIDO
- * get:
- * summary: Obtém uma Forma de Acervo pelo ID
- * tags: [Admin: Formas de Acervo]
- * security:
- * - bearerAuth: []
- * parameters:
- * - in: path
- * name: id
- * required: true
- * schema:
- * type: string
- * format: uuid
- * description: ID da forma de acervo
- * responses:
- * 200:
- * description: Detalhes da Forma de Acervo.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/FormaAcervo'
- * 404:
- * description: Forma de Acervo não encontrada.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
- * put:
- * summary: Atualiza uma Forma de Acervo pelo ID (apenas Admin)
- * tags: [Admin: Formas de Acervo]
- * security:
- * - bearerAuth: []
- * parameters:
- * - in: path
- * name: id
- * required: true
- * schema:
- * type: string
- * format: uuid
- * description: ID da forma de acervo
- * requestBody:
- * required: true
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/FormaAcervo'
- * responses:
- * 200:
- * description: Forma de Acervo atualizada com sucesso.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/FormaAcervo'
- * 400:
- * description: Erro de validação.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error400'
- * 403:
- * description: Acesso negado (não é Admin).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
- * 404:
- * description: Forma de Acervo não encontrada.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
+ * /api/v1/formas-acervo/{id}: # CORRIGIDO: Prefix /v1 adicionado
  * delete:
- * summary: Deleta uma Forma de Acervo pelo ID (apenas Admin)
+ * summary: Deleta uma forma de acervo pelo ID (apenas Admin)
  * tags: [Admin: Formas de Acervo]
  * security:
  * - bearerAuth: []
@@ -158,34 +72,17 @@ const router = Router();
  * description: ID da forma de acervo
  * responses:
  * 200:
- * description: Forma de Acervo deletada com sucesso.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/SuccessDelete'
+ * description: Forma de acervo deletada com sucesso.
  * 403:
  * description: Acesso negado (não é Admin).
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error403'
  * 404:
- * description: Forma de Acervo não encontrada.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error404'
+ * description: Forma de acervo não encontrada.
  */
 
-// Rotas públicas (GET)
-router.get('/', formaAcervoController.list);
-router.get('/:id', formaAcervoController.get);
-
-// Rotas exclusivas de Admin (POST, PUT, DELETE)
 router.use(authenticateAdmin);
 
-router.post('/', validate(createFormaAcervoSchema), formaAcervoController.create);
-router.put('/:id', validate(createFormaAcervoSchema), formaAcervoController.update);
-router.delete('/:id', formaAcervoController.remove);
+router.post('/', validate(formaAcervoSchema), create);
+router.get('/', getAll);
+router.delete('/:id', remove);
 
 export default router;
