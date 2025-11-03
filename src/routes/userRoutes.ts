@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { authenticateAdmin } from '../middleware/authMiddleware'; // CORRIGIDO: Middleware
+import { authenticateAdmin } from '../middleware/authMiddleware'; 
 import { getAll, getById, update, remove } from '../controllers/userController'; // CORRIGIDO: Importação nomeada
 import { validate } from '../middleware/validate';
-import { userUpdateSchema } from '../validators/authValidator'; // CORRIGIDO: Nome do schema
+import { userUpdateSchema } from '../validators/authValidator'; // CORRIGIDO: userUpdateSchema é o nome correto
 
 const router = Router();
 
@@ -15,7 +15,7 @@ const router = Router();
  * tags:
  * name: Admin: Usuários
  * description: (Admin) Endpoints para gerenciar os usuários.
- * /api/v1/users: # CORRIGIDO: Prefix /v1 adicionado
+ * /api/v1/users: 
  * get:
  * summary: Lista todos os usuários (apenas Admin)
  * tags: [Admin: Usuários]
@@ -26,7 +26,7 @@ const router = Router();
  * description: Lista de usuários.
  * 403:
  * description: Acesso negado (não é Admin).
- * /api/v1/users/{id}: # CORRIGIDO: Prefix /v1 adicionado
+ * /api/v1/users/{id}: 
  * get:
  * summary: Obtém um usuário pelo ID (apenas Admin)
  * tags: [Admin: Usuários]
