@@ -7,7 +7,7 @@
 @hostname = https://api-bombeiros-s-o-r-o.onrender.com
 # @hostname = http://localhost:3000
 
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZThjYmYzYy1jYmUxLTQ5ZjgtODllNi1hOWI1YjhlMjkzNzQiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjIxMjgwODgsImV4cCI6MTc2MjE1Njg4OH0.TN2aH3MLheeWJYwiil86gz6I-HAgovkPb-d_LJL2d5w
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZThjYmYzYy1jYmUxLTQ5ZjgtODllNi1hOWI1YjhlMjkzNzQiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjIyMTczOTQsImV4cCI6MTc2MjI0NjE5NH0.jPMDyevKlpQVIwFbj1RLjHkGGAHvlS3TDVlii-NJakE
 @subgrupoId =
 @formaAcervoId =
 @grupamentoId =
@@ -23,13 +23,12 @@
 
 ### 1.1 - Cadastrar o usuário ADMIN (Com Senha Definida)
 # @name createVictoriaAdminComSenha
-POST {{hostname}}/api/auth/register
+POST {{hostname}}/api/v1/auth/register
 Content-Type: application/json
 
 {
     "name": "Comandante Victoria",
     "email": "vickgzambom@gmail.com",
-    "password": "senhaForte123!",
     "profile": "ADMIN",
     "matricula": "100001-z" 
 }
@@ -37,7 +36,7 @@ Content-Type: application/json
 ### 1.2 - Fazer login como ADMIN
 # AÇÃO: Execute e copie o token da resposta para a variável @adminToken acima.
 # @name loginAdmin
-POST {{hostname}}/api/auth/login
+POST {{hostname}}/api/v1/auth/login
 Content-Type: application/json
 
 {
@@ -47,16 +46,16 @@ Content-Type: application/json
 
 ### Deletar o usuário Comandante Victoria
 # @name deleteVictoria
-DELETE {{hostname}}/api/users/ffd25e5c-ba3e-4938-b34a-3d2069ca12c3
+DELETE {{hostname}}/api/v1/users/ffd25e5c-ba3e-4938-b34a-3d2069ca12c3
 Authorization: Bearer {{adminToken}}
 
 ### 1.3 - Testar Acesso Admin (Listar Usuários)
-GET {{hostname}}/api/users
+GET {{hostname}}/api/v1/users
 Authorization: Bearer {{adminToken}}
 
 ### 1.4 - TESTE: Cadastrar Novo Usuário (Admin) - Deve Enviar E-mail
 # @name registerTestUserWithEmail
-POST {{hostname}}/api/auth/register
+POST {{hostname}}/api/v1/auth/register
 Authorization: Bearer {{adminToken}} 
 Content-Type: application/json
 
@@ -77,19 +76,19 @@ Content-Type: application/json
 
 ### 2.1 - POST: Criar Grupamento (Ex: Metropolitano / Comando)
 # @name createGrupamento
-POST {{hostname}}/api/grupamentos
+POST {{hostname}}/api/v1/grupamentos
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 { "nome_grupamento": "Grupamento de Bombeiros Metropolitano", "sigla": "GBM" }
 
 ### GET: Listar todos os grupamentos (Para encontrar o ID)
-GET {{hostname}}/api/grupamentos
+GET {{hostname}}/api/v1/grupamentos
 Authorization: Bearer {{adminToken}}
 
 ### POST: Criar a Unidade QCG (Corretamente)
 # @name createUnidade
-POST {{hostname}}/api/unidades-operacionais
+POST {{hostname}}/api/v1/unidades-operacionais
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
@@ -103,7 +102,7 @@ Content-Type: application/json
 
 ### 2.2.1 - POST: Criar Unidade (Centro de Manutenção)
 # @name createUnidadeCMan
-POST {{hostname}}/api/unidades-operacionais
+POST {{hostname}}/api/v1/unidades-operacionais
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
@@ -115,7 +114,7 @@ Content-Type: application/json
 
 ### 2.2.2 - POST: Criar Unidade (Centro de Atividades Técnicas)
 # @name createUnidadeCAT
-POST {{hostname}}/api/unidades-operacionais
+POST {{hostname}}/api/v1/unidades-operacionais
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
@@ -127,7 +126,7 @@ Content-Type: application/json
 
 ### 2.2.3 - POST: Criar Grupamento (Incêndio)
 # @name createGrupamentoGBI
-POST {{hostname}}/api/grupamentos
+POST {{hostname}}/api/v1/grupamentos
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
@@ -135,7 +134,7 @@ Content-Type: application/json
 
 ### 2.2.3.1 - POST: Criar Unidade-Sede do GBI
 # @name createUnidadeGBI
-POST {{hostname}}/api/unidades-operacionais
+POST {{hostname}}/api/v1/unidades-operacionais
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
@@ -147,7 +146,7 @@ Content-Type: application/json
 
 ### 2.2.4 - POST: Criar Grupamento (Atendimento Pré-Hospitalar)
 # @name createGrupamentoGBAPH
-POST {{hostname}}/api/grupamentos
+POST {{hostname}}/api/v1/grupamentos
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
@@ -155,7 +154,7 @@ Content-Type: application/json
 
 ### 2.2.4.1 - POST: Criar Unidade-Sede do GBAPH
 # @name createUnidadeGBAPH
-POST {{hostname}}/api/unidades-operacionais
+POST {{hostname}}/api/v1/unidades-operacionais
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
@@ -168,7 +167,7 @@ Content-Type: application/json
 
 ### 2.2.5 - POST: Criar Grupamento (Salvamento)
 # @name createGrupamentoGBS
-POST {{hostname}}/api/grupamentos
+POST {{hostname}}/api/v1/grupamentos
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
@@ -176,7 +175,7 @@ Content-Type: application/json
 
 ### 2.2.5.1 - POST: Criar Unidade-Sede do GBS
 # @name createUnidadeGBS
-POST {{hostname}}/api/unidades-operacionais
+POST {{hostname}}/api/v1/unidades-operacionais
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
@@ -189,7 +188,7 @@ Content-Type: application/json
 
 ### 2.2.6 - POST: Criar Grupamento (Marítimo)
 # @name createGrupamentoGBMar
-POST {{hostname}}/api/grupamentos
+POST {{hostname}}/api/v1/grupamentos
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
@@ -197,7 +196,7 @@ Content-Type: application/json
 
 ### 2.2.6.1 - POST: Criar Unidade-Sede do GBMar
 # @name createUnidadeGBMar
-POST {{hostname}}/api/unidades-operacionais
+POST {{hostname}}/api/v1/unidades-operacionais
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
@@ -212,7 +211,7 @@ Content-Type: application/json
 
 ### 2.3 - POST: Criar Natureza (Ex: Incêndio)
 # @name createNatureza
-POST {{hostname}}/api/naturezas
+POST {{hostname}}/api/v1/naturezas
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
@@ -220,7 +219,7 @@ Content-Type: application/json
 
 ### 2.4 - POST: Criar Grupo (Ex: Incêndio em Edificação)
 # @name createGrupo
-POST {{hostname}}/api/grupos
+POST {{hostname}}/api/v1/grupos
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
@@ -231,7 +230,7 @@ Content-Type: application/json
 
 ### 2.5 - POST: Criar Subgrupo (Ex: Incêndio em Residência)
 # @name createSubgrupo
-POST {{hostname}}/api/subgrupos
+POST {{hostname}}/api/v1/subgrupos
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
@@ -243,7 +242,7 @@ Content-Type: application/json
 
 ### 2.7 - POST: Criar Forma Acervo (Ex: Telefone 193)
 # @name createFormaAcervo
-POST {{hostname}}/api/formas-acervo
+POST {{hostname}}/api/v1/formas-acervo
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
@@ -256,7 +255,7 @@ Content-Type: application/json
 
 ### 3.1.1 - Cadastrar Analista (Quartel Central do Recife - QCG)
 # @name createAnalistaQCG
-POST {{hostname}}/api/auth/register
+POST {{hostname}}/api/v1/auth/register
 Content-Type: application/json
 
 {
@@ -270,7 +269,7 @@ Content-Type: application/json
 
 ### 3.1.2 - Cadastrar Analista (Centro de Atividades Técnicas - CAT)
 # @name createAnalistaCAT
-POST {{hostname}}/api/auth/register
+POST {{hostname}}/api/v1/auth/register
 Content-Type: application/json
 
 {
@@ -284,7 +283,7 @@ Content-Type: application/json
 
 ### 3.1.3 - Cadastrar Analista (Centro de Manutenção - CMan)
 # @name createAnalistaCMan
-POST {{hostname}}/api/auth/register
+POST {{hostname}}/api/v1/auth/register
 Content-Type: application/json
 
 {
@@ -298,7 +297,7 @@ Content-Type: application/json
 
 ### 3.1.4 - Cadastrar Analista (Sede do GBI - Incêndio)
 # @name createAnalistaGBI
-POST {{hostname}}/api/auth/register
+POST {{hostname}}/api/v1/auth/register
 Content-Type: application/json
 
 {
@@ -312,7 +311,7 @@ Content-Type: application/json
 
 ### 3.1.5 - Cadastrar Analista (Sede do GBAPH - Resgate)
 # @name createAnalistaGBAPH
-POST {{hostname}}/api/auth/register
+POST {{hostname}}/api/v1/auth/register
 Content-Type: application/json
 
 {
@@ -326,7 +325,7 @@ Content-Type: application/json
 
 ### 3.1.6 - Cadastrar Analista (Sede do GBS - Salvamento)
 # @name createAnalistaGBS
-POST {{hostname}}/api/auth/register
+POST {{hostname}}/api/v1/auth/register
 Content-Type: application/json
 
 {
@@ -340,7 +339,7 @@ Content-Type: application/json
 
 ### 3.1.7 - Cadastrar Analista (Sede do GBMar - Marítimo)
 # @name createAnalistaGBMar
-POST {{hostname}}/api/auth/register
+POST {{hostname}}/api/v1/auth/register
 Content-Type: application/json
 
 {
@@ -355,7 +354,7 @@ Content-Type: application/json
 ### 3.2 - Login como ANALISTA
 # AÇÃO: Execute e copie o token da resposta para a variável @analistaToken acima.
 # @name loginAnalista
-POST {{hostname}}/api/auth/login
+POST {{hostname}}/api/v1/auth/login
 Content-Type: application/json
 
 {
@@ -365,7 +364,7 @@ Content-Type: application/json
 
 ### 3.3 - POST: Criar Ocorrência (Incêndio Residencial na Boa Vista)
 # @name createOcorrencia
-POST {{hostname}}/api/ocorrencias
+POST {{hostname}}/api/v1/ocorrencias
 Authorization: Bearer {{analistaToken}}
 Content-Type: application/json
 
@@ -379,12 +378,12 @@ Content-Type: application/json
 }
 
 ### 3.4 - GET: Listar Ocorrências (Pendentes de Hoje)
-GET {{hostname}}/api/ocorrencias?status=PENDENTE&dataInicio=2025-10-21T00:00:00Z
+GET {{hostname}}/api/v1/ocorrencias?status=PENDENTE&dataInicio=2025-10-21T00:00:00Z
 Authorization: Bearer {{analistaToken}}
 
 ### 3.5 - GET: Detalhes da Ocorrência Criada
 # @name getOcorrenciaById
-GET {{hostname}}/api/ocorrencias/{{createOcorrencia.response.body.id_ocorrencia}}
+GET {{hostname}}/api/v1/ocorrencias/{{createOcorrencia.response.body.id_ocorrencia}}
 Authorization: Bearer {{analistaToken}}
 
 
@@ -393,29 +392,29 @@ Authorization: Bearer {{analistaToken}}
 # ===================================================================
 
 ### 4.1 - GET: KPI Ocorrências por Status
-GET {{hostname}}/api/dashboard/ocorrencias-por-status
+GET {{hostname}}/api/v1/dashboard/ocorrencias-por-status
 Authorization: Bearer {{adminToken}}
 
 ### 4.2 - GET: KPI Ocorrências por Bairro (Do Bairro Boa Vista)
-GET {{hostname}}/api/dashboard/ocorrencias-por-bairro?bairroId={{createBairro.response.body.id_bairro}}
+GET {{hostname}}/api/v1/dashboard/ocorrencias-por-bairro?bairroId={{createBairro.response.body.id_bairro}}
 Authorization: Bearer {{adminToken}}
 
 ### 4.3 - GET: Relatório CSV (Ocorrências de Incêndio Pendentes)
-GET {{hostname}}/api/relatorios?type=csv&status=PENDENTE&subgrupoId={{createSubgrupo.response.body.id_subgrupo}}
+GET {{hostname}}/api/v1/relatorios?type=csv&status=PENDENTE&subgrupoId={{createSubgrupo.response.body.id_subgrupo}}
 Authorization: Bearer {{adminToken}}
 
 ### 4.4 - GET: Relatório PDF (Todas as ocorrências do dia)
-GET {{hostname}}/api/relatorios?type=pdf&dataInicio=2025-10-21T00:00:00Z
+GET {{hostname}}/api/v1/relatorios?type=pdf&dataInicio=2025-10-21T00:00:00Z
 Authorization: Bearer {{adminToken}}
 
 ### GET: Listar todas as naturezas (Para pegar os IDs)
-GET {{hostname}}/api/naturezas
+GET {{hostname}}/api/v1/naturezas
 Authorization: Bearer {{adminToken}}
 
 ### GET: Listar todos os Grupos (Para pegar os IDs)
-GET {{hostname}}/api/grupos
+GET {{hostname}}/api/v1/grupos
 Authorization: Bearer {{adminToken}}
 
 ### GET: Listar todos os Subgrupos (Para pegar os IDs)
-GET {{hostname}}/api/subgrupos
+GET {{hostname}}/api/v1/subgrupos
 Authorization: Bearer {{adminToken}}
