@@ -1,5 +1,3 @@
-// src/services/ocorrenciaService.ts (CORRIGIDO)
-
 import PDFDocument from 'pdfkit';
 import { stringify } from 'csv-stringify/sync';
 import { PrismaClient, Status, Ocorrencia, Prisma } from '@prisma/client';
@@ -8,12 +6,11 @@ import {
   NotFoundError, 
   UnauthorizedError
 } from '../errors/api-errors';
-// --- 1. IMPORTAR 'Express' PARA OS TIPOS ---
-import { Express } from 'express'; 
+import { Express } from 'express'; // Importa Express para os tipos do Multer
 
 const prisma = new PrismaClient();
 
-// ... (Interfaces e funções CRUD existentes) ...
+// ... (Interfaces e funções CRUD (create, getAll, getById, update) - sem mudanças) ...
 interface CreateOcorrenciaData {
  data_acionamento: string | Date;
  hora_acionamento: string | Date;
@@ -164,11 +161,12 @@ export const updateOcorrencia = async (
   return updatedOcorrencia;
 };
 
-// --- FUNÇÃO DE UPLOAD DE MÍDIA (agora válida) ---
+
+// Função de Upload (agora correta)
 export const addMidiaToOcorrencia = async (
   ocorrenciaId: string, 
   userId: string, 
-  file: Express.Multer.File // <-- Este tipo agora será encontrado
+  file: Express.Multer.File // <-- Tipo agora é reconhecido
 ) => {
   
   const ocorrencia = await prisma.ocorrencia.findUnique({
@@ -194,7 +192,7 @@ export const addMidiaToOcorrencia = async (
   return novaMidia;
 };
 
-// ... (Funções de exportação) ...
+// ... (Funções de exportação - sem mudanças) ...
 export const getOcorrenciasForExport = async (filters: OcorrenciaFilters) => {
  const { dataInicio, dataFim, status, bairroId, subgrupoId } = filters;
  const where: any = {};

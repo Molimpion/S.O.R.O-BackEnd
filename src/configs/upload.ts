@@ -1,13 +1,9 @@
-// src/configs/upload.ts (CORRIGIDO)
-
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
-// --- 1. IMPORTAR FileFilterCallback ---
-import multer, { FileFilterCallback } from 'multer'; 
+import multer, { FileFilterCallback } from 'multer'; // Importa FileFilterCallback
 import { Request } from 'express';
 import { ApiError } from '../errors/api-errors';
-// --- 2. CORRIGIR CAMINHO (assumindo que environment.ts está em 'configs') ---
-import { env } from './environment'; 
+import { env } from './environment';
 
 cloudinary.config({ 
   cloud_name: env.cloudinary.cloudName, 
@@ -27,15 +23,13 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ 
   storage: storage,
-  // --- 3. USAR O TIPO CORRETO ---
   fileFilter: (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => { 
     const allowedMimes = ['image/jpeg', 'image/png', 'video/mp4', 'video/quicktime'];
     
     if (allowedMimes.includes(file.mimetype)) {
-      cb(null, true); // Aceita o arquivo
+      cb(null, true); // Aceita
     } else {
-      // --- 4. CORREÇÃO: Rejeita com um erro (sem o 'false') ---
-      cb(new ApiError('Tipo de arquivo inválido.', 400));
+      cb(new ApiError('Tipo de arquivo inválido.', 400)); // Rejeita
     }
   },
   limits: {
