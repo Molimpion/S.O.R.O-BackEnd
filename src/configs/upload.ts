@@ -1,23 +1,25 @@
+// src/configs/upload.ts (CORRIGIDO)
+
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
-import multer from 'multer';
+// --- 1. IMPORTAR FileFilterCallback ---
+import multer, { FileFilterCallback } from 'multer'; 
+import { Request } from 'express';
 import { ApiError } from '../errors/api-errors';
-// 1. Importa a configuração centralizada
-import { env } from './environment';
+// --- 2. CORRIGIR CAMINHO (assumindo que environment.ts está em 'configs') ---
+import { env } from './environment'; 
 
-// 2. Configura o Cloudinary usando o objeto 'env'
 cloudinary.config({ 
   cloud_name: env.cloudinary.cloudName, 
   api_key: env.cloudinary.apiKey, 
   api_secret: env.cloudinary.apiSecret 
 });
 
-// O resto do arquivo permanece o mesmo
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: async (req, file) => {
+  params: async (req: Request, file: Express.Multer.File) => { 
     return {
-      folder: 'soro-midia', 
+      folder: 'soro-midia',
       allowed_formats: ['jpg', 'png', 'jpeg', 'mp4', 'm4v'],
     };
   },
@@ -25,11 +27,14 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ 
   storage: storage,
-  fileFilter: (req, file, cb) => {
+  // --- 3. USAR O TIPO CORRETO ---
+  fileFilter: (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => { 
     const allowedMimes = ['image/jpeg', 'image/png', 'video/mp4', 'video/quicktime'];
+    
     if (allowedMimes.includes(file.mimetype)) {
-      cb(null, true);
+      cb(null, true); // Aceita o arquivo
     } else {
+      // --- 4. CORREÇÃO: Rejeita com um erro (sem o 'false') ---
       cb(new ApiError('Tipo de arquivo inválido.', 400));
     }
   },

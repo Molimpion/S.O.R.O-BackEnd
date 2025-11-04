@@ -1,12 +1,14 @@
-// src/controllers/ocorrenciaController.ts (COM UPLOAD DE MÍDIA)
+// src/controllers/ocorrenciaController.ts (CORRIGIDO)
 
-import { Request, Response } from 'express';
+// --- 1. IMPORTAR 'Express' PARA OS TIPOS ---
+import { Request, Response, Express } from 'express'; 
 import * as ocorrenciaService from '../services/ocorrenciaService';
-import { BadRequestError } from '../errors/api-errors'; // Importa o erro para o upload
+import { BadRequestError } from '../errors/api-errors'; 
 
-// Esta interface é necessária para extrair o 'userId' do token
+// --- 2. ATUALIZAR INTERFACE ---
 interface AuthRequest extends Request {
   user?: { userId: string; profile: string };
+  file?: Express.Multer.File; // <-- Propriedade 'file' adicionada
 }
 
 export const create = async (req: AuthRequest, res: Response) => {
@@ -40,21 +42,17 @@ export const update = async (req: AuthRequest, res: Response) => {
   res.status(200).json(ocorrenciaAtualizada);
 };
 
-// --- FUNÇÃO DE UPLOAD ADICIONADA ---
-/**
- * Handler para fazer upload de um arquivo de mídia para uma ocorrência.
- */
+// --- FUNÇÃO DE UPLOAD (agora válida) ---
 export const uploadMidia = async (req: AuthRequest, res: Response) => {
-  const { id } = req.params; // ID da ocorrência
-  const userId = req.user!.userId; // ID do usuário (do token)
+  const { id } = req.params; 
+  const userId = req.user!.userId; 
 
-  // 1. Verifica se o arquivo foi enviado (o multer coloca em req.file)
+  // Esta verificação agora é válida
   if (!req.file) {
     throw new BadRequestError('Nenhum arquivo enviado.');
   }
 
-  // 2. Chama o serviço para salvar a URL no banco de dados
-  // (A função 'addMidiaToOcorrencia' está no ocorrenciaService.ts)
+  // Esta chamada agora é válida
   const novaMidia = await ocorrenciaService.addMidiaToOcorrencia(
     id,
     userId,
@@ -63,4 +61,3 @@ export const uploadMidia = async (req: AuthRequest, res: Response) => {
 
   res.status(201).json({ message: 'Mídia enviada com sucesso!', data: novaMidia });
 };
-// --- FIM DA FUNÇÃO ADICIONADA ---
