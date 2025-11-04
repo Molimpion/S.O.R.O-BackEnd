@@ -1,10 +1,8 @@
-import 'express-async-errors';
-import dotenv from 'dotenv';
-dotenv.config();
+// src/index.ts (Completo e usando a config centralizada)
 
-if (!process.env.JWT_SECRET) {
-  throw new Error('JWT_SECRET não está definido no arquivo .env');
-}
+import 'express-async-errors';
+// 1. Importa o 'env' centralizado (que já carregou e validou tudo)
+import { env } from './configs/environment';
 
 import express from 'express';
 import bodyParser from 'body-parser';
@@ -13,10 +11,11 @@ import { authenticateToken } from './middleware/authMiddleware';
 
 // --- Imports para o Swagger ---
 import swaggerUi from 'swagger-ui-express';
-import swaggerSpec from './swaggerConfig'; // Importa nossa configuração
-// --- Fim dos imports do Swagger ---
+// 2. Mova o swaggerConfig para a pasta 'config' (se você fez isso)
+// Se não moveu, mantenha como './swaggerConfig'
+import swaggerSpec from './configs/swaggerConfig'; 
 
-// Importações das rotas existentes
+// Importações das rotas
 import authRoutes from './routes/authRoutes';
 import ocorrenciaRoutes from './routes/ocorrenciaRoutes';
 import userRoutes from './routes/userRoutes';
@@ -33,31 +32,25 @@ import dashboardRoutes from './routes/dashboardRoutes';
 import municipioRoutes from './routes/municipioRoutes'; 
 
 const app = express();
-const PORT = process.env.PORT || 3000; 
+// 3. Usa a porta do 'env'
+const PORT = env.port; 
 
 app.use(bodyParser.json());
 
-// --- Rota da Documentação (Swagger) ---
-// Esta rota (e a raiz) permanecem públicas e sem versão
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.get('/', (req, res) => { res.send('API S.O.R.O. está funcionando! Acesse /api/docs para a documentação.') });
 
-
-// --- INÍCIO DA MODIFICAÇÃO (VERSIONAMENTO) ---
-
-// Rotas de autenticação (agora com /v1/)
+// Rotas públicas
 app.use('/api/v1/auth', authRoutes); 
 
 // Middleware de autenticação para as rotas seguintes
 app.use(authenticateToken);
 
-// Rotas protegidas (agora com /v1/)
+// Rotas protegidas
 app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1/relatorios', relatorioRoutes);
 app.use('/api/v1/ocorrencias', ocorrenciaRoutes);
 app.use('/api/v1/users', userRoutes);
-
-// Rotas administrativas (CRUDs de suporte) (agora com /v1/)
 app.use('/api/v1/municipios', municipioRoutes); 
 app.use('/api/v1/bairros', bairroRoutes);
 app.use('/api/v1/naturezas', naturezaRoutes);
@@ -68,10 +61,7 @@ app.use('/api/v1/grupamentos', grupamentoRoutes);
 app.use('/api/v1/unidades-operacionais', unidadeOperacionalRoutes);
 app.use('/api/v1/viaturas', viaturaRoutes);
 
-// --- FIM DA MODIFICAÇÃO ---
-
-
-// Middleware de tratamento de erros (deve ser o último)
+// Middleware de tratamento de erros
 app.use(errorMiddleware);
 
 app.listen(PORT, () => {

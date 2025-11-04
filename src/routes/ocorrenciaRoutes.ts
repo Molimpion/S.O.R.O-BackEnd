@@ -1,14 +1,21 @@
-// src/routes/ocorrenciaRoutes.ts 
+// src/routes/ocorrenciaRoutes.ts
 
 import { Router } from 'express';
-import { create, getAll, getById, update } from '../controllers/ocorrenciaController'; // CORRIGIDO: Importação nomeada
-import { authenticateToken, checkAdmin } from '../middleware/authMiddleware'; 
+import {
+  create,
+  getAll,
+  getById,
+  update,
+  uploadMidia,
+} from '../controllers/ocorrenciaController';
+import { authenticateToken } from '../middleware/authMiddleware';
 import { validate } from '../middleware/validate';
-import { 
-  createOcorrenciaSchema, 
+import {
+  createOcorrenciaSchema,
   listOcorrenciaSchema,
-  putOcorrenciaSchema // CORRIGIDO
-} from '../validators/ocorrenciaValidator'; 
+  putOcorrenciaSchema,
+} from '../validators/ocorrenciaValidator';
+import upload from '../configs/upload'; // Middleware de upload (Multer/Cloudinary)
 
 const router = Router();
 
@@ -33,7 +40,7 @@ const router = Router();
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/OcorrenciaCreate'
+ *             $ref: '#/components/schemas/OcorrenciaInput'
  *     responses:
  *       201:
  *         description: Ocorrência criada com sucesso.
@@ -52,24 +59,30 @@ const router = Router();
  *         name: status
  *         schema:
  *           type: string
- *           enum: [EM_ANDAMENTO, FINALIZADA, CANCELADA]
+ *           enum: [PENDENTE, EM_ANDAMENTO, CONCLUIDO, CANCELADO]
  *         description: Filtrar por status (opcional)
  *       - in: query
- *         name: unidadeOperacionalId
+ *         name: subgrupoId
  *         schema:
  *           type: string
  *           format: uuid
- *         description: Filtrar por Unidade Operacional (opcional)
+ *         description: Filtrar por Subgrupo (opcional)
  *       - in: query
- *         name: skip
+ *         name: bairroId
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Filtrar por Bairro (opcional)
+ *       - in: query
+ *         name: page
  *         schema:
  *           type: integer
- *         description: Número de itens para pular (opcional)
+ *         description: Número da página (default: 1)
  *       - in: query
- *         name: take
+ *         name: limit
  *         schema:
  *           type: integer
- *         description: Número máximo de itens a retornar (opcional)
+ *         description: Quantidade máxima de itens (default: 10)
  *     responses:
  *       200:
  *         description: Lista de ocorrências.
@@ -97,7 +110,7 @@ const router = Router();
  *         description: Ocorrência não encontrada.
  *
  *   put:
- *     summary: Atualiza uma ocorrência pelo ID
+ *     summary: Atualiza uma ocorrência pelo ID (apenas o criador)
  *     tags: [Ocorrências]
  *     security:
  *       - bearerAuth: []
@@ -114,12 +127,60 @@ const router = Router();
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/OcorrenciaUpdate'
+ *             type: object
+ *             properties:
+ *               status_situacao:
+ *                 type: string
+ *                 enum: [PENDENTE, EM_ANDAMENTO, CONCLUIDO, CANCELADO]
+ *               data_execucao_servico:
+ *                 type: string
+ *                 format: date-time
+ *                 nullable: true
+ *               relacionado_eleicao:
+ *                 type: boolean
+ *               nr_aviso:
+ *                 type: string
+ *                 nullable: true
  *     responses:
  *       200:
  *         description: Ocorrência atualizada com sucesso.
  *       400:
  *         description: Erro de validação.
+ *       403:
+ *         description: Acesso negado (não é o criador).
+ *       404:
+ *         description: Ocorrência não encontrada.
+ *
+ * /api/v1/ocorrencias/{id}/midia:
+ *   post:
+ *     summary: Faz upload de uma nova mídia (imagem ou vídeo) para uma ocorrência
+ *     tags: [Ocorrências]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID da ocorrência
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               midia:
+ *                 type: string
+ *                 format: binary
+ *                 description: Arquivo de mídia (imagem ou vídeo)
+ *     responses:
+ *       201:
+ *         description: Mídia enviada com sucesso.
+ *       400:
+ *         description: Erro de validação ou nenhum arquivo enviado.
  *       404:
  *         description: Ocorrência não encontrada.
  */
@@ -128,18 +189,10 @@ router.use(authenticateToken);
 
 router.get('/', validate(listOcorrenciaSchema), getAll);
 router.get('/:id', getById);
-router.post(
-  '/',
-  validate(createOcorrenciaSchema),
-  create
-);
-router.put(
-  '/:id',
-  validate(putOcorrenciaSchema), // CORRIGIDO
-  update
-);
+router.post('/', validate(createOcorrenciaSchema), create);
+router.put('/:id', validate(putOcorrenciaSchema), update);
 
-// Adicione a rota DELETE se necessário:
-// router.delete('/:id', [authenticateToken, checkAdmin], remove); 
+// Upload de mídia (imagem/vídeo)
+router.post('/:id/midia', upload.single('midia'), uploadMidia);
 
 export default router;

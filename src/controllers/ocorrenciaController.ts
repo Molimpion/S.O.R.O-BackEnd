@@ -1,9 +1,10 @@
-// src/controllers/ocorrenciaController.ts (COM UPDATE CORRIGIDO)
+// src/controllers/ocorrenciaController.ts (COM UPLOAD DE MÍDIA)
 
 import { Request, Response } from 'express';
 import * as ocorrenciaService from '../services/ocorrenciaService';
+import { BadRequestError } from '../errors/api-errors'; // Importa o erro para o upload
 
-// Esta interface já existe no seu arquivo e é essencial
+// Esta interface é necessária para extrair o 'userId' do token
 interface AuthRequest extends Request {
   user?: { userId: string; profile: string };
 }
@@ -25,30 +26,41 @@ export const getById = async (req: Request, res: Response) => {
   res.status(200).json(ocorrencia);
 };
 
-// --- ALTERAÇÃO (PASSO 3 CORRIGIDO) ---
-/**
- * Handler para atualizar uma ocorrência.
- * Pega os dados da requisição e o ID do usuário logado
- * e os repassa para o serviço de ocorrência.
- */
-export const update = async (req: AuthRequest, res: Response) => { // <-- 1. Usa AuthRequest
-  // O ID vem dos parâmetros da URL
+export const update = async (req: AuthRequest, res: Response) => { 
   const { id } = req.params; 
-  
-  // Os dados vêm do corpo da requisição
   const data = req.body; 
-  
-  // 2. (CORREÇÃO) O ID do usuário vem do token JWT
-  //
   const userId = req.user!.userId; 
 
-  // 3. (CORREÇÃO) Chama o serviço com os 3 argumentos obrigatórios
   const ocorrenciaAtualizada = await ocorrenciaService.updateOcorrencia(
     id,
     data,
-    userId // <-- 4. Passa o userId para o serviço (Passo 2)
+    userId 
   );
   
   res.status(200).json(ocorrenciaAtualizada);
 };
-// --- FIM DA ALTERAÇÃO ---
+
+// --- FUNÇÃO DE UPLOAD ADICIONADA ---
+/**
+ * Handler para fazer upload de um arquivo de mídia para uma ocorrência.
+ */
+export const uploadMidia = async (req: AuthRequest, res: Response) => {
+  const { id } = req.params; // ID da ocorrência
+  const userId = req.user!.userId; // ID do usuário (do token)
+
+  // 1. Verifica se o arquivo foi enviado (o multer coloca em req.file)
+  if (!req.file) {
+    throw new BadRequestError('Nenhum arquivo enviado.');
+  }
+
+  // 2. Chama o serviço para salvar a URL no banco de dados
+  // (A função 'addMidiaToOcorrencia' está no ocorrenciaService.ts)
+  const novaMidia = await ocorrenciaService.addMidiaToOcorrencia(
+    id,
+    userId,
+    req.file
+  );
+
+  res.status(201).json({ message: 'Mídia enviada com sucesso!', data: novaMidia });
+};
+// --- FIM DA FUNÇÃO ADICIONADA ---

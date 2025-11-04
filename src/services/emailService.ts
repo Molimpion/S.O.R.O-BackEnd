@@ -1,22 +1,21 @@
-// Em: src/services/emailService.ts (MODIFICADO PARA USAR A API REST DO BREVO)
+// src/services/emailService.ts (CORRIGIDO)
 
-import dotenv from 'dotenv';
+// 1. Importa a configuração centralizada
+import { env } from '../configs/environment';
 
-dotenv.config(); // Garante que as variáveis de .env sejam carregadas
+// 2. Extrai as variáveis limpas do objeto 'env'
+const brevoApiKey = env.brevo.apiKey; 
+const emailFrom = env.brevo.emailFrom;
 
-// 1. Validação das Variáveis de Ambiente
-// Vamos usar uma variável específica para a API Key para ser mais claro
-const brevoApiKey = process.env.BREVO_API_KEY; 
-const emailFrom = process.env.EMAIL_FROM!; // Ex: "Sistema S.O.R.O." <seu.email@exemplo.com>
+// 3. (REMOVIDO) O dotenv.config() e as validações
+//     foram movidos para 'src/config/environment.ts'
 
-// Tenta extrair o email e o nome do EMAIL_FROM
+// O resto do seu arquivo permanece o mesmo
 const emailFromParsed = emailFrom ? emailFrom.match(/<([^>]+)>/) : null;
 const senderEmail = emailFromParsed ? emailFromParsed[1] : null;
+// --- CORREÇÃO AQUI (ponto e vírgula adicionado) ---
 const senderName = emailFrom ? emailFrom.split('<')[0].replace(/"/g, '').trim() : null;
-
-if (!brevoApiKey || !senderEmail || !senderName) {
-  throw new Error('Variáveis de ambiente BREVO_API_KEY ou EMAIL_FROM (no formato "Nome" <email@exemplo.com>) não estão definidas!');
-}
+// --- FIM DA CORREÇÃO ---
 
 /**
  * Envia um e-mail de boas-vindas para um novo usuário com sua senha temporária.
@@ -40,11 +39,16 @@ export const sendWelcomeEmail = async (to: string, name: string, tempPassword: s
     <p>Equipe S.O.R.O.</p>
   `;
 
-  // 2. Monta o payload para a API v3 do Brevo
+  // Validação interna para garantir que o parsing do email funcionou
+  if (!senderEmail || !senderName) {
+    console.error('Falha ao fazer o parse do EMAIL_FROM. Verifique o formato no .env');
+    throw new Error('Configuração de e-mail do remetente inválida.');
+  }
+
   const payload = {
     sender: {
-      name: senderName,
-      email: senderEmail
+      name: senderName, // <-- O '!' não é mais necessário devido à validação acima
+      email: senderEmail 
     },
     to: [
       { email: to, name: name }
@@ -54,20 +58,17 @@ export const sendWelcomeEmail = async (to: string, name: string, tempPassword: s
   };
 
   try {
-    // 3. Envia a requisição usando fetch (HTTPS, Porta 443)
     const response = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
       headers: {
         'accept': 'application/json',
-        'api-key': brevoApiKey, // <- Autentica com a API Key
+        'api-key': brevoApiKey, 
         'content-type': 'application/json'
       },
       body: JSON.stringify(payload)
     });
 
-    // 4. Verifica se a API do Brevo aceitou o envio
     if (!response.ok) {
-      // Se o Brevo der um erro (4xx, 5xx), captura os detalhes
       const errorData = await response.json();
       console.error(`Erro da API do Brevo ao enviar e-mail para ${to}:`, errorData);
       throw new Error(`Falha na API do Brevo: ${errorData.message || response.statusText}`);
@@ -78,7 +79,6 @@ export const sendWelcomeEmail = async (to: string, name: string, tempPassword: s
   
   } catch (error) {
     console.error(`Erro crítico ao enviar e-mail de boas-vindas para ${to}:`, error);
-    // Lança o erro para que o authService possa fazer o rollback
     throw new Error('Falha ao enviar e-mail de boas-vindas.'); 
   }
 };
