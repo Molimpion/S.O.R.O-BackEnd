@@ -1,17 +1,25 @@
-import { Request, Response, Express } from 'express'; // Importa Express
-import * as ocorrenciaService from '../services/ocorrenciaService';
-import { BadRequestError } from '../errors/api-errors'; 
+// src/controllers/ocorrenciaController.ts (COM SOCKET.IO)
 
-// Atualiza a interface
+import { Request, Response, Express } from 'express';
+import * as ocorrenciaService from '../services/ocorrenciaService';
+import { BadRequestError } from '../errors/api-errors';
+
+// Interface atualizada para incluir 'file' (para o upload)
 interface AuthRequest extends Request {
   user?: { userId: string; profile: string };
-  file?: Express.Multer.File; // Adiciona a propriedade 'file'
+  file?: Express.Multer.File;
 }
 
-// ... (create, getAll, getById - sem mudanças) ...
 export const create = async (req: AuthRequest, res: Response) => {
   const userId = req.user!.userId;
   const novaOcorrencia = await ocorrenciaService.createOcorrencia(req.body, userId);
+
+  // --- EMITIR SOCKET ---
+  // Notifica todos os clientes conectados sobre a nova ocorrência
+  const io = req.app.get('io');
+  io.emit('nova_ocorrencia', novaOcorrencia); 
+  // --- FIM DO SOCKET ---
+
   res.status(201).json(novaOcorrencia);
 };
 
@@ -37,16 +45,24 @@ export const update = async (req: AuthRequest, res: Response) => {
     userId 
   );
   
+  // --- EMITIR SOCKET ---
+  // Notifica todos sobre a atualização (ex: mudança de status)
+  const io = req.app.get('io');
+  io.emit('ocorrencia_atualizada', ocorrenciaAtualizada);
+  // --- FIM DO SOCKET ---
+  
   res.status(200).json(ocorrenciaAtualizada);
 };
 
-
-// Função de Upload (agora correta)
+// --- FUNÇÃO DE UPLOAD ADICIONADA (das etapas anteriores) ---
+/**
+ * Handler para fazer upload de um arquivo de mídia para uma ocorrência.
+ */
 export const uploadMidia = async (req: AuthRequest, res: Response) => {
-  const { id } = req.params; 
-  const userId = req.user!.userId; 
+  const { id } = req.params; // ID da ocorrência
+  const userId = req.user!.userId; // ID do usuário (do token)
 
-  if (!req.file) { // Agora req.file é reconhecido
+  if (!req.file) {
     throw new BadRequestError('Nenhum arquivo enviado.');
   }
 
@@ -55,6 +71,13 @@ export const uploadMidia = async (req: AuthRequest, res: Response) => {
     userId,
     req.file
   );
+
+  // --- EMITIR SOCKET ---
+  // Notifica o frontend que novas mídias foram adicionadas a uma ocorrência
+  const io = req.app.get('io');
+  // Envia a mídia e também o ID da ocorrência pai
+  io.emit('media_adicionada', { ...novaMidia, ocorrenciaId: id }); 
+  // --- FIM DO SOCKET ---
 
   res.status(201).json({ message: 'Mídia enviada com sucesso!', data: novaMidia });
 };

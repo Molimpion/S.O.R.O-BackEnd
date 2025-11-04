@@ -1,8 +1,17 @@
+// src/controllers/grupamentoController.ts (COM SOCKET.IO)
+
 import { Request, Response } from 'express';
 import { createGrupamento, getAllGrupamentos, deleteGrupamento } from '../services/grupamentoService';
 
 export const create = async (req: Request, res: Response) => {
   const novoGrupamento = await createGrupamento(req.body);
+
+  // --- EMITIR SOCKET ---
+  const io = req.app.get('io');
+  io.emit('lista_grupamentos_atualizada', { action: 'create', data: novoGrupamento });
+  // --- FIM DO SOCKET ---
+  
+  // O seu service não encapsula em 'data', então envio 'novoGrupamento' direto
   res.status(201).json({ message: 'Grupamento criado com sucesso!', data: novoGrupamento });
 };
 
@@ -14,5 +23,11 @@ export const getAll = async (req: Request, res: Response) => {
 export const remove = async (req: Request, res: Response) => {
   const { id } = req.params;
   await deleteGrupamento(id);
+
+  // --- EMITIR SOCKET ---
+  const io = req.app.get('io');
+  io.emit('lista_grupamentos_atualizada', { action: 'delete', data: { id } });
+  // --- FIM DO SOCKET ---
+
   res.status(200).json({ message: 'Grupamento deletado com sucesso.' });
 };
