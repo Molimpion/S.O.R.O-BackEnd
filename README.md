@@ -1,17 +1,15 @@
-# Projeto Integrador - Painel Web Bombeiros (Backend)
-
 **Repositório do Backend da Aplicação S.O.R.O.**
 
------
+---
 
 *Projeto Integrador da Turma 44 da Faculdade Senac Pernambuco.*
 *Professores Responsáveis: Danilo Farias, Geraldo Gomes, Marcos Tenorio e Sônia Gomes.*
 
-        [](https://www.google.com/search?q=%5Bhttps://render.com%5D\(https://render.com\))
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white) ![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white) ![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white) [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com)
 
 ## 1\. Visão Geral
 
-Este repositório contém o código-fonte do backend para o Painel Web do Projeto Bombeiros (S.O.R.O.). Trata-se de uma API RESTful robusta, segura e escalável, projetada para gerir utilizadores, ocorrências, logs de auditoria e todas as entidades de suporte necessárias para a operação.
+Este repositório contém o código-fonte do backend para o Painel Web do Projeto Bombeiros (S.O.R.O.). Trata-se de uma API RESTful robusta, segura e escalável, projetada para gerir utilizadores, ocorrências, logs de auditoria e todas as entidades de suporte necessárias para a operação, com base no Modelo Entidade-Relacionamento (MER) fornecido.
 
 **API ao vivo:** [https://api-bombeiros-s-o-r-o.onrender.com](https://api-bombeiros-s-o-r-o.onrender.com)
 
@@ -140,7 +138,7 @@ O projeto inclui um ficheiro `api-tests/requests.http` com uma suíte de testes 
 
 | Método | Endpoint | Descrição | Acesso |
 | :--- | :--- | :--- | :--- |
-| `POST` | `/register` | Regista um novo utilizador. | Admin |
+| `POST` | `/register` | Regista um novo utilizador. | Público |
 | `POST` | `/login` | Autentica um utilizador e retorna um token JWT. | Público |
 
 #### Ocorrências (`/api/v1/ocorrencias`)
