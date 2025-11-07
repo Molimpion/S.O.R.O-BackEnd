@@ -62,6 +62,15 @@ app.use(bodyParser.json());
 
 // --- Rotas Públicas ---
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// =======================================================================
+// ==== ROTA ADICIONADA PARA O FRONTEND (GERAR API CLIENT) ====
+app.get('/api-docs-json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+// =======================================================================
+
 app.get('/', (req, res) => { res.send('API S.O.R.O. está funcionando! Acesse /api/docs para a documentação.') });
 app.use('/api/v1/auth', authRoutes); 
 
