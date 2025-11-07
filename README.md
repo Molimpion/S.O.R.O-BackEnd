@@ -28,7 +28,6 @@ A implementação de todos os requisitos funcionais do backend foi **concluída,
   - [x] **W-07 | Dashboard Operacional (KPI simples):** Completo.
   - [x] **(Novo) | Upload de Mídia:** Completo (via Cloudinary).
   - [x] **(Novo) | Notificações Real-Time:** Completo (via Socket.io).
-  - [ ] **W-08 | Catálogo/Form Builder:** Fora do escopo atual (marcado como "Futuro").
 
 ## 3\. Arquitetura e Decisões de Design
 
