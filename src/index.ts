@@ -1,16 +1,23 @@
-// src/index.ts (CORRIGIDO com tipos do Socket.io)
+// src/index.ts (CORRIGIDO para Sentry V7)
 
 import 'express-async-errors';
-import { env } from './configs/environment';
 
+// --- 1. IMPORTAÇÕES (Sentry V7 e Pino) ---
+import * as Sentry from '@sentry/node';
+// A V7 REQUER ESTE PACOTE SEPARADO PARA TRACING
+import * as Tracing from '@sentry/tracing'; 
+import { logger } from './configs/logger'; // O nosso logger Pino
+import pinoHttp from 'pino-http'; // O logger de requisições
+// --- FIM DAS NOVAS IMPORTAÇÕES ---
+
+import { env } from './configs/environment';
 import express from 'express';
 import bodyParser from 'body-parser';
 import helmet from 'helmet';
 
-// --- 1. IMPORTAR 'Socket' E 'Server' ---
+// --- Importações originais ---
 import http from 'http';
-import { Server, Socket } from 'socket.io'; // <-- TIPO 'Socket' ADICIONADO
-
+import { Server, Socket } from 'socket.io';
 import { errorMiddleware } from './middleware/errorMiddleware';
 import { authenticateToken } from './middleware/authMiddleware';
 
@@ -34,6 +41,23 @@ import relatorioRoutes from './routes/relatorioRoutes';
 import dashboardRoutes from './routes/dashboardRoutes';
 import municipioRoutes from './routes/municipioRoutes'; 
 
+// --- 2. INICIALIZE O SENTRY V7 (ANTES DE "const app = express()") ---
+Sentry.init({
+  dsn: env.sentry.dsn,
+  enabled: process.env.NODE_ENV === 'production', 
+  integrations: [
+    // A sintaxe da V7 usa Sentry.Integrations
+    new Sentry.Integrations.Http({ tracing: true }),
+    // A integração do Prisma na V7 vem do pacote @sentry/tracing
+    new Tracing.Integrations.Prisma(),
+  ],
+  tracesSampleRate: 1.0, 
+  // O profiling da V7 não é compatível da mesma forma,
+  // então removemos 'profilesSampleRate' por agora.
+});
+// --- FIM DA INICIALIZAÇÃO DO SENTRY ---
+
+
 const app = express();
 const PORT = env.port; 
 
@@ -48,17 +72,26 @@ const io = new Server(httpServer, {
 
 app.set('io', io);
 
-// --- 2. ADICIONAR O TIPO 'Socket' ---
-io.on('connection', (socket: Socket) => { // <-- TIPO ADICIONADO AQUI
-  console.log(`Cliente conectado via Socket.io: ${socket.id}`);
+io.on('connection', (socket: Socket) => {
+  logger.info(`Cliente conectado via Socket.io: ${socket.id}`);
   socket.on('disconnect', () => {
-    console.log(`Cliente desconectado: ${socket.id}`);
+    logger.info(`Cliente desconectado: ${socket.id}`);
   });
 });
 
 // --- Middlewares ---
 app.use(helmet()); 
 app.use(bodyParser.json());
+
+// --- 3. ADICIONE OS HANDLERS DO SENTRY V7 E PINO (AQUI) ---
+// A sintaxe da V7 usa Sentry.Handlers
+app.use(Sentry.Handlers.requestHandler());
+app.use(Sentry.Handlers.tracingHandler());
+
+// Logger de requisições (Pino-HTTP)
+app.use(pinoHttp({ logger }));
+// --- FIM DOS HANDLERS ---
+
 
 // --- Rotas Públicas ---
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -92,11 +125,18 @@ app.use('/api/v1/grupamentos', grupamentoRoutes);
 app.use('/api/v1/unidades-operacionais', unidadeOperacionalRoutes);
 app.use('/api/v1/viaturas', viaturaRoutes);
 
+// --- 4. AJUSTE OS MIDDLEWARES DE ERRO (NO FIM) ---
+
+// A sintaxe da V7 usa Sentry.Handlers
+app.use(Sentry.Handlers.errorHandler());
+
 // Middleware de tratamento de erros
 app.use(errorMiddleware);
+// --- FIM DOS AJUSTES DE ERRO ---
+
 
 // --- Iniciar o 'httpServer' ---
 httpServer.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-  console.log(`Documentação da API disponível em http://localhost:${PORT}/api/docs`);
+  logger.info(`Servidor rodando na porta ${PORT}`);
+  logger.info(`Documentação da API disponível em http://localhost:${PORT}/api/docs`);
 });

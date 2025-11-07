@@ -1,42 +1,37 @@
-// src/services/authService.ts (COM ROLLBACK E MENSAGEM DE ERRO CUSTOMIZADA)
+// src/services/authService.ts (COM ROLLBACK E LOGGER)
 import { PrismaClient, Profile } from '@prisma/client';
 import bcrypt from 'bcrypt'; 
 import jwt from 'jsonwebtoken'; 
 import { createLog } from './logService'; 
-// --- ALTERAÇÃO 1: Importar ApiError ---
 import { UnauthorizedError, ApiError } from '../errors/api-errors'; 
 import * as crypto from 'crypto'; 
 import { sendWelcomeEmail } from './emailService'; 
+import logger from '../configs/logger'; // <-- 1. Importar o logger
 
 const prisma = new PrismaClient(); 
 
-// --- FUNÇÃO registerUser MODIFICADA ---
 export const registerUser = async (data: any) => {
   
   let passwordToHash: string;
   let isTemporaryPassword = false;
   let tempPasswordForEmail: string | null = null; 
 
-  // --- Lógica Condicional ---
   if (data.password) {
-    // 1. Se uma senha FOI fornecida pelo admin:
     passwordToHash = data.password;
     isTemporaryPassword = false;
-    console.log(`Registrando usuário ${data.email} com senha fornecida pelo admin.`);
+    // Substituir console.log por logger.info
+    logger.info(`Registrando usuário ${data.email} com senha fornecida pelo admin.`);
   } else {
-    // 2. Se uma senha NÃO foi fornecida: Gera temporária
     const tempPassword = crypto.randomBytes(8).toString('hex');
     passwordToHash = tempPassword;
     isTemporaryPassword = true;
     tempPasswordForEmail = tempPassword; 
-    console.log(`Senha temporária gerada para ${data.email}: ${tempPassword}`); 
+    // Substituir console.log por logger.info
+    logger.info(`Senha temporária gerada para ${data.email}: ${tempPassword}`); 
   }
-  // --- FIM DA Lógica Condicional ---
 
-  // 3. Faz o hash da senha escolhida
   const hashedPassword = await bcrypt.hash(passwordToHash, 10); 
 
-  // 4. Cria o usuário no banco
   const user = await prisma.user.create({ 
     data: {
       email: data.email, 
@@ -48,46 +43,46 @@ export const registerUser = async (data: any) => {
     },
   });
 
-  // --- Envia e-mail SOMENTE se for senha temporária ---
   if (isTemporaryPassword && tempPasswordForEmail) {
+    // --- Início da Modificação do Bloco Catch ---
     try {
       // Tenta enviar o e-mail
       await sendWelcomeEmail(user.email, user.nome, tempPasswordForEmail);
     } catch (emailError) {
       
-      console.error(`FALHA CRÍTICA: E-mail não enviado para ${user.email}. Iniciando rollback...`, emailError);
+      // 2. Substituir console.error por logger.error
+      logger.error(
+        emailError, 
+        `FALHA CRÍTICA: E-mail não enviado para ${user.email}. Iniciando rollback...`
+      );
       
       // Passo 1: Deleta o usuário que acabamos de criar.
       await prisma.user.delete({
         where: { id: user.id }
       });
-      console.log(`Rollback concluído: Usuário ${user.email} deletado.`);
 
-      // --- ALTERAÇÃO 2: Lançar um ApiError específico ---
-      // Isto será capturado pelo errorMiddleware e enviado como JSON.
+      // 3. Substituir console.log por logger.warn
+      logger.warn(`Rollback concluído: Usuário ${user.email} deletado.`);
+
+      // Lança o erro para o errorMiddleware
       throw new ApiError(
         'Não foi possível criar o usuário: falha ao enviar o e-mail de confirmação.',
-        500 // 500 (Internal Server Error) ainda é o status correto
+        500 
       );
-      // --- FIM DA ALTERAÇÃO 2 ---
     }
+    // --- Fim da Modificação do Bloco Catch ---
   }
-  // --- FIM DO Envio Condicional ---
 
-  // 6. Cria o log de auditoria
   await createLog({ 
     action: 'USER_REGISTERED', 
     userId: user.id, 
     details: `Novo usuário '${user.nome}' (${user.email}) criado ${isTemporaryPassword ? 'com senha temporária' : 'com senha definida pelo admin'}.`, 
   });
 
-  // 7. Retorna o usuário sem a senha hasheada
   const { senha_hash, ...userWithoutPassword } = user; 
   return userWithoutPassword; 
 };
-// --- FIM DA FUNÇÃO registerUser MODIFICADA ---
 
-// --- FUNÇÃO loginUser MANTIDA ORIGINAL ---
 export const loginUser = async (data: any) => { 
   const user = await prisma.user.findUnique({ 
     where: { email: data.email }, 
@@ -127,4 +122,3 @@ export const loginUser = async (data: any) => {
   const { senha_hash, ...userWithoutPassword } = user; 
   return { user: userWithoutPassword, token }; 
 };
-// --- FIM DA FUNÇÃO loginUser MANTIDA ORIGINAL ---

@@ -1,4 +1,4 @@
-// src/config/environment.ts (CORRIGIDO com '!')
+// src/configs/environment.ts (ATUALIZADO COM SENTRY)
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -17,8 +17,15 @@ if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL não está definida no arquivo .env');
 }
 
-// 2. Exporta um objeto limpo e tipado para o resto da aplicação
-// --- CORREÇÃO: Adicionamos '!' para informar ao TS que validamos as chaves ---
+// --- ADIÇÃO PARA O SENTRY ---
+// Validação do Sentry (não lança erro, apenas avisa no console)
+if (!process.env.SENTRY_DSN) {
+  console.warn('[AVISO] SENTRY_DSN não está definida. O rastreamento de erros está desabilitado.');
+}
+// --- FIM DA ADIÇÃO ---
+
+
+// 2. Exporta um objeto limpo e tipado
 export const env = {
   // Configurações da Aplicação
   port: process.env.PORT || 3000,
@@ -37,4 +44,10 @@ export const env = {
     apiKey: process.env.CLOUDINARY_API_KEY!,
     apiSecret: process.env.CLOUDINARY_API_SECRET!,
   },
+
+  // --- ADIÇÃO PARA O SENTRY ---
+  sentry: {
+    dsn: process.env.SENTRY_DSN
+  }
+  // --- FIM DA ADIÇÃO ---
 };

@@ -1,4 +1,6 @@
+// src/services/logService.ts
 import { PrismaClient, ActionType } from '@prisma/client';
+import logger from '../configs/logger'; // <-- 1. Importar o logger
 
 const prisma = new PrismaClient();
 
@@ -20,6 +22,9 @@ export const createLog = async (logData: LogData) => {
       },
     });
   } catch (error) {
-    console.error("Falha ao criar log de auditoria:", error);
+    // --- 2. Modificação do bloco catch ---
+    // Substitui console.error pelo logger estruturado
+    logger.error(error, "Falha ao criar log de auditoria no banco de dados");
+    // --- Fim da modificação ---
   }
 };
