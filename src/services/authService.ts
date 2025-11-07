@@ -6,7 +6,7 @@ import { createLog } from './logService';
 import { UnauthorizedError, ApiError } from '../errors/api-errors'; 
 import * as crypto from 'crypto'; 
 import { sendWelcomeEmail } from './emailService'; 
-import logger from '../configs/logger'; // <-- 1. Importar o logger
+import { logger } from '../configs/logger'; // <-- 1. Importar o logger
 
 const prisma = new PrismaClient(); 
 

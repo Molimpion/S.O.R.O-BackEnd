@@ -1,6 +1,6 @@
 // src/services/logService.ts
 import { PrismaClient, ActionType } from '@prisma/client';
-import logger from '../configs/logger'; // <-- 1. Importar o logger
+import { logger } from '../configs/logger'; // <-- 1. Importar o logger
 
 const prisma = new PrismaClient();
 
