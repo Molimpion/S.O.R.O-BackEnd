@@ -1,4 +1,4 @@
-// src/configs/environment.ts (Atualizado para SendGrid)
+// src/configs/environment.ts (CORRIGIDO com SendGrid + Sentry)
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -8,40 +8,48 @@ if (!process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET não está definido no arquivo .env');
 }
 
-// --- ALTERAÇÃO AQUI ---
-// Removemos a validação do BREVO_API_KEY
-// Adicionamos a validação do SENDGRID_API_KEY
+// Validação SendGrid
 if (!process.env.SENDGRID_API_KEY || !process.env.EMAIL_FROM) {
   throw new Error('Credenciais do SendGrid (SENDGRID_API_KEY, EMAIL_FROM) não definidas.');
 }
-// --- FIM DA ALTERAÇÃO ---
 
+// Validação Cloudinary
 if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
   throw new Error('Credenciais do Cloudinary (CLOUDINARY_...) não definidas.');
 }
+
+// Validação Database
 if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL não está definida no arquivo .env');
 }
 
+// Validação Sentry (Adicionada de volta)
+// Opcional: se SENTRY_DSN não for obrigatório, pode-se usar console.warn
+if (!process.env.SENTRY_DSN) {
+    console.warn('SENTRY_DSN não definido no .env');
+}
+
 // 2. Exporta um objeto limpo e tipado
 export const env = {
-  // Configurações da Aplicação
   port: process.env.PORT || 3000,
   jwtSecret: process.env.JWT_SECRET!,
   databaseUrl: process.env.DATABASE_URL!,
   
-  // --- ALTERAÇÃO AQUI ---
-  // Trocamos o objeto 'brevo' por 'sendgrid' e 'emailFrom'
+  // Configs do SendGrid (Novas)
   sendgrid: {
     apiKey: process.env.SENDGRID_API_KEY!,
   },
-  emailFrom: process.env.EMAIL_FROM!, // O e-mail verificado no SendGrid
-  // --- FIM DA ALTERAÇÃO ---
+  emailFrom: process.env.EMAIL_FROM!,
 
-  // Configurações do Cloudinary
+  // Configs do Cloudinary (Existentes)
   cloudinary: {
     cloudName: process.env.CLOUDINARY_CLOUD_NAME!,
     apiKey: process.env.CLOUDINARY_API_KEY!,
     apiSecret: process.env.CLOUDINARY_API_SECRET!,
   },
+
+  // Configs do Sentry (Adicionadas de volta)
+  sentry: {
+    dsn: process.env.SENTRY_DSN
+  }
 };
