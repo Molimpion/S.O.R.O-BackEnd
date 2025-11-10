@@ -13,6 +13,7 @@ Este repositório contém o código-fonte do backend do Painel Web do Projeto Bo
 Trata-se de uma **API RESTful** robusta, segura e escalável, projetada para gerir utilizadores, ocorrências, logs de auditoria e todas as entidades de suporte necessárias à operação, com base no Modelo Entidade-Relacionamento (MER) fornecido.
 
 **API ao vivo:** [https://api-bombeiros-s-o-r-o.onrender.com](https://api-bombeiros-s-o-r-o.onrender.com)
+
 **Documentação da API:** [https://api-bombeiros-s-o-r-o.onrender.com/api/docs/](https://api-bombeiros-s-o-r-o.onrender.com/api/docs/)
 
 ## 2. Estado do Projeto
