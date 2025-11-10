@@ -8,7 +8,8 @@ import { ApiError } from '../errors/api-errors';
 export interface CustomRequest extends Request {
   user: {
     id: string;
-    role: string;
+    // --- CORREÇÃO AQUI (de 'role' para 'profile') ---
+    profile: string; 
     unidadeOperacionalId: string | null;
   };
 }
@@ -44,7 +45,8 @@ export const checkAdmin = (
 ) => {
   const user = (req as CustomRequest).user;
 
-  if (user.role !== 'ADMIN') {
+  // --- CORREÇÃO AQUI (de 'user.role' para 'user.profile') ---
+  if (user.profile !== 'ADMIN') {
     throw new ApiError('Acesso negado. Permissão de administrador necessária.', 403);
   }
   next();
@@ -58,7 +60,8 @@ export const checkChefe = (
 ) => {
   const user = (req as CustomRequest).user;
 
-  if (user.role !== 'CHEFE') {
+  // --- CORREÇÃO AQUI (de 'user.role' para 'user.profile') ---
+  if (user.profile !== 'CHEFE') {
     throw new ApiError('Acesso negado. Permissão de chefe necessária.', 403);
   }
   next();

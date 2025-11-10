@@ -1,15 +1,14 @@
 # ===================================================================
 # apresentação Geraldo
-# API S.O.R.O. BOMBEIROS - Cenário: Incêndio Residencial
+# API S.O.R.O. BOMBEIROS - Cenário: Incêndio Residencial (CORRIGIDO)
 # ===================================================================
 
 # --- VARIÁVEIS GLOBAIS ---
 @hostname = https://api-bombeiros-s-o-r-o.onrender.com
 # @hostname = http://localhost:3000
 
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZThjYmYzYy1jYmUxLTQ5ZjgtODllNi1hOWI1YjhlMjkzNzQiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjIyMTczOTQsImV4cCI6MTc2MjI0NjE5NH0.jPMDyevKlpQVIwFbj1RLjHkGGAHvlS3TDVlii-NJakE
-@subgrupoId =
-@formaAcervoId =
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZThjYmYzYy1jYmUxLTQ5ZjgtODllNi1hOWI1YjhlMjkzNzQiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjI3OTQxNTgsImV4cCI6MTc2MjgyMjk1OH0.uT_-C4HOX-f04eNvyGRf2YdM4KsDZgQO1beEbc9Xu6Q
+@analistaToken = ### CORREÇÃO: Adicionada variável para o token do analista
 @grupamentoId =
 @unidadeId =
 @viaturaId =
@@ -34,7 +33,6 @@ Content-Type: application/json
 }
 
 ### 1.2 - Fazer login como ADMIN
-# AÇÃO: Execute e copie o token da resposta para a variável @adminToken acima.
 # @name loginAdmin
 POST {{hostname}}/api/v1/auth/login
 Content-Type: application/json
@@ -44,6 +42,9 @@ Content-Type: application/json
     "password": "senhaAdminForte123"
 }
 
+### CORREÇÃO: Captura dinâmica do token de Admin
+@adminToken = {{loginAdmin.response.body.token}}
+
 ### Deletar o usuário Comandante Victoria
 # @name deleteVictoria
 DELETE {{hostname}}/api/v1/users/ffd25e5c-ba3e-4938-b34a-3d2069ca12c3
@@ -52,23 +53,6 @@ Authorization: Bearer {{adminToken}}
 ### 1.3 - Testar Acesso Admin (Listar Usuários)
 GET {{hostname}}/api/v1/users
 Authorization: Bearer {{adminToken}}
-
-### 1.4 - TESTE: Cadastrar Novo Usuário (Admin) - Deve Enviar E-mail
-# @name registerTestUserWithEmail
-POST {{hostname}}/api/v1/auth/register
-Authorization: Bearer {{adminToken}} 
-Content-Type: application/json
-
-{
-    "name": "Usuario Teste Email",
-    "email": "SEU_EMAIL_DE_TESTE_REAL@exemplo.com", // <-- SUBSTITUA AQUI
-    // "password": "SENHA_REMOVIDA", // <-- NÃO ENVIAR MAIS
-    "profile": "ANALISTA",
-    "matricula": "999999-9", // <-- Use uma matrícula nova
-    "id_unidade_operacional_fk": "{{createUnidade.response.body.id_unidade}}" // Reutiliza a unidade criada antes
-}
-
-
 
 # ===================================================================
 # FASE 2: CRIAÇÃO DE DADOS MÍNIMOS DE DEPENDÊNCIA (ADMIN)
@@ -95,8 +79,24 @@ Content-Type: application/json
 {
     "nome_unidade": "Quartel Central do Recife (QCG)",
     "endereco_base": "Av. João de Barros, 399 - Soledade, Recife - PE",
-    "id_grupamento_fk": "{{createGrupamento.response.body.id_grupamento}}"
+    "id_grupamento_fk": "{{createGrupamento.response.body.data.id_grupamento}}"
 }
+
+### 1.4 - TESTE: Cadastrar Novo Usuário (Admin) - Deve Enviar E-mail
+### CORREÇÃO: Movido para depois da criação da Unidade, para que a variável exista
+# @name registerTestUserWithEmail
+POST {{hostname}}/api/v1/auth/register
+Authorization: Bearer {{adminToken}} 
+Content-Type: application/json
+
+{
+    "name": "Usuario Teste Email",
+    "email": "SEU_EMAIL_DE_TESTE_REAL@exemplo.com", // <-- SUBSTITUA AQUI
+    "profile": "ANALISTA",
+    "matricula": "999999-9", // <-- Use uma matrícula nova
+    "id_unidade_operacional_fk": "{{createUnidade.response.body.data.id_unidade}}" // Reutiliza a unidade criada antes
+}
+
 
 # --- ADIÇÕES COM BASE NA NOSSA CONVERSA ---
 
@@ -109,7 +109,8 @@ Content-Type: application/json
 {
     "nome_unidade": "Centro de Manutenção (CMan)",
     "endereco_base": "Av. Rio Capibaribe, 147 - São José, Recife - PE",
-    "id_grupamento_fk": "bb48ce14-fe3c-45a8-a696-e626cd529ef0"
+    ### CORREÇÃO: Usando ID dinâmico ao invés de fixo
+    "id_grupamento_fk": "{{createGrupamento.response.body.data.id_grupamento}}"
 }
 
 ### 2.2.2 - POST: Criar Unidade (Centro de Atividades Técnicas)
@@ -121,7 +122,8 @@ Content-Type: application/json
 {
     "nome_unidade": "Centro de Atividades Técnicas (CAT)",
     "endereco_base": "Av. João de Barros, 399 - Soledade, Recife - PE",
-    "id_grupamento_fk": "bb48ce14-fe3c-45a8-a696-e626cd529ef0"
+    ### CORREÇÃO: Usando ID dinâmico ao invés de fixo
+    "id_grupamento_fk": "{{createGrupamento.response.body.data.id_grupamento}}"
 }
 
 ### 2.2.3 - POST: Criar Grupamento (Incêndio)
@@ -141,7 +143,7 @@ Content-Type: application/json
 {
     "nome_unidade": "Sede do GBI - Prazeres",
     "endereco_base": "Estrada da Batalha, S/N - Prazeres, Jaboatão dos Guararapes - PE",
-    "id_grupamento_fk": "{{createGrupamentoGBI.response.body.id_grupamento}}"
+    "id_grupamento_fk": "{{createGrupamentoGBI.response.body.data.id_grupamento}}"
 }
 
 ### 2.2.4 - POST: Criar Grupamento (Atendimento Pré-Hospitalar)
@@ -161,7 +163,7 @@ Content-Type: application/json
 {
     "nome_unidade": "Sede do GBAPH (Resgate) - Varadouro",
     "endereco_base": "Av. Presidente Kennedy, S/N - Varadouro, Olinda - PE",
-    "id_grupamento_fk": "{{createGrupamentoGBAPH.response.body.id_grupamento}}"
+    "id_grupamento_fk": "{{createGrupamentoGBAPH.response.body.data.id_grupamento}}"
 }
 
 
@@ -182,7 +184,7 @@ Content-Type: application/json
 {
     "nome_unidade": "Sede do GBS - Abreu e Lima",
     "endereco_base": "Av. Dr. Reinaldo Pinho Alves, S/N - Distrito Industrial, Abreu e Lima - PE",
-    "id_grupamento_fk": "{{createGrupamentoGBS.response.body.id_grupamento}}"
+    "id_grupamento_fk": "{{createGrupamentoGBS.response.body.data.id_grupamento}}"
 }
 
 
@@ -203,10 +205,8 @@ Content-Type: application/json
 {
     "nome_unidade": "Sede do GBMar - Piedade",
     "endereco_base": "Avenida Beira Mar, 606A - Piedade, Jaboatão dos Guararapes - PE",
-    "id_grupamento_fk": "{{createGrupamentoGBMar.response.body.id_grupamento}}"
+    "id_grupamento_fk": "{{createGrupamentoGBMar.response.body.data.id_grupamento}}"
 }
-
-# --- FIM DAS ADIÇÕES ---
 
 
 ### 2.3 - POST: Criar Natureza (Ex: Incêndio)
@@ -225,7 +225,7 @@ Content-Type: application/json
 
 {
     "descricao_grupo": "Incêndio em Edificação",
-    "id_natureza_fk": "{{createNatureza.response.body.id_natureza}}"
+    "id_natureza_fk": "{{createNatureza.response.body.data.id_natureza}}"
 }
 
 ### 2.5 - POST: Criar Subgrupo (Ex: Incêndio em Residência)
@@ -236,7 +236,7 @@ Content-Type: application/json
 
 {
     "descricao_subgrupo": "Incêndio em Residência Unifamiliar",
-    "id_grupo_fk": "{{createGrupo.response.body.id_grupo}}"
+    "id_grupo_fk": "{{createGrupo.response.body.data.id_grupo}}"
 }
 
 
@@ -248,6 +248,29 @@ Content-Type: application/json
 
 { "descricao": "TELEFONE 193" }
 
+### CORREÇÃO: Adicionando as requisições faltantes de Município e Bairro
+
+### 2.8 - POST: Criar Município (Recife)
+# @name createMunicipio
+POST {{hostname}}/api/v1/municipios
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "nome_municipio": "Recife"
+}
+
+### 2.9 - POST: Criar Bairro (Boa Vista)
+# @name createBairro
+POST {{hostname}}/api/v1/bairros
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "nome_bairro": "Boa Vista",
+    "id_municipio_fk": "{{createMunicipio.response.body.id_municipio}}"
+}
+
 
 # ===================================================================
 # FASE 3: CRIAÇÃO EM LOTE DE ANALISTAS POR UNIDADE
@@ -256,6 +279,7 @@ Content-Type: application/json
 ### 3.1.1 - Cadastrar Analista (Quartel Central do Recife - QCG)
 # @name createAnalistaQCG
 POST {{hostname}}/api/v1/auth/register
+Authorization: Bearer {{adminToken}} ### CORREÇÃO: Adicionado Auth (rota é protegida)
 Content-Type: application/json
 
 {
@@ -264,12 +288,14 @@ Content-Type: application/json
     "password": "senhaAnalistaSegura456",
     "profile": "ANALISTA",
     "matricula": "200003-C",
-    "id_unidade_operacional_fk": "00f8e2cb-c30b-45ce-8897-cbacbc7c8b84"
+    ### CORREÇÃO: Usando ID dinâmico da Unidade
+    "id_unidade_operacional_fk": "{{createUnidade.response.body.data.id_unidade}}"
 }
 
 ### 3.1.2 - Cadastrar Analista (Centro de Atividades Técnicas - CAT)
 # @name createAnalistaCAT
 POST {{hostname}}/api/v1/auth/register
+Authorization: Bearer {{adminToken}} ### CORREÇÃO: Adicionado Auth (rota é protegida)
 Content-Type: application/json
 
 {
@@ -278,12 +304,14 @@ Content-Type: application/json
     "password": "senhaAnalistaSegura456",
     "profile": "ANALISTA",
     "matricula": "200004-D",
-    "id_unidade_operacional_fk": "c1c75230-bf34-4cc7-b81d-859e5f69484d"
+    ### CORREÇÃO: Usando ID dinâmico da Unidade
+    "id_unidade_operacional_fk": "{{createUnidadeCAT.response.body.data.id_unidade}}"
 }
 
 ### 3.1.3 - Cadastrar Analista (Centro de Manutenção - CMan)
 # @name createAnalistaCMan
 POST {{hostname}}/api/v1/auth/register
+Authorization: Bearer {{adminToken}} ### CORREÇÃO: Adicionado Auth (rota é protegida)
 Content-Type: application/json
 
 {
@@ -292,12 +320,14 @@ Content-Type: application/json
     "password": "senhaAnalistaSegura456",
     "profile": "ANALISTA",
     "matricula": "200005-E",
-    "id_unidade_operacional_fk": "388300ee-2f89-4377-a3e4-ea3a4b8780ce"
+    ### CORREÇÃO: Usando ID dinâmico da Unidade
+    "id_unidade_operacional_fk": "{{createUnidadeCMan.response.body.data.id_unidade}}"
 }
 
 ### 3.1.4 - Cadastrar Analista (Sede do GBI - Incêndio)
 # @name createAnalistaGBI
 POST {{hostname}}/api/v1/auth/register
+Authorization: Bearer {{adminToken}} ### CORREÇÃO: Adicionado Auth (rota é protegida)
 Content-Type: application/json
 
 {
@@ -306,12 +336,14 @@ Content-Type: application/json
     "password": "senhaAnalistaSegura456",
     "profile": "ANALISTA",
     "matricula": "200006-F",
-    "id_unidade_operacional_fk": "4fcc7fc6-fe96-4bb0-b699-a4e23c24e68e"
+    ### CORREÇÃO: Usando ID dinâmico da Unidade
+    "id_unidade_operacional_fk": "{{createUnidadeGBI.response.body.data.id_unidade}}"
 }
 
 ### 3.1.5 - Cadastrar Analista (Sede do GBAPH - Resgate)
 # @name createAnalistaGBAPH
 POST {{hostname}}/api/v1/auth/register
+Authorization: Bearer {{adminToken}} ### CORREÇÃO: Adicionado Auth (rota é protegida)
 Content-Type: application/json
 
 {
@@ -320,12 +352,14 @@ Content-Type: application/json
     "password": "senhaAnalistaSegura456",
     "profile": "ANALISTA",
     "matricula": "200007-G",
-    "id_unidade_operacional_fk": "50c88aad-a5b7-4190-bddf-e1a4a7abc0ca"
+    ### CORREÇÃO: Usando ID dinâmico da Unidade
+    "id_unidade_operacional_fk": "{{createUnidadeGBAPH.response.body.data.id_unidade}}"
 }
 
 ### 3.1.6 - Cadastrar Analista (Sede do GBS - Salvamento)
 # @name createAnalistaGBS
 POST {{hostname}}/api/v1/auth/register
+Authorization: Bearer {{adminToken}} ### CORREÇÃO: Adicionado Auth (rota é protegida)
 Content-Type: application/json
 
 {
@@ -334,12 +368,14 @@ Content-Type: application/json
     "password": "senhaAnalistaSegura456",
     "profile": "ANALISTA",
     "matricula": "200008-H",
-    "id_unidade_operacional_fk": "7be541a9-a0f8-4547-8b0c-245d5b658dfb"
+    ### CORREÇÃO: Usando ID dinâmico da Unidade
+    "id_unidade_operacional_fk": "{{createUnidadeGBS.response.body.data.id_unidade}}"
 }
 
 ### 3.1.7 - Cadastrar Analista (Sede do GBMar - Marítimo)
 # @name createAnalistaGBMar
 POST {{hostname}}/api/v1/auth/register
+Authorization: Bearer {{adminToken}} ### CORREÇÃO: Adicionado Auth (rota é protegida)
 Content-Type: application/json
 
 {
@@ -348,11 +384,11 @@ Content-Type: application/json
     "password": "senhaAnalistaSegura456",
     "profile": "ANALISTA",
     "matricula": "200009-I",
-    "id_unidade_operacional_fk": "f73c5419-1e4c-4f2f-9c10-099a4d246529"
+    ### CORREÇÃO: Usando ID dinâmico da Unidade
+    "id_unidade_operacional_fk": "{{createUnidadeGBMar.response.body.data.id_unidade}}"
 }
 
 ### 3.2 - Login como ANALISTA
-# AÇÃO: Execute e copie o token da resposta para a variável @analistaToken acima.
 # @name loginAnalista
 POST {{hostname}}/api/v1/auth/login
 Content-Type: application/json
@@ -361,6 +397,10 @@ Content-Type: application/json
     "email": "op.alves.gbmar@bombeiros.pe.gov.br",
     "password": "senhaAnalistaSegura456"
 }
+
+### CORREÇÃO: Captura dinâmica do token de Analista
+@analistaToken = {{loginAnalista.response.body.token}}
+
 
 ### 3.3 - POST: Criar Ocorrência (Incêndio Residencial na Boa Vista)
 # @name createOcorrencia
@@ -372,9 +412,10 @@ Content-Type: application/json
     "data_acionamento": "2025-10-21T10:15:00Z",
     "hora_acionamento": "2025-10-21T10:15:00Z",
     "nr_aviso": "AV-DIA1-001",
-    "id_subgrupo_fk": "{{createSubgrupo.response.body.id_subgrupo}}",
+    "id_subgrupo_fk": "{{createSubgrupo.response.body.data.id_subgrupo}}",
+    ### CORREÇÃO: Usando a variável da requisição createBairro
     "id_bairro_fk": "{{createBairro.response.body.id_bairro}}",
-    "id_forma_acervo_fk": "{{createFormaAcervo.response.body.id_forma_acervo}}"
+    "id_forma_acervo_fk": "{{createFormaAcervo.response.body.data.id_forma_acervo}}"
 }
 
 ### 3.4 - GET: Listar Ocorrências (Pendentes de Hoje)
@@ -396,11 +437,12 @@ GET {{hostname}}/api/v1/dashboard/ocorrencias-por-status
 Authorization: Bearer {{adminToken}}
 
 ### 4.2 - GET: KPI Ocorrências por Bairro (Do Bairro Boa Vista)
+### CORREÇÃO: Usando a variável da requisição createBairro
 GET {{hostname}}/api/v1/dashboard/ocorrencias-por-bairro?bairroId={{createBairro.response.body.id_bairro}}
 Authorization: Bearer {{adminToken}}
 
 ### 4.3 - GET: Relatório CSV (Ocorrências de Incêndio Pendentes)
-GET {{hostname}}/api/v1/relatorios?type=csv&status=PENDENTE&subgrupoId={{createSubgrupo.response.body.id_subgrupo}}
+GET {{hostname}}/api/v1/relatorios?type=csv&status=PENDENTE&subgrupoId={{createSubgrupo.response.body.data.id_subgrupo}}
 Authorization: Bearer {{adminToken}}
 
 ### 4.4 - GET: Relatório PDF (Todas as ocorrências do dia)
