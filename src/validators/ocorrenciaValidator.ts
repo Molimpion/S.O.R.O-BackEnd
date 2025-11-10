@@ -20,11 +20,14 @@ export const listOcorrenciaSchema = z.object({
     subgrupoId: z.string().uuid().optional(),
     page: z.coerce.number().int().min(1).optional(),
     limit: z.coerce.number().int().min(1).optional(),
+    // --- ADIÇÃO (FASE 3) ---
+    periodo: z.enum(['day', 'month']).optional(), // Para o gráfico de linha
   }),
 });
 
 export const reportOcorrenciaSchema = z.object({
-  query: listOcorrenciaSchema.shape.query.extend({
+  // Modificado para usar o 'listOcorrenciaSchema' atualizado
+  query: listOcorrenciaSchema.shape.query.extend({ 
     type: z.enum(['csv', 'pdf'], {
       required_error: 'O tipo de exportação (csv ou pdf) é obrigatório.',
       invalid_type_error: "Tipo de exportação inválido. Use 'csv' ou 'pdf'.",
