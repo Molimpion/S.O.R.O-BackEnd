@@ -58,7 +58,7 @@ const router = Router();
  *         format: uuid
  *       description: ID do Subgrupo para filtrar (opcional)
  *
- * /api/v1/dashboard/ocorrencias-por-status:
+ * /api/v2/dashboard/ocorrencias-por-status:
  *   get:
  *     summary: Obtém o número de ocorrências por status
  *     tags: [Dashboard]
@@ -72,7 +72,7 @@ const router = Router();
  *       '200':
  *         description: Dados de ocorrências por status.
  *
- * /api/v1/dashboard/ocorrencias-por-tipo:
+ * /api/v2/dashboard/ocorrencias-por-tipo:
  *   get:
  *     summary: Obtém o top 10 de ocorrências por tipo (Subgrupo)
  *     tags: [Dashboard]
@@ -86,7 +86,7 @@ const router = Router();
  *       '200':
  *         description: Dados de ocorrências por tipo.
  *
- * /api/v1/dashboard/ocorrencias-por-bairro:
+ * /api/v2/dashboard/ocorrencias-por-bairro:
  *   get:
  *     summary: Obtém o top 10 de ocorrências por bairro
  *     tags: [Dashboard]
@@ -100,7 +100,7 @@ const router = Router();
  *       '200':
  *         description: Dados de ocorrências por bairro.
  *
- * /api/v1/dashboard/ocorrencias-por-municipio:
+ * /api/v2/dashboard/ocorrencias-por-municipio:
  *   get:
  *     summary: (NOVO) Obtém ocorrências por município (Gráfico Pizza)
  *     tags: [Dashboard]
@@ -114,7 +114,7 @@ const router = Router();
  *       '200':
  *         description: Dados de ocorrências por município.
  *
- * /api/v1/dashboard/ocorrencias-por-periodo:
+ * /api/v2/dashboard/ocorrencias-por-periodo:
  *   get:
  *     summary: (NOVO) Obtém total de ocorrências por período (Gráfico Linha)
  *     tags: [Dashboard]
@@ -136,7 +136,7 @@ const router = Router();
  *       '200':
  *         description: Lista de totais por período.
  *
- * /api/v1/dashboard/avg-completion-time:
+ * /api/v2/dashboard/avg-completion-time:
  *   get:
  *     summary: (NOVO) Obtém tempo médio (em horas) de conclusão por tipo (Gráfico Barra)
  *     tags: [Dashboard]

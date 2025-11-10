@@ -111,7 +111,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use(authenticateToken);
 
 // --- Rotas Protegidas ---
-app.use('/api/v1/dashboard', dashboardRoutes);
+app.use('/api/v2/dashboard', dashboardRoutes);
 app.use('/api/v1/relatorios', relatorioRoutes);
 app.use('/api/v1/ocorrencias', ocorrenciaRoutes);
 app.use('/api/v1/users', userRoutes);
