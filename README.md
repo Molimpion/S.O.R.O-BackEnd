@@ -39,7 +39,6 @@ A aplicação segue o padrão de **Monólito com Camadas (Layered Monolith)**. E
   - **Segurança (Autenticação):** Tokens JWT (`jsonwebtoken`) e criptografia `bcrypt`.
   - **Segurança (Headers):** `helmet` para proteção contra vulnerabilidades web comuns (XSS, Clickjacking).
   - **Comunicação Real-Time:** `socket.io` para notificações instantâneas ao frontend.
-  - **Serviço de E-mail:** **SendGrid** (Utilizando a API HTTP para evitar bloqueios em plataformas como o Render).
   - **Upload de Mídia:** `cloudinary` e `multer` para gestão de uploads de imagens e vídeos.
   - **Validação:** Validação robusta de dados de entrada com `zod`.
   - **Logging:** Logging estruturado e de requisições com `pino` e `pino-http`.
@@ -73,9 +72,9 @@ O projeto utiliza a especificação **Dev Container** (`.devcontainer`) para def
     # Segurança
     JWT_SECRET="gere_uma_chave_secreta_forte_e_aleatoria_aqui"
 
-    # --- Configuração do Serviço de E-mail (SendGrid API) ---
-    SENDGRID_API_KEY=SUA_CHAVE_API_DO_SENDGRID
-    EMAIL_FROM="Sistema S.O.R.O." <seu.email.verificado@gmail.com>
+    # --- Configuração do Serviço de E-mail (BREVO API) ---
+    BREVO_API_KEY=SUA_CHAVE_API_DO_BREVO
+    EMAIL_FROM="Sistema S.O.R.O." <seu.email@verificado.com>
 
     # --- Configuração de Upload (Cloudinary) ---
     CLOUDINARY_CLOUD_NAME=SEU_CLOUD_NAME
@@ -85,7 +84,6 @@ O projeto utiliza a especificação **Dev Container** (`.devcontainer`) para def
     # --- Monitoramento (Opcional no dev) ---
     SENTRY_DSN=SUA_DSN_DO_SENTRY
     ```
-> **NOTA sobre E-mail:** Como estamos utilizando um e-mail gratuito verificado (`@gmail.com` ou similar), o e-mail de boas-vindas pode ser classificado como **SPAM**. Por favor, oriente os usuários a verificar a caixa de spam.
 
       * Abra a pasta do projeto no VS Code. O editor irá sugerir reabrir o projeto num contentor. Aceite.
 
@@ -116,8 +114,8 @@ Para que a aplicação funcione em produção, as seguintes variáveis de ambien
 
   - `DATABASE_URL`: (Usar o **Internal Connection URL** do serviço PostgreSQL do Render)
   - `JWT_SECRET`: (Uma chave secreta forte e única para produção)
-  - **`SENDGRID_API_KEY`**: (Chave API gerada no SendGrid)
-  - `EMAIL_FROM`: (O e-mail de remetente **verificado** no SendGrid)
+  - `BREVO_API_KEY`: (Chave API gerada no Brevo)
+  - `EMAIL_FROM`: (O e-mail de remetente verificado no Brevo)
   - `CLOUDINARY_CLOUD_NAME`: (Chave do Cloudinary)
   - `CLOUDINARY_API_KEY`: (Chave do Cloudinary)
   - `CLOUDINARY_API_SECRET`: (Chave do Cloudinary)
@@ -190,6 +188,25 @@ A API também inclui endpoints `POST`, `GET`, `PUT` e `DELETE` (protegidos por `
   - `/api/v1/unidades-operacionais`
   - `/api/v1/viaturas`
 
+## 8\. Eventos Real-Time (Socket.io)
+
+A API emite eventos via Socket.io para permitir que os clientes (frontends) atualizem as suas interfaces em tempo real. O frontend deve "ouvir" (`io.on(...)`) estes eventos:
+
+| Evento Emitido | Acionado por | Dados Enviados |
+| :--- | :--- | :--- |
+| `nova_ocorrencia` | `POST /ocorrencias` | `Ocorrencia` |
+| `ocorrencia_atualizada` | `PUT /ocorrencias/:id` | `Ocorrencia` |
+| `media_adicionada` | `POST /ocorrencias/:id/midia` | `Midia & ocorrenciaId` |
+| `lista_usuarios_atualizada` | `PUT/DELETE /users/:id` | `{ action, data }` |
+| `lista_viaturas_atualizada` | `POST/PUT/DELETE /viaturas` | `{ action, data }` |
+| `lista_bairros_atualizada` | `POST/PUT/DELETE /bairros` | `{ action, data }` |
+| `lista_municipios_atualizada` | `POST/PUT/DELETE /municipios` | `{ action, data }` |
+| `lista_grupamentos_atualizada` | `POST/DELETE /grupamentos` | `{ action, data }` |
+| `lista_unidades_atualizada` | `POST/DELETE /unidades-operacionais` | `{ action, data }` |
+| `lista_naturezas_atualizada` | `POST/DELETE /naturezas` | `{ action, data }` |
+| `lista_grupos_atualizada` | `POST/DELETE /grupos` | `{ action, data }` |
+| `lista_subgrupos_atualizada` | `POST/DELETE /subgrupos` | `{ action, data }` |
+| `lista_formasacervo_atualizada` | `POST/DELETE /formas-acervo` | `{ action, data }` |
 ## 8\. Eventos Real-Time (Socket.io)
 
 A API emite eventos via Socket.io para permitir que os clientes (frontends) atualizem as suas interfaces em tempo real. O frontend deve "ouvir" (`io.on(...)`) estes eventos:
