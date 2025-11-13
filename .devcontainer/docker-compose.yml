@@ -9,6 +9,8 @@ services:
     # A dependência agora é do serviço 'postgres-db'
     depends_on:
       - postgres-db
+    ports: # <-- ADICIONE ESTA LINHA
+      - 3000:3000 # <-- E ESTA LINHA (Cuidado com a indentação)
 
   # Serviço de banco de dados foi alterado para PostgreSQL
   postgres-db:
@@ -25,5 +27,21 @@ services:
       # A porta padrão do PostgreSQL é 5432
       - 5432:5432
 
+# --- SERVIÇO NOVO ADICIONADO ---
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      # Monta o ficheiro de configuração que criámos no Passo 1
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      # Expõe a interface web do Prometheus no http://localhost:9090
+      - 9090:9090
+    depends_on:
+      - app # Garante que o Prometheus só inicia depois da app
+      
 volumes:
   postgres-data:

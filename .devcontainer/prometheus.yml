@@ -1,0 +1,7 @@
+global:
+  scrape_interval: 15s # A cada 15 segundos, ele irá buscar as métricas.
+
+scrape_configs:
+  - job_name: 'soro-api'
+    static_configs:
+      - targets: ['app:3000'] # 'app' é o nome do serviço S.O.R.O. no docker-compose

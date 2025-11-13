@@ -7,7 +7,7 @@
 @hostname = https://api-bombeiros-s-o-r-o.onrender.com
 # @hostname = http://localhost:3000
 
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZThjYmYzYy1jYmUxLTQ5ZjgtODllNi1hOWI1YjhlMjkzNzQiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjI3OTQxNTgsImV4cCI6MTc2MjgyMjk1OH0.uT_-C4HOX-f04eNvyGRf2YdM4KsDZgQO1beEbc9Xu6Q
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZThjYmYzYy1jYmUxLTQ5ZjgtODllNi1hOWI1YjhlMjkzNzQiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjI3OTQ1MzUsImV4cCI6MTc2MjgyMzMzNX0.9W2KmiRY1d2he1TYxLb0NDhwD8AaRdCVHNDClX1g45s
 @analistaToken = ### CORREÇÃO: Adicionada variável para o token do analista
 @grupamentoId =
 @unidadeId =
@@ -26,10 +26,10 @@ POST {{hostname}}/api/v1/auth/register
 Content-Type: application/json
 
 {
-    "name": "Comandante Victoria",
-    "email": "vickgzambom@gmail.com",
+    "name": "Comandante Manoel",
+    "email": "olimpiommelo@gmail.com",
     "profile": "ADMIN",
-    "matricula": "100001-z" 
+    "matricula": "100001-y" 
 }
 
 ### 1.2 - Fazer login como ADMIN
@@ -47,7 +47,7 @@ Content-Type: application/json
 
 ### Deletar o usuário Comandante Victoria
 # @name deleteVictoria
-DELETE {{hostname}}/api/v1/users/ffd25e5c-ba3e-4938-b34a-3d2069ca12c3
+DELETE {{hostname}}/api/v1/users/dacfef0a-589a-4c2f-9007-2cc6bac182af
 Authorization: Bearer {{adminToken}}
 
 ### 1.3 - Testar Acesso Admin (Listar Usuários)
