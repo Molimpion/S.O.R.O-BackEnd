@@ -5,12 +5,12 @@
 *Projeto Integrador da Turma 44 da Faculdade Senac Pernambuco.*
 *Professores responsáveis: Danilo Farias, Geraldo Gomes, Marcos Tenorio e Sônia Gomes.*
 
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge\&logo=nodedotjs\&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge\&logo=typescript\&logoColor=white) ![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge\&logo=express\&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge\&logo=postgresql\&logoColor=white) ![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge\&logo=prisma\&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge\&logo=docker\&logoColor=white) [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white) ![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white) ![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white) ![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white) ![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white) [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com)
 
 ## 1. Visão Geral
 
 Este repositório contém o código-fonte do backend do Painel Web do Projeto Bombeiros (S.O.R.O.).
-Trata-se de uma **API RESTful** robusta, segura e escalável, projetada para gerir utilizadores, ocorrências, logs de auditoria e todas as entidades de suporte necessárias à operação, com base no Modelo Entidade-Relacionamento (MER) fornecido.
+Trata-se de uma **API RESTful** robusta, segura e escalável, projetada para gerenciar usuários, ocorrências, logs de auditoria e todas as entidades de suporte necessárias à operação, com base no Modelo Entidade-Relacionamento (MER) fornecido.
 
 **API ao vivo:** [https://api-bombeiros-s-o-r-o.onrender.com](https://api-bombeiros-s-o-r-o.onrender.com)
 
@@ -24,11 +24,12 @@ A implementação de todos os requisitos funcionais do backend foi **concluída,
 * [x] **W-02 | Lista & Filtros de Ocorrências:** Completo
 * [x] **W-03 | Visualização de Detalhes:** Completo
 * [x] **W-04 | Relatórios Básicos & Exportação (CSV/PDF):** Completo
-* [x] **W-05 | Gestão de Utilizadores:** Completo
+* [x] **W-05 | Gestão de Usuários:** Completo
 * [x] **W-06 | Auditoria & Logs:** Completo
 * [x] **W-07 | Dashboard Operacional (KPI simples):** Completo
 * [x] **(Novo) | Upload de Mídia:** Completo (via Cloudinary)
 * [x] **(Novo) | Notificações em Tempo Real:** Completo (via Socket.io)
+* [x] **(Novo) | Observabilidade (APM):** Completo (via Prometheus + Grafana + Sentry)
 
 ## 3. Arquitetura e Decisões de Design
 
@@ -46,13 +47,14 @@ Essa abordagem foi escolhida para maximizar a agilidade de desenvolvimento, mant
 * **Validação:** Validação robusta de dados com `zod`
 * **Logging:** Logging estruturado com `pino` e `pino-http`
 * **Monitoramento de Erros:** Rastreamento em produção com `Sentry`
+* **Monitoramento de Métricas (APM):** `Prometheus` (via `prom-client` para coleta) e `Grafana` (para visualização)
 * **Tratamento de Erros:** Sistema centralizado com erros personalizados e middleware global
 * **Configuração:** Variáveis de ambiente centralizadas e validadas em `src/config/environment.ts`
 
 ### Ambiente de Desenvolvimento Padronizado
 
 O projeto utiliza **Dev Containers** (`.devcontainer`) para definir e automatizar o ambiente de desenvolvimento.
-Através do `docker-compose.yml`, são orquestrados dois contêineres: um para a aplicação Node.js e outro para o banco de dados PostgreSQL.
+Através do `docker-compose.yml`, são orquestrados **três** contêineres: um para a aplicação Node.js (`app`), um para o banco de dados (`postgres-db`) e um para o coletor de métricas (`prometheus`).
 
 ## 4. Como Executar o Projeto Localmente
 
@@ -65,8 +67,8 @@ Através do `docker-compose.yml`, são orquestrados dois contêineres: um para a
 ### 2. Inicialização
 
 1. Clone este repositório.
-2. Na raiz do projeto, crie um ficheiro `.env` (já listado no `.gitignore`).
-   Use `src/config/environment.ts` como referência para todas as chaves necessárias.
+2. Na raiz do projeto, crie um arquivo `.env` (já listado no `.gitignore`).
+   Use `src/config/environment.ts` como referência para todas as chaves necessárias.
 
 **Exemplo de `.env` local:**
 
@@ -88,14 +90,14 @@ CLOUDINARY_API_SECRET=SEU_API_SECRET
 
 # --- Monitoramento (Opcional no dev) ---
 SENTRY_DSN=SUA_DSN_DO_SENTRY
-```
+````
 
 > **Nota sobre E-mail:** Como utilizamos um remetente gratuito verificado (`@gmail.com` ou similar), o e-mail de boas-vindas pode ser classificado como **spam**.
-> Oriente os utilizadores a verificarem a caixa de spam.
+> Oriente os usuários a verificarem a caixa de spam.
 
-3. Abra a pasta do projeto no VS Code. O editor sugerirá reabrir o projeto em um contêiner — aceite.
+3.  Abra a pasta do projeto no VS Code. O editor sugerirá reabrir o projeto em um contêiner — aceite.
 
-### 3. Dentro do Dev Container
+### 3\. Dentro do Dev Container
 
 Execute os seguintes comandos no terminal do VS Code:
 
@@ -116,107 +118,130 @@ npm run dev
 ```
 
 O servidor estará disponível em `http://localhost:3000`.
+O servidor do Prometheus estará em `http://localhost:9090`.
 
-## 5. Deployment (Render)
+## 5\. Deployment (Render)
 
 A aplicação está configurada para **deploy contínuo** na plataforma **Render**.
 Cada `push` para a branch `main` aciona automaticamente um novo *build* e *deploy*.
 
-### Variáveis de Ambiente no Render
+A nossa implantação no Render é composta por **dois** Web Services:
 
-As seguintes variáveis devem ser configuradas no painel do Render:
+### 1\. A API S.O.R.O. (`api-bombeiros-s-o-r-o`)
 
-* `DATABASE_URL`: (usar o **Internal Connection URL** do serviço PostgreSQL)
-* `JWT_SECRET`: (chave secreta forte e única para produção)
-* `SENDGRID_API_KEY`: (chave API do SendGrid)
-* `EMAIL_FROM`: (e-mail de remetente **verificado** no SendGrid)
-* `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
-* `SENTRY_DSN`: (DSN do projeto no Sentry)
+Este é o serviço principal da aplicação.
 
-## 6. Testando a API
+  * **Runtime:** `Node`
+  * **Build Command:** `npm run build`
+  * **Start Command:** `npm run start`
+  * **Variáveis de Ambiente:**
+      * `DATABASE_URL`: (usar o **Internal Connection URL** do serviço PostgreSQL)
+      * `JWT_SECRET`: (chave secreta forte e única para produção)
+      * `SENDGRID_API_KEY`: (chave API do SendGrid)
+      * `EMAIL_FROM`: (e-mail de remetente **verificado** no SendGrid)
+      * `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
+      * `SENTRY_DSN`: (DSN do projeto no Sentry)
 
-O projeto inclui o ficheiro `api-tests/requests.http` com uma suíte de testes de ponta a ponta.
+### 2\. O Prometheus (`s-o-r-o-prometheus`)
+
+Este serviço "raspa" (scrape) as métricas da API e as fornece ao Grafana.
+
+  * **Runtime:** `Docker`
+  * **Root Directory:** `./.render`
+  * **Dockerfile Path:** `./Dockerfile.prometheus`
+  * **Start Command:** (deixar em branco)
+
+## 6\. Observabilidade (Prometheus + Grafana)
+
+Além do Sentry (para erros) e Pino (para logs), a aplicação está configurada para monitoramento de métricas em tempo real.
+
+  * **Endpoint:** A API expõe métricas de saúde e performance no endpoint público `/metrics`.
+  * **Coleta:** No Render, um segundo serviço (`s-o-r-o-prometheus`) é responsável por "raspar" (scrape) este endpoint e armazenar os dados.
+  * **Visualização:** O **Grafana Cloud** é usado para visualizar esses dados, conectando-se ao serviço `s-o-r-o-prometheus` do Render como fonte de dados.
+
+## 7\. Testando a API
+
+O projeto inclui o arquivo `api-tests/requests.http` com uma suíte de testes de ponta a ponta.
 
 ### Passos
 
-1. Instale a extensão **"REST Client"** (por Huachao Mao) no VS Code.
-2. Certifique-se de que o servidor está em execução (local ou produção).
-3. Abra `api-tests/requests.http`, defina `@hostname` e execute as requisições na ordem indicada.
+1.  Instale a extensão **"REST Client"** (por Huachao Mao) no VS Code.
+2.  Certifique-se de que o servidor está em execução (local ou produção).
+3.  Abra `api-tests/requests.http`, defina `@hostname` e execute as requisições na ordem indicada.
 
-## 7. Documentação da API (Endpoints)
+## 8\. Documentação da API (Endpoints)
 
-> Todos os endpoints estão versionados com o prefixo `/api/v1/`.
+> Todos os endpoints estão versionados com o prefixo `/api/v1/`, exceto o Dashboard (`/api/v2/`).
 
 ### Autenticação (`/api/v1/auth`)
 
-| Método | Endpoint    | Descrição                        | Acesso  |
+| Método | Endpoint    | Descrição                        | Acesso  |
 | :----- | :---------- | :------------------------------- | :------ |
-| `POST` | `/register` | Registra um novo utilizador      | Público |
-| `POST` | `/login`    | Autentica e retorna um token JWT | Público |
+| `POST` | `/register` | Registra um novo usuário         | Público |
+| `POST` | `/login`    | Autentica e retorna um token JWT | Público |
 
 ### Ocorrências (`/api/v1/ocorrencias`)
 
-| Método | Endpoint     | Descrição                                 | Acesso             |
+| Método | Endpoint     | Descrição                                 | Acesso             |
 | :----- | :----------- | :---------------------------------------- | :----------------- |
-| `POST` | `/`          | Cria uma nova ocorrência                  | Autenticado        |
-| `GET`  | `/`          | Lista ocorrências com filtros e paginação | Autenticado        |
-| `GET`  | `/:id`       | Obtém os detalhes de uma ocorrência       | Autenticado        |
-| `PUT`  | `/:id`       | Atualiza uma ocorrência existente         | Autenticado (Dono) |
-| `POST` | `/:id/midia` | Faz upload de mídia (imagem/vídeo)        | Autenticado        |
+| `POST` | `/`          | Cria uma nova ocorrência                  | Autenticado        |
+| `GET`  | `/`          | Lista ocorrências com filtros e paginação | Autenticado        |
+| `GET`  | `/:id`       | Obtém os detalhes de uma ocorrência       | Autenticado        |
+| `PUT`  | `/:id`       | Atualiza uma ocorrência existente         | Autenticado (Dono) |
+| `POST` | `/:id/midia` | Faz upload de mídia (imagem/vídeo)        | Autenticado        |
 
-### Gestão de Utilizadores (`/api/v1/users`)
+### Gestão de Usuários (`/api/v1/users`)
 
-| Método   | Endpoint | Descrição                       | Acesso |
+| Método   | Endpoint | Descrição                       | Acesso |
 | :------- | :------- | :------------------------------ | :----- |
-| `GET`    | `/`      | Lista todos os utilizadores     | Admin  |
-| `GET`    | `/:id`   | Obtém detalhes de um utilizador | Admin  |
-| `PUT`    | `/:id`   | Atualiza um utilizador          | Admin  |
-| `DELETE` | `/:id`   | Remove um utilizador            | Admin  |
+| `GET`    | `/`      | Lista todos os usuários         | Admin  |
+| `GET`    | `/:id`   | Obtém detalhes de um usuário    | Admin  |
+| `PUT`    | `/:id`   | Atualiza um usuário             | Admin  |
+| `DELETE` | `/:id`   | Remove um usuário               | Admin  |
 
 ### Relatórios e Dashboard
 
-| Método | Endpoint                                   | Descrição                               | Acesso      |
-| :----- | :----------------------------------------- | :-------------------------------------- | :---------- |
-| `GET`  | `/api/v1/relatorios`                       | Gera relatório (CSV/PDF) de ocorrências | Admin       |
-| `GET`  | `/api/v1/dashboard/ocorrencias-por-status` | Total de ocorrências por status         | Autenticado |
-| `GET`  | `/api/v1/dashboard/ocorrencias-por-tipo`   | Total de ocorrências por tipo           | Autenticado |
-| `GET`  | `/api/v1/dashboard/ocorrencias-por-bairro` | Total de ocorrências por bairro         | Autenticado |
+| Método | Endpoint                                    | Descrição                                | Acesso      |
+| :----- | :----------------------------------------- | :--------------------------------------- | :---------- |
+| `GET`  | `/api/v1/relatorios`                        | Gera relatório (CSV/PDF) de ocorrências  | Admin       |
+| `GET`  | `/api/v2/dashboard/ocorrencias-por-status` | Total de ocorrências por status          | Autenticado |
+| `GET`  | `/api/v2/dashboard/ocorrencias-por-tipo`   | Total de ocorrências por tipo            | Autenticado |
+| `GET`  | `/api/v2/dashboard/ocorrencias-por-bairro` | Total de ocorrências por bairro          | Autenticado |
 
 ### Endpoints Administrativos (CRUDs de Suporte)
 
 A API inclui endpoints `POST`, `GET`, `PUT` e `DELETE` (protegidos por `authenticateAdmin`) para administração das seguintes entidades:
 
-* `/api/v1/municipios`
-* `/api/v1/bairros`
-* `/api/v1/naturezas`
-* `/api/v1/grupos`
-* `/api/v1/subgrupos`
-* `/api/v1/formas-acervo`
-* `/api/v1/grupamentos`
-* `/api/v1/unidades-operacionais`
-* `/api/v1/viaturas`
+  * `/api/v1/municipios`
+  * `/api/v1/bairros`
+  * `/api/v1/naturezas`
+  * `/api/v1/grupos`
+  * `/api/v1/subgrupos`
+  * `/api/v1/formas-acervo`
+  * `/api/v1/grupamentos`
+  * `/api/v1/unidades-operacionais`
+  * `/api/v1/viaturas`
 
-## 8. Eventos em Tempo Real (Socket.io)
+## 9\. Eventos em Tempo Real (Socket.io)
 
 A API emite eventos via **Socket.io** para que o frontend atualize suas interfaces em tempo real.
 Os clientes devem "ouvir" (`io.on(...)`) os seguintes eventos:
 
-| Evento Emitido                  | Acionado por                         | Dados Enviados         |
+| Evento Emitido                  | Acionado por                         | Dados Enviados         |
 | :------------------------------ | :----------------------------------- | :--------------------- |
-| `nova_ocorrencia`               | `POST /ocorrencias`                  | `Ocorrencia`           |
-| `ocorrencia_atualizada`         | `PUT /ocorrencias/:id`               | `Ocorrencia`           |
-| `media_adicionada`              | `POST /ocorrencias/:id/midia`        | `Midia & ocorrenciaId` |
-| `lista_usuarios_atualizada`     | `PUT/DELETE /users/:id`              | `{ action, data }`     |
-| `lista_viaturas_atualizada`     | `POST/PUT/DELETE /viaturas`          | `{ action, data }`     |
-| `lista_bairros_atualizada`      | `POST/PUT/DELETE /bairros`           | `{ action, data }`     |
-| `lista_municipios_atualizada`   | `POST/PUT/DELETE /municipios`        | `{ action, data }`     |
-| `lista_grupamentos_atualizada`  | `POST/DELETE /grupamentos`           | `{ action, data }`     |
-| `lista_unidades_atualizada`     | `POST/DELETE /unidades-operacionais` | `{ action, data }`     |
-| `lista_naturezas_atualizada`    | `POST/DELETE /naturezas`             | `{ action, data }`     |
-| `lista_grupos_atualizada`       | `POST/DELETE /grupos`                | `{ action, data }`     |
-| `lista_subgrupos_atualizada`    | `POST/DELETE /subgrupos`             | `{ action, data }`     |
-| `lista_formasacervo_atualizada` | `POST/DELETE /formas-acervo`         | `{ action, data }`     |
+| `nova_ocorrencia`D              | `POST /ocorrencias`                  | `Ocorrencia`           |
+| `ocorrencia_atualizada`         | `PUT /ocorrencias/:id`               | `Ocorrencia`           |
+| `media_adicionada`              | `POST /ocorrencias/:id/midia`        | `Midia & ocorrenciaId` |
+| `lista_usuarios_atualizada`     | `PUT/DELETE /users/:id`              | `{ action, data }`     |
+| `lista_viaturas_atualizada`     | `POST/PUT/DELETE /viaturas`          | `{ action, data }`     |
+| `lista_bairros_atualizada`      | `POST/PUT/DELETE /bairros`           | `{ action, data }`     |
+| `lista_municipios_atualizada`   | `POST/PUT/DELETE /municipios`        | `{ action, data }`     |
+| `lista_grupamentos_atualizada`a | `POST/DELETE /grupamentos`           | `{ action, data }`     |
+| `lista_unidades_atualizada`     | `POST/DELETE /unidades-operacionais` | `{ action, data }`     |
+| `lista_naturezas_atualizada`    | `POST/DELETE /naturezas`             | `{ action, data }`    m |
+| `lista_grupos_atualizada`       | `POST/DELETE /grupos`                | `{ action, data }`     |
+| `lista_subgrupos_atualizada`    | `POST/DELETE /subgrupos`             | `{ action, data }`     |
+| `lista_formasacervo_atualizada` | `POST/DELETE /formas-acervo`         | `{ action, data }`     |
 
----
-
-Se quiser, posso gerar uma **versão em português do Brasil (PT-BR)** mais fluida (sem "ficheiro", "utilizadores" etc.) — ideal para publicação no GitHub. Deseja que eu adapte o texto nesse formato?
+```
+```
