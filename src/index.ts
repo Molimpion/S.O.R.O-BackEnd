@@ -1,4 +1,4 @@
-// src/index.ts (COM SENTRY, PINO E PROMETHEUS)
+// src/index.ts (COM SUPORTE A TESTES + SENTRY, PINO E PROMETHEUS)
 
 import 'express-async-errors';
 
@@ -41,20 +41,26 @@ import dashboardRoutes from './routes/dashboardRoutes';
 import municipioRoutes from './routes/municipioRoutes';
 
 // --- 2. INICIALIZE O SENTRY V7 (ANTES DE "const app = express()") ---
-Sentry.init({
-  dsn: env.sentry.dsn,
-  enabled: process.env.NODE_ENV === 'production',
-  integrations: [
-    new Sentry.Integrations.Http({ tracing: true }),
-    new Tracing.Integrations.Prisma(),
-  ],
-  tracesSampleRate: 1.0,
-});
+// Verifica se não estamos em ambiente de teste antes de iniciar o Sentry para evitar ruído nos testes
+if (process.env.NODE_ENV !== 'test') {
+  Sentry.init({
+    dsn: env.sentry.dsn,
+    enabled: process.env.NODE_ENV === 'production',
+    integrations: [
+      new Sentry.Integrations.Http({ tracing: true }),
+      new Tracing.Integrations.Prisma(),
+    ],
+    tracesSampleRate: 1.0,
+  });
+}
 // --- FIM DA INICIALIZAÇÃO DO SENTRY ---
 
 // --- 3. INICIALIZE O PROMETHEUS ---
 // Habilita as métricas padrão (uso de CPU, memória, etc.)
-promClient.collectDefaultMetrics();
+// Também evita inicializar durante os testes para não poluir ou causar conflitos
+if (process.env.NODE_ENV !== 'test') {
+  promClient.collectDefaultMetrics();
+}
 // --- FIM DA INICIALIZAÇÃO DO PROMETHEUS ---
 
 
@@ -73,9 +79,14 @@ const io = new Server(httpServer, {
 app.set('io', io);
 
 io.on('connection', (socket: Socket) => {
-  logger.info(`Cliente conectado via Socket.io: ${socket.id}`);
+  // Logs apenas se não for teste, para manter a saída dos testes limpa
+  if (process.env.NODE_ENV !== 'test') {
+    logger.info(`Cliente conectado via Socket.io: ${socket.id}`);
+  }
   socket.on('disconnect', () => {
-    logger.info(`Cliente desconectado: ${socket.id}`);
+    if (process.env.NODE_ENV !== 'test') {
+      logger.info(`Cliente desconectado: ${socket.id}`);
+    }
   });
 });
 
@@ -88,7 +99,10 @@ app.use(Sentry.Handlers.requestHandler());
 app.use(Sentry.Handlers.tracingHandler());
 
 // Logger de requisições (Pino-HTTP)
-app.use(pinoHttp({ logger }));
+// Condicional para não logar requisições durante os testes (mantém o terminal limpo)
+if (process.env.NODE_ENV !== 'test') {
+  app.use(pinoHttp({ logger }));
+}
 // --- FIM DOS HANDLERS ---
 
 
@@ -119,7 +133,7 @@ app.get('/metrics', async (req, res) => {
 app.use(authenticateToken);
 
 // --- Rotas Protegidas ---
-app.use('/api/v2/dashboard', dashboardRoutes);
+app.use('/api/v2/dashboard', dashboardRoutes); // Nota: vi que aqui está v2, mantive conforme seu arquivo original
 app.use('/api/v1/relatorios', relatorioRoutes);
 app.use('/api/v1/ocorrencias', ocorrenciaRoutes);
 app.use('/api/v1/users', userRoutes);
@@ -142,10 +156,17 @@ app.use(errorMiddleware);
 // --- FIM DOS AJUSTES DE ERRO ---
 
 
-// --- Iniciar o 'httpServer' ---
-httpServer.listen(PORT, () => {
-  logger.info(`Servidor rodando na porta ${PORT}`);
-  logger.info(`Documentação da API disponível em http://localhost:${PORT}/api/docs`);
-  // --- 7. ADICIONAR LOG PARA METRICS ---
-  logger.info(`Métricas do Prometheus disponíveis em http://localhost:${PORT}/metrics`);
-});
+// --- 7. MODIFICAÇÃO CRÍTICA PARA TESTES: EXPORTAR APP E INICIAR CONDICIONALMENTE ---
+
+// Exporta a instância 'app' para ser usada pelo Supertest nos testes de integração
+export default app;
+
+// Inicia o servidor APENAS se este arquivo for executado diretamente (ex: npm start)
+// Se for importado por um teste (Jest), o servidor não iniciará a escuta na porta, evitando conflitos.
+if (process.env.NODE_ENV !== 'test') {
+  httpServer.listen(PORT, () => {
+    logger.info(`Servidor rodando na porta ${PORT}`);
+    logger.info(`Documentação da API disponível em http://localhost:${PORT}/api/docs`);
+    logger.info(`Métricas do Prometheus disponíveis em http://localhost:${PORT}/metrics`);
+  });
+}
