@@ -72,8 +72,9 @@ const PORT = env.port;
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
+    origin: "*", // Permite qualquer origem
+    methods: ["GET", "POST"],
+    credentials: true // Adicione isso para garantir
   }
 });
 
