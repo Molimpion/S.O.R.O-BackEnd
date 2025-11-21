@@ -7,7 +7,7 @@
 @hostname = https://api-bombeiros-s-o-r-o.onrender.com
 # @hostname = http://localhost:3000
 
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZThjYmYzYy1jYmUxLTQ5ZjgtODllNi1hOWI1YjhlMjkzNzQiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjI3OTQ1MzUsImV4cCI6MTc2MjgyMzMzNX0.9W2KmiRY1d2he1TYxLb0NDhwD8AaRdCVHNDClX1g45s
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZThjYmYzYy1jYmUxLTQ5ZjgtODllNi1hOWI1YjhlMjkzNzQiLCJwcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjM3NTEwMjQsImV4cCI6MTc2Mzc3OTgyNH0.598E81K3kWQg4f5BrcwnVkUxbIHAM91SoBM-_3ZC18g
 @analistaToken = ### CORREÇÃO: Adicionada variável para o token do analista
 @grupamentoId =
 @unidadeId =

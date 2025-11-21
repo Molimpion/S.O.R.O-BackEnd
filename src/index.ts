@@ -1,8 +1,8 @@
-// src/index.ts (COM SUPORTE A TESTES + SENTRY, PINO E PROMETHEUS)
+// src/index.ts (COM SUPORTE A TESTES + SENTRY, PINO, PROMETHEUS E CORS)
 
 import 'express-async-errors';
 
-// --- 1. IMPORTAÇÕES (Sentry, Pino, e Prometheus) ---
+// --- 1. IMPORTAÇÕES (Sentry, Pino, Prometheus e CORS) ---
 import * as Sentry from '@sentry/node';
 import * as Tracing from '@sentry/tracing';
 import { logger } from './configs/logger'; // O nosso logger Pino
@@ -13,6 +13,7 @@ import { env } from './configs/environment';
 import express from 'express';
 import bodyParser from 'body-parser';
 import helmet from 'helmet';
+import cors from 'cors'; // <--- 1. IMPORTAÇÃO DO CORS ADICIONADA
 
 // --- Importações originais ---
 import http from 'http';
@@ -92,6 +93,16 @@ io.on('connection', (socket: Socket) => {
 
 // --- Middlewares ---
 app.use(helmet());
+
+// --- 2. CONFIGURAÇÃO DO CORS (ADICIONADO) ---
+// Permite que o frontend (localhost ou produção) acesse a API sem bloqueio
+app.use(cors({
+  origin: '*', // Aceita requisições de qualquer origem
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+// --- FIM DA CONFIGURAÇÃO DO CORS ---
+
 app.use(bodyParser.json());
 
 // --- 4. ADICIONE OS HANDLERS DO SENTRY V7 E PINO (AQUI) ---
