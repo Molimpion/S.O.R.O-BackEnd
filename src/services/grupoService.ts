@@ -1,5 +1,5 @@
-import { PrismaClient } from '@prisma/client';
-import { NotFoundError, ConflictError } from '../errors/api-errors';
+import { PrismaClient } from "@prisma/client";
+import { NotFoundError, ConflictError } from "../errors/api-errors";
 
 const prisma = new PrismaClient();
 
@@ -8,32 +8,44 @@ interface GrupoData {
   id_natureza_fk: string;
 }
 
+// Interface para filtros
+interface GrupoFilters {
+  naturezaId?: string;
+}
+
 export async function createGrupo(data: GrupoData) {
   const naturezaExists = await prisma.natureza.findUnique({
     where: { id_natureza: data.id_natureza_fk },
   });
   if (!naturezaExists) {
-    throw new NotFoundError('Natureza associada não encontrada.');
+    throw new NotFoundError("Natureza associada não encontrada.");
   }
 
   const grupo = await prisma.grupo.create({ data });
   return grupo;
-};
+}
 
-export async function getAllGrupos() {
+export async function getAllGrupos(filters?: GrupoFilters) {
+  const where: any = {};
+
+  if (filters?.naturezaId) {
+    where.id_natureza_fk = filters.naturezaId;
+  }
+
   const grupos = await prisma.grupo.findMany({
-    orderBy: { descricao_grupo: 'asc' },
+    where,
+    orderBy: { descricao_grupo: "asc" },
     include: {
       natureza: true,
     },
   });
   return grupos;
-};
+}
 
 export async function deleteGrupo(id: string) {
   const grupo = await prisma.grupo.findUnique({ where: { id_grupo: id } });
   if (!grupo) {
-    throw new NotFoundError('Grupo não encontrado');
+    throw new NotFoundError("Grupo não encontrado");
   }
 
   const subgrupoEmUso = await prisma.subgrupo.findFirst({
@@ -41,8 +53,10 @@ export async function deleteGrupo(id: string) {
   });
 
   if (subgrupoEmUso) {
-    throw new ConflictError('Este grupo não pode ser deletado pois está em uso em Subgrupos.');
+    throw new ConflictError(
+      "Este grupo não pode ser deletado pois está em uso em Subgrupos."
+    );
   }
 
   await prisma.grupo.delete({ where: { id_grupo: id } });
-};
+}

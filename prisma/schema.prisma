@@ -16,6 +16,9 @@ datasource db {
 model Ocorrencia {
   id_ocorrencia              String                 @id @default(uuid())
   nr_aviso                   String?
+  // --- NOVO CAMPO ---
+  observacoes                String?                @db.Text // Texto longo para detalhes do solicitante
+  // ------------------
   data_acionamento           DateTime
   hora_acionamento           DateTime
   status_situacao            Status                 @default(PENDENTE)
@@ -32,7 +35,7 @@ model Ocorrencia {
   usuario_abertura           User                 @relation("OcorrenciasAbertas", fields: [id_usuario_abertura_fk], references: [id], onDelete: Restrict, onUpdate: Cascade)
   id_usuario_abertura_fk     String
 
-  localizacao                LocalizacaoOcorrencia?
+  localizacao                LocalizacaoOcorrencia? // Já existia, agora vamos usar no create
   vitimas                    Vitima[]
   midias                     Midia[]
   viaturas_usadas            OcorrenciaViatura[]
