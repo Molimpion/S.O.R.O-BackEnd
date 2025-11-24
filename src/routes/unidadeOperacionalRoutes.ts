@@ -1,8 +1,12 @@
-import { Router } from 'express';
-import { create, getAll, remove } from '../controllers/unidadeOperacionalController';
-import { authenticateAdmin } from '../middleware/authMiddleware';
-import { validate } from '../middleware/validate';
-import { unidadeSchema } from '../validators/unidadeOperacionalValidator';
+import { Router } from "express";
+import {
+  create,
+  getAll,
+  remove,
+} from "../controllers/unidadeOperacionalController";
+import { authenticateAdmin } from "../middleware/authMiddleware";
+import { validate } from "../middleware/validate";
+import { unidadeSchema } from "../validators/unidadeOperacionalValidator";
 
 const router = Router();
 
@@ -77,8 +81,8 @@ const router = Router();
 
 router.use(authenticateAdmin);
 
-router.post('/', validate(unidadeSchema), create);
-router.get('/', getAll);
-router.delete('/:id', remove);
+router.post("/", validate(unidadeSchema), create);
+router.get("/", getAll);
+router.delete("/:id", remove);
 
 export default router;

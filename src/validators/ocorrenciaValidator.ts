@@ -1,5 +1,3 @@
-// src/validators/ocorrenciaValidator.ts
-
 import { z } from "zod";
 
 export const createOcorrenciaSchema = z.object({

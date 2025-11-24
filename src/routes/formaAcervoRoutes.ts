@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import { create, getAll, remove } from '../controllers/formaAcervoController';
-import { authenticateAdmin } from '../middleware/authMiddleware';
-import { validate } from '../middleware/validate';
-import { formaAcervoSchema } from '../validators/formaAcervoValidator';
+import { Router } from "express";
+import { create, getAll, remove } from "../controllers/formaAcervoController";
+import { authenticateAdmin } from "../middleware/authMiddleware";
+import { validate } from "../middleware/validate";
+import { formaAcervoSchema } from "../validators/formaAcervoValidator";
 
 const router = Router();
 
@@ -81,8 +81,8 @@ const router = Router();
 
 router.use(authenticateAdmin);
 
-router.post('/', validate(formaAcervoSchema), create);
-router.get('/', getAll);
-router.delete('/:id', remove);
+router.post("/", validate(formaAcervoSchema), create);
+router.get("/", getAll);
+router.delete("/:id", remove);
 
 export default router;

@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client';
-import { createLog } from './logService';
-import { NotFoundError } from '../errors/api-errors';
+import { PrismaClient } from "@prisma/client";
+import { createLog } from "./logService";
+import { NotFoundError } from "../errors/api-errors";
 
 const prisma = new PrismaClient();
 
@@ -30,12 +30,16 @@ export const getUserById = async (id: string) => {
   });
 
   if (!user) {
-    throw new NotFoundError('Usuário não encontrado');
+    throw new NotFoundError("Usuário não encontrado");
   }
   return user;
 };
 
-export const updateUser = async (id: string, data: any, adminUserId: string) => {
+export const updateUser = async (
+  id: string,
+  data: any,
+  adminUserId: string
+) => {
   await getUserById(id);
 
   const updatedUser = await prisma.user.update({
@@ -56,7 +60,7 @@ export const updateUser = async (id: string, data: any, adminUserId: string) => 
   });
 
   await createLog({
-    action: 'ADMIN_UPDATED_USER',
+    action: "ADMIN_UPDATED_USER",
     userId: adminUserId,
     details: `Admin (ID: ${adminUserId}) atualizou o usuário '${updatedUser.nome}' (ID: ${updatedUser.id}).`,
   });
@@ -66,9 +70,9 @@ export const updateUser = async (id: string, data: any, adminUserId: string) => 
 
 export const deleteUser = async (id: string, adminUserId: string) => {
   const userToDelete = await prisma.user.findUnique({ where: { id } });
-  
+
   if (!userToDelete) {
-    throw new NotFoundError('Usuário a ser deletado não encontrado');
+    throw new NotFoundError("Usuário a ser deletado não encontrado");
   }
 
   await prisma.user.delete({
@@ -76,7 +80,7 @@ export const deleteUser = async (id: string, adminUserId: string) => {
   });
 
   await createLog({
-    action: 'ADMIN_DELETED_USER',
+    action: "ADMIN_DELETED_USER",
     userId: adminUserId,
     details: `Admin (ID: ${adminUserId}) deletou o usuário '${userToDelete.nome}' (ID: ${userToDelete.id}).`,
   });

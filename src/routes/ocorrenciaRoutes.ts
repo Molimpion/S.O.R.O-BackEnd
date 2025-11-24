@@ -1,15 +1,19 @@
-// src/routes/ocorrenciaRoutes.ts
-
-import { Router } from 'express';
-import { create, getAll, getById, update, uploadMidia } from '../controllers/ocorrenciaController';
-import { authenticateToken } from '../middleware/authMiddleware';
-import { validate } from '../middleware/validate';
+import { Router } from "express";
+import {
+  create,
+  getAll,
+  getById,
+  update,
+  uploadMidia,
+} from "../controllers/ocorrenciaController";
+import { authenticateToken } from "../middleware/authMiddleware";
+import { validate } from "../middleware/validate";
 import {
   createOcorrenciaSchema,
   listOcorrenciaSchema,
-  putOcorrenciaSchema
-} from '../validators/ocorrenciaValidator';
-import upload from '../configs/upload';
+  putOcorrenciaSchema,
+} from "../validators/ocorrenciaValidator";
+import upload from "../configs/upload";
 
 const router = Router();
 
@@ -186,12 +190,12 @@ const router = Router();
 
 router.use(authenticateToken);
 
-router.get('/', validate(listOcorrenciaSchema), getAll);
-router.get('/:id', getById);
-router.post('/', validate(createOcorrenciaSchema), create);
-router.put('/:id', validate(putOcorrenciaSchema), update);
+router.get("/", validate(listOcorrenciaSchema), getAll);
+router.get("/:id", getById);
+router.post("/", validate(createOcorrenciaSchema), create);
+router.put("/:id", validate(putOcorrenciaSchema), update);
 
 // Upload de mídia
-router.post('/:id/midia', upload.single('midia'), uploadMidia);
+router.post("/:id/midia", upload.single("midia"), uploadMidia);
 
 export default router;

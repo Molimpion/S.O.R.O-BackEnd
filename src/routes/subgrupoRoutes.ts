@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import { create, getAll, remove } from '../controllers/subgrupoController';
-import { authenticateAdmin } from '../middleware/authMiddleware';
-import { validate } from '../middleware/validate';
-import { subgrupoSchema } from '../validators/subgrupoValidator';
+import { Router } from "express";
+import { create, getAll, remove } from "../controllers/subgrupoController";
+import { authenticateAdmin } from "../middleware/authMiddleware";
+import { validate } from "../middleware/validate";
+import { subgrupoSchema } from "../validators/subgrupoValidator";
 
 const router = Router();
 
@@ -77,8 +77,8 @@ const router = Router();
 
 router.use(authenticateAdmin);
 
-router.post('/', validate(subgrupoSchema), create);
-router.get('/', getAll);
-router.delete('/:id', remove);
+router.post("/", validate(subgrupoSchema), create);
+router.get("/", getAll);
+router.delete("/:id", remove);
 
 export default router;

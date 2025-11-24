@@ -1,5 +1,3 @@
-// src/controllers/userController.ts (COM SOCKET.IO)
-
 import { Request, Response } from 'express';
 import * as userService from '../services/userService';
 

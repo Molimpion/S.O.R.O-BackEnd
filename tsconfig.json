@@ -1,24 +1,16 @@
 {
   "compilerOptions": {
-    "target": "es2020", 
-    "module": "commonjs", 
-    "outDir": "./dist", 
-    
-    // "rootDir": "./src", // REMOVIDO: Comentamos ou removemos isso para permitir arquivos fora de 'src'
-    
-    "strict": true, 
-    "esModuleInterop": true, 
-    "forceConsistentCasingInFileNames": true, 
+    "target": "es2020",
+    "module": "commonjs",
+    "outDir": "./dist",
+
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
 
-    // --- NOVA CONFIGURAÇÃO PARA TESTES ---
-    // Carrega explicitamente os tipos do Jest e do Node.js
-    "types": ["jest", "node"] 
+    "types": ["jest", "node"]
   },
 
-  // --- INCLUI A PASTA DE TESTES NA COMPILAÇÃO ---
-  "include": [
-    "src/**/*", 
-    "api-tests/**/*"
-  ]
+  "include": ["src/**/*", "api-tests/**/*"]
 }

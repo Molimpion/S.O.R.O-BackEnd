@@ -1,10 +1,7 @@
-// src/controllers/ocorrenciaController.ts (COM SOCKET.IO)
+import { Request, Response, Express } from "express";
+import * as ocorrenciaService from "../services/ocorrenciaService";
+import { BadRequestError } from "../errors/api-errors";
 
-import { Request, Response, Express } from 'express';
-import * as ocorrenciaService from '../services/ocorrenciaService';
-import { BadRequestError } from '../errors/api-errors';
-
-// Interface atualizada para incluir 'file' (para o upload)
 interface AuthRequest extends Request {
   user?: { userId: string; profile: string };
   file?: Express.Multer.File;
@@ -12,13 +9,13 @@ interface AuthRequest extends Request {
 
 export const create = async (req: AuthRequest, res: Response) => {
   const userId = req.user!.userId;
-  const novaOcorrencia = await ocorrenciaService.createOcorrencia(req.body, userId);
+  const novaOcorrencia = await ocorrenciaService.createOcorrencia(
+    req.body,
+    userId
+  );
 
-  // --- EMITIR SOCKET ---
-  // Notifica todos os clientes conectados sobre a nova ocorrência
-  const io = req.app.get('io');
-  io.emit('nova_ocorrencia', novaOcorrencia); 
-  // --- FIM DO SOCKET ---
+  const io = req.app.get("io");
+  io.emit("nova_ocorrencia", novaOcorrencia);
 
   res.status(201).json(novaOcorrencia);
 };
@@ -34,36 +31,32 @@ export const getById = async (req: Request, res: Response) => {
   res.status(200).json(ocorrencia);
 };
 
-export const update = async (req: AuthRequest, res: Response) => { 
-  const { id } = req.params; 
-  const data = req.body; 
-  const userId = req.user!.userId; 
+export const update = async (req: AuthRequest, res: Response) => {
+  const { id } = req.params;
+  const data = req.body;
+  const userId = req.user!.userId;
 
   const ocorrenciaAtualizada = await ocorrenciaService.updateOcorrencia(
     id,
     data,
-    userId 
+    userId
   );
-  
-  // --- EMITIR SOCKET ---
-  // Notifica todos sobre a atualização (ex: mudança de status)
-  const io = req.app.get('io');
-  io.emit('ocorrencia_atualizada', ocorrenciaAtualizada);
-  // --- FIM DO SOCKET ---
-  
+
+  const io = req.app.get("io");
+  io.emit("ocorrencia_atualizada", ocorrenciaAtualizada);
+
   res.status(200).json(ocorrenciaAtualizada);
 };
 
-// --- FUNÇÃO DE UPLOAD ADICIONADA (das etapas anteriores) ---
 /**
  * Handler para fazer upload de um arquivo de mídia para uma ocorrência.
  */
 export const uploadMidia = async (req: AuthRequest, res: Response) => {
-  const { id } = req.params; // ID da ocorrência
-  const userId = req.user!.userId; // ID do usuário (do token)
+  const { id } = req.params; //
+  const userId = req.user!.userId;
 
   if (!req.file) {
-    throw new BadRequestError('Nenhum arquivo enviado.');
+    throw new BadRequestError("Nenhum arquivo enviado.");
   }
 
   const novaMidia = await ocorrenciaService.addMidiaToOcorrencia(
@@ -72,12 +65,11 @@ export const uploadMidia = async (req: AuthRequest, res: Response) => {
     req.file
   );
 
-  // --- EMITIR SOCKET ---
-  // Notifica o frontend que novas mídias foram adicionadas a uma ocorrência
-  const io = req.app.get('io');
-  // Envia a mídia e também o ID da ocorrência pai
-  io.emit('media_adicionada', { ...novaMidia, ocorrenciaId: id }); 
-  // --- FIM DO SOCKET ---
+  const io = req.app.get("io");
 
-  res.status(201).json({ message: 'Mídia enviada com sucesso!', data: novaMidia });
+  io.emit("media_adicionada", { ...novaMidia, ocorrenciaId: id });
+
+  res
+    .status(201)
+    .json({ message: "Mídia enviada com sucesso!", data: novaMidia });
 };

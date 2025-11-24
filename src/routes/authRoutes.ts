@@ -1,7 +1,7 @@
-import { Router } from 'express';
-import { register, login } from '../controllers/authController'; // Importação nomeada correta
-import { registerSchema, loginSchema } from '../validators/authValidator';
-import { validate } from '../middleware/validate';
+import { Router } from "express";
+import { register, login } from "../controllers/authController";
+import { registerSchema, loginSchema } from "../validators/authValidator";
+import { validate } from "../middleware/validate";
 
 const router = Router();
 
@@ -70,7 +70,7 @@ const router = Router();
  *               $ref: '#/components/schemas/Error401'
  */
 
-router.post('/register', validate(registerSchema), register);
-router.post('/login', validate(loginSchema), login);
+router.post("/register", validate(registerSchema), register);
+router.post("/login", validate(loginSchema), login);
 
 export default router;

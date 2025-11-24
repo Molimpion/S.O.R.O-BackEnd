@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
-import { ZodError, z } from 'zod';
+import { Request, Response, NextFunction } from "express";
+import { ZodError, z } from "zod";
 
-export const validate = (schema: z.Schema) =>
+export const validate =
+  (schema: z.Schema) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-    
       await schema.parseAsync({
         body: req.body,
         query: req.query,
@@ -20,6 +20,6 @@ export const validate = (schema: z.Schema) =>
           }))
         );
       }
-      return res.status(500).json({ message: 'Internal server error' });
+      return res.status(500).json({ message: "Internal server error" });
     }
   };

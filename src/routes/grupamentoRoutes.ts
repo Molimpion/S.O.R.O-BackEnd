@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import { create, getAll, remove } from '../controllers/grupamentoController';
-import { authenticateAdmin } from '../middleware/authMiddleware';
-import { validate } from '../middleware/validate';
-import { grupamentoSchema } from '../validators/grupamentoValidator';
+import { Router } from "express";
+import { create, getAll, remove } from "../controllers/grupamentoController";
+import { authenticateAdmin } from "../middleware/authMiddleware";
+import { validate } from "../middleware/validate";
+import { grupamentoSchema } from "../validators/grupamentoValidator";
 
 const router = Router();
 
@@ -77,8 +77,8 @@ const router = Router();
 
 router.use(authenticateAdmin);
 
-router.post('/', validate(grupamentoSchema), create);
-router.get('/', getAll);
-router.delete('/:id', remove);
+router.post("/", validate(grupamentoSchema), create);
+router.get("/", getAll);
+router.delete("/:id", remove);
 
 export default router;

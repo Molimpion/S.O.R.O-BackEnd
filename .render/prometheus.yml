@@ -1,8 +1,8 @@
 global:
   scrape_interval: 15s
 scrape_configs:
-  - job_name: 'soro-api-render'
+  - job_name: "soro-api-render"
     scheme: https
     static_configs:
-      - targets: ['api-bombeiros-s-o-r-o.onrender.com']
+      - targets: ["api-bombeiros-s-o-r-o.onrender.com"]
     metrics_path: /metrics

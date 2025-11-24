@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import { create, getAll, remove } from '../controllers/naturezaController';
-import { authenticateAdmin } from '../middleware/authMiddleware';
-import { validate } from '../middleware/validate';
-import { naturezaSchema } from '../validators/naturezaValidator';
+import { Router } from "express";
+import { create, getAll, remove } from "../controllers/naturezaController";
+import { authenticateAdmin } from "../middleware/authMiddleware";
+import { validate } from "../middleware/validate";
+import { naturezaSchema } from "../validators/naturezaValidator";
 
 const router = Router();
 
@@ -77,8 +77,8 @@ const router = Router();
 
 router.use(authenticateAdmin);
 
-router.post('/', validate(naturezaSchema), create);
-router.get('/', getAll);
-router.delete('/:id', remove);
+router.post("/", validate(naturezaSchema), create);
+router.get("/", getAll);
+router.delete("/:id", remove);
 
 export default router;

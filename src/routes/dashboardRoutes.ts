@@ -1,16 +1,15 @@
-import { Router } from 'express';
-// --- 1. IMPORTAR OS NOVOS CONTROLLERS ---
-import { 
-  getKpiOcorrenciasPorStatus, 
-  getKpiOcorrenciasPorTipo, 
+import { Router } from "express";
+import {
+  getKpiOcorrenciasPorStatus,
+  getKpiOcorrenciasPorTipo,
   getKpiOcorrenciasPorBairro,
   getKpiOcorrenciasPorMunicipio,
   getKpiOcorrenciasPorPeriodo,
-  getKpiAvgCompletionTime
-} from '../controllers/dashboardController';
-import { authenticateToken } from '../middleware/authMiddleware';
-import { validate } from '../middleware/validate';
-import { listOcorrenciaSchema } from '../validators/ocorrenciaValidator';
+  getKpiAvgCompletionTime,
+} from "../controllers/dashboardController";
+import { authenticateToken } from "../middleware/authMiddleware";
+import { validate } from "../middleware/validate";
+import { listOcorrenciaSchema } from "../validators/ocorrenciaValidator";
 
 const router = Router();
 
@@ -154,14 +153,35 @@ const router = Router();
 
 router.use(authenticateToken);
 
-// --- 2. ADICIONAR AS NOVAS ROTAS ---
-router.get('/ocorrencias-por-status', validate(listOcorrenciaSchema), getKpiOcorrenciasPorStatus);
-router.get('/ocorrencias-por-tipo', validate(listOcorrenciaSchema), getKpiOcorrenciasPorTipo);
-router.get('/ocorrencias-por-bairro', validate(listOcorrenciaSchema), getKpiOcorrenciasPorBairro);
-
-// NOVAS ROTAS DA FASE 3
-router.get('/ocorrencias-por-municipio', validate(listOcorrenciaSchema), getKpiOcorrenciasPorMunicipio);
-router.get('/ocorrencias-por-periodo', validate(listOcorrenciaSchema), getKpiOcorrenciasPorPeriodo);
-router.get('/avg-completion-time', validate(listOcorrenciaSchema), getKpiAvgCompletionTime);
+router.get(
+  "/ocorrencias-por-status",
+  validate(listOcorrenciaSchema),
+  getKpiOcorrenciasPorStatus
+);
+router.get(
+  "/ocorrencias-por-tipo",
+  validate(listOcorrenciaSchema),
+  getKpiOcorrenciasPorTipo
+);
+router.get(
+  "/ocorrencias-por-bairro",
+  validate(listOcorrenciaSchema),
+  getKpiOcorrenciasPorBairro
+);
+router.get(
+  "/ocorrencias-por-municipio",
+  validate(listOcorrenciaSchema),
+  getKpiOcorrenciasPorMunicipio
+);
+router.get(
+  "/ocorrencias-por-periodo",
+  validate(listOcorrenciaSchema),
+  getKpiOcorrenciasPorPeriodo
+);
+router.get(
+  "/avg-completion-time",
+  validate(listOcorrenciaSchema),
+  getKpiAvgCompletionTime
+);
 
 export default router;

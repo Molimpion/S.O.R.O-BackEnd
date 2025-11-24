@@ -1,4 +1,3 @@
-// src/validators/unidadeOperacionalValidator.ts (CORRIGIDO)
 import { z } from 'zod';
 
 export const unidadeSchema = z.object({

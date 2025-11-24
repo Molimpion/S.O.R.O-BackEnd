@@ -8,7 +8,6 @@ interface GrupoData {
   id_natureza_fk: string;
 }
 
-// Interface para filtros
 interface GrupoFilters {
   naturezaId?: string;
 }

@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import { authenticateAdmin } from '../middleware/authMiddleware';
-import { getAll, getById, update, remove } from '../controllers/userController';
-import { validate } from '../middleware/validate';
-import { putUserSchema } from '../validators/authValidator';
+import { Router } from "express";
+import { authenticateAdmin } from "../middleware/authMiddleware";
+import { getAll, getById, update, remove } from "../controllers/userController";
+import { validate } from "../middleware/validate";
+import { putUserSchema } from "../validators/authValidator";
 
 const router = Router();
 
@@ -97,9 +97,9 @@ const router = Router();
 
 router.use(authenticateAdmin);
 
-router.get('/', getAll);
-router.get('/:id', getById);
-router.put('/:id', validate(putUserSchema), update);
-router.delete('/:id', remove);
+router.get("/", getAll);
+router.get("/:id", getById);
+router.put("/:id", validate(putUserSchema), update);
+router.delete("/:id", remove);
 
 export default router;

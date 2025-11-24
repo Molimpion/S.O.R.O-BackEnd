@@ -1,5 +1,5 @@
 {
-  "name": "Node.js & PostgreSQL", // <-- Mude de MySQL para PostgreSQL
+  "name": "Node.js & PostgreSQL",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspace",

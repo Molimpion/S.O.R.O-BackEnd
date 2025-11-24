@@ -1,8 +1,17 @@
-import { Router } from 'express';
-import { create, getAll, getById, update, remove } from '../controllers/bairroController'; 
-import { authenticateAdmin } from '../middleware/authMiddleware'; 
-import { validate } from '../middleware/validate';
-import { createBairroSchema, putBairroSchema } from '../validators/bairroValidator'; 
+import { Router } from "express";
+import {
+  create,
+  getAll,
+  getById,
+  update,
+  remove,
+} from "../controllers/bairroController";
+import { authenticateAdmin } from "../middleware/authMiddleware";
+import { validate } from "../middleware/validate";
+import {
+  createBairroSchema,
+  putBairroSchema,
+} from "../validators/bairroValidator";
 
 const router = Router();
 
@@ -177,12 +186,12 @@ const router = Router();
  *               $ref: '#/components/schemas/Error404'
  */
 
-router.use(authenticateAdmin); 
+router.use(authenticateAdmin);
 
-router.post('/', validate(createBairroSchema), create);
-router.get('/', getAll);
-router.get('/:id', getById);
-router.put('/:id', validate(putBairroSchema), update); 
-router.delete('/:id', remove);
+router.post("/", validate(createBairroSchema), create);
+router.get("/", getAll);
+router.get("/:id", getById);
+router.put("/:id", validate(putBairroSchema), update);
+router.delete("/:id", remove);
 
 export default router;

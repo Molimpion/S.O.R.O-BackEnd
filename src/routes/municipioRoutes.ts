@@ -1,8 +1,17 @@
-import { Router } from 'express';
-import { create, getAll, getById, update, remove } from '../controllers/municipioController';
-import { authenticateAdmin } from '../middleware/authMiddleware';
-import { validate } from '../middleware/validate';
-import { createMunicipioSchema, putMunicipioSchema } from '../validators/municipioValidator';
+import { Router } from "express";
+import {
+  create,
+  getAll,
+  getById,
+  update,
+  remove,
+} from "../controllers/municipioController";
+import { authenticateAdmin } from "../middleware/authMiddleware";
+import { validate } from "../middleware/validate";
+import {
+  createMunicipioSchema,
+  putMunicipioSchema,
+} from "../validators/municipioValidator";
 
 const router = Router();
 
@@ -123,10 +132,10 @@ const router = Router();
 
 router.use(authenticateAdmin);
 
-router.post('/', validate(createMunicipioSchema), create);
-router.get('/', getAll);
-router.get('/:id', getById);
-router.put('/:id', validate(putMunicipioSchema), update);
-router.delete('/:id', remove);
+router.post("/", validate(createMunicipioSchema), create);
+router.get("/", getAll);
+router.get("/:id", getById);
+router.put("/:id", validate(putMunicipioSchema), update);
+router.delete("/:id", remove);
 
 export default router;

@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import { exportRelatorio } from '../controllers/relatorioController';
-import { authenticateAdmin } from '../middleware/authMiddleware';
-import { validate } from '../middleware/validate';
-import { reportOcorrenciaSchema } from '../validators/ocorrenciaValidator';
+import { Router } from "express";
+import { exportRelatorio } from "../controllers/relatorioController";
+import { authenticateAdmin } from "../middleware/authMiddleware";
+import { validate } from "../middleware/validate";
+import { reportOcorrenciaSchema } from "../validators/ocorrenciaValidator";
 
 const router = Router();
 
@@ -54,6 +54,6 @@ const router = Router();
 
 router.use(authenticateAdmin);
 
-router.get('/', validate(reportOcorrenciaSchema), exportRelatorio);
+router.get("/", validate(reportOcorrenciaSchema), exportRelatorio);
 
 export default router;

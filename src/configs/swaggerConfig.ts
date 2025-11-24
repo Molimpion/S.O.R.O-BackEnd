@@ -12,22 +12,16 @@ const options: swaggerJsdoc.Options = {
         email: 'desenvolvimento@bombeiros.pe.gov.br'
       }
     },
-    // ======================================================
-    // ==== CORREÇÃO (REVERTIDA): O PREFIXO VAI PARA O JSDOC ====
-    // ======================================================
     servers: [
       {
-        url: 'https://api-bombeiros-s-o-r-o.onrender.com', // <-- URL base sem prefixo /api/v1
+        url: 'https://api-bombeiros-s-o-r-o.onrender.com',
         description: 'Servidor de Produção (Render)'
       },
       {
-        url: 'http://localhost:3000', // <-- URL base sem prefixo /api/v1
+        url: 'http://localhost:3000',
         description: 'Servidor de Desenvolvimento Local'
       }
     ],
-    // ======================================================
-    // ==== BLOCO DE TAGS GLOBAIS CENTRALIZADO ====
-    // ======================================================
     tags: [
       {
         name: 'Autenticação',
@@ -74,11 +68,7 @@ const options: swaggerJsdoc.Options = {
         description: '(Admin) Endpoints para gerenciar as viaturas.'
       }
     ],
-    // ======================================================
-    // 1. COMPONENTES (SCHEMAS) CENTRALIZADOS
-    // ======================================================
     components: {
-      // Schemas de Segurança
       securitySchemes: {
         bearerAuth: {
           type: 'http',
@@ -87,10 +77,7 @@ const options: swaggerJsdoc.Options = {
           description: 'Token JWT obtido no login (Ex: Bearer eyJhbGci...)'
         }
       },
-      // Schemas de Dados (Modelos da API)
       schemas: {
-        
-        // --- Entidades Principais ---
         User: {
           type: 'object',
           properties: {
@@ -144,7 +131,6 @@ const options: swaggerJsdoc.Options = {
             id_bairro_fk: { type: 'string', format: 'uuid' },
             id_forma_acervo_fk: { type: 'string', format: 'uuid' },
             nr_aviso: { type: 'string', nullable: true },
-            // --- NOVOS CAMPOS ADICIONADOS ---
             observacoes: { type: 'string', description: 'Relato inicial da ocorrência' },
             localizacao: {
               type: 'object',
@@ -160,8 +146,6 @@ const options: swaggerJsdoc.Options = {
             }
           }
         },
-
-        // --- Entidades de Organização ---
         Grupamento: {
           type: 'object',
           required: ['nome_grupamento', 'sigla'],
@@ -191,8 +175,6 @@ const options: swaggerJsdoc.Options = {
             id_unidade_operacional_fk: { type: 'string', format: 'uuid' }
           }
         },
-
-        // --- Entidades de Classificação (Lookup) ---
         Natureza: {
           type: 'object',
           required: ['descricao'],
@@ -246,16 +228,12 @@ const options: swaggerJsdoc.Options = {
             id_municipio_fk: { type: 'string', format: 'uuid', nullable: true }
           }
         },
-
-        // --- Respostas Padrão ---
         SuccessDelete: {
           type: 'object',
           properties: {
             message: { type: 'string', example: 'Recurso deletado com sucesso.' }
           }
         },
-        
-        // --- Erros Padrão ---
         Error400: {
           type: 'array',
           items: {
@@ -295,23 +273,16 @@ const options: swaggerJsdoc.Options = {
         }
       }
     },
-    // 2. SEGURANÇA GLOBAL (Aplica Bearer Auth em todas as rotas por padrão)
     security: [
       {
         bearerAuth: []
       }
     ]
   },
-  
-  // ======================================================
-  // ==== CORREÇÃO 1: APONTAR PARA .TS E .JS (MANTIDO) ====
-  // ======================================================
-  // Caminho para os arquivos que contêm as anotações JSDoc
   apis: [
-    './src/routes/*.ts', // Para 'npm run dev'
-    './dist/routes/*.js' // Para 'npm run start' (produção)
-  ], 
-  // ======================================================
+    './src/routes/*.ts',
+    './dist/routes/*.js'
+  ],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
