@@ -68,7 +68,7 @@ Através do `docker-compose.yml`, são orquestrados **três** contêineres: um p
 
 1. Clone este repositório.
 2. Na raiz do projeto, crie um arquivo `.env` (já listado no `.gitignore`).
-   Use `src/config/environment.ts` como referência para todas as chaves necessárias.
+   Use `src/config/environment.ts` como referência para todas as chaves necessárias.
 
 **Exemplo de `.env` local:**
 
@@ -175,38 +175,41 @@ O projeto inclui o arquivo `api-tests/requests.http` com uma suíte de testes de
 
 ### Autenticação (`/api/v1/auth`)
 
-| Método | Endpoint    | Descrição                        | Acesso  |
+| Método | Endpoint    | Descrição                        | Acesso  |
 | :----- | :---------- | :------------------------------- | :------ |
-| `POST` | `/register` | Registra um novo usuário         | Público |
-| `POST` | `/login`    | Autentica e retorna um token JWT | Público |
+| `POST` | `/register` | Registra um novo usuário         | Público |
+| `POST` | `/login`    | Autentica e retorna um token JWT | Público |
 
 ### Ocorrências (`/api/v1/ocorrencias`)
 
-| Método | Endpoint     | Descrição                                 | Acesso             |
+| Método | Endpoint     | Descrição                                 | Acesso             |
 | :----- | :----------- | :---------------------------------------- | :----------------- |
-| `POST` | `/`          | Cria uma nova ocorrência                  | Autenticado        |
-| `GET`  | `/`          | Lista ocorrências com filtros e paginação | Autenticado        |
-| `GET`  | `/:id`       | Obtém os detalhes de uma ocorrência       | Autenticado        |
-| `PUT`  | `/:id`       | Atualiza uma ocorrência existente         | Autenticado (Dono) |
-| `POST` | `/:id/midia` | Faz upload de mídia (imagem/vídeo)        | Autenticado        |
+| `POST` | `/`          | Cria uma nova ocorrência                  | Autenticado        |
+| `GET`  | `/`          | Lista ocorrências com filtros e paginação | Autenticado        |
+| `GET`  | `/:id`       | Obtém os detalhes de uma ocorrência       | Autenticado        |
+| `PUT`  | `/:id`       | Atualiza uma ocorrência existente         | Autenticado (Dono) |
+| `POST` | `/:id/midia` | Faz upload de mídia (imagem/vídeo)        | Autenticado        |
 
 ### Gestão de Usuários (`/api/v1/users`)
 
-| Método   | Endpoint | Descrição                       | Acesso |
+| Método   | Endpoint | Descrição                       | Acesso |
 | :------- | :------- | :------------------------------ | :----- |
-| `GET`    | `/`      | Lista todos os usuários         | Admin  |
-| `GET`    | `/:id`   | Obtém detalhes de um usuário    | Admin  |
-| `PUT`    | `/:id`   | Atualiza um usuário             | Admin  |
-| `DELETE` | `/:id`   | Remove um usuário               | Admin  |
+| `GET`    | `/`      | Lista todos os usuários         | Admin  |
+| `GET`    | `/:id`   | Obtém detalhes de um usuário    | Admin  |
+| `PUT`    | `/:id`   | Atualiza um usuário             | Admin  |
+| `DELETE` | `/:id`   | Remove um usuário               | Admin  |
 
 ### Relatórios e Dashboard
 
-| Método | Endpoint                                    | Descrição                                | Acesso      |
-| :----- | :----------------------------------------- | :--------------------------------------- | :---------- |
-| `GET`  | `/api/v1/relatorios`                        | Gera relatório (CSV/PDF) de ocorrências  | Admin       |
-| `GET`  | `/api/v2/dashboard/ocorrencias-por-status` | Total de ocorrências por status          | Autenticado |
-| `GET`  | `/api/v2/dashboard/ocorrencias-por-tipo`   | Total de ocorrências por tipo            | Autenticado |
-| `GET`  | `/api/v2/dashboard/ocorrencias-por-bairro` | Total de ocorrências por bairro          | Autenticado |
+| Método | Endpoint                                       | Descrição                                  | Acesso      |
+| :----- | :--------------------------------------------- | :----------------------------------------- | :---------- |
+| `GET`  | `/api/v1/relatorios`                           | Gera relatório (CSV/PDF) de ocorrências    | Admin       |
+| `GET`  | `/api/v2/dashboard/ocorrencias-por-status`     | Total de ocorrências por status            | Autenticado |
+| `GET`  | `/api/v2/dashboard/ocorrencias-por-tipo`       | Total de ocorrências por tipo              | Autenticado |
+| `GET`  | `/api/v2/dashboard/ocorrencias-por-bairro`     | Total de ocorrências por bairro            | Autenticado |
+| `GET`  | `/api/v2/dashboard/ocorrencias-por-municipio`  | Total de ocorrências por município (Pizza) | Autenticado |
+| `GET`  | `/api/v2/dashboard/ocorrencias-por-periodo`    | Evolução temporal das ocorrências (Linha)  | Autenticado |
+| `GET`  | `/api/v2/dashboard/avg-completion-time`        | Tempo médio de conclusão por tipo (Barra)  | Autenticado |
 
 ### Endpoints Administrativos (CRUDs de Suporte)
 
@@ -227,21 +230,18 @@ A API inclui endpoints `POST`, `GET`, `PUT` e `DELETE` (protegidos por `authenti
 A API emite eventos via **Socket.io** para que o frontend atualize suas interfaces em tempo real.
 Os clientes devem "ouvir" (`io.on(...)`) os seguintes eventos:
 
-| Evento Emitido                  | Acionado por                         | Dados Enviados         |
+| Evento Emitido                  | Acionado por                         | Dados Enviados         |
 | :------------------------------ | :----------------------------------- | :--------------------- |
-| `nova_ocorrencia`D              | `POST /ocorrencias`                  | `Ocorrencia`           |
-| `ocorrencia_atualizada`         | `PUT /ocorrencias/:id`               | `Ocorrencia`           |
-| `media_adicionada`              | `POST /ocorrencias/:id/midia`        | `Midia & ocorrenciaId` |
-| `lista_usuarios_atualizada`     | `PUT/DELETE /users/:id`              | `{ action, data }`     |
-| `lista_viaturas_atualizada`     | `POST/PUT/DELETE /viaturas`          | `{ action, data }`     |
-| `lista_bairros_atualizada`      | `POST/PUT/DELETE /bairros`           | `{ action, data }`     |
-| `lista_municipios_atualizada`   | `POST/PUT/DELETE /municipios`        | `{ action, data }`     |
-| `lista_grupamentos_atualizada`a | `POST/DELETE /grupamentos`           | `{ action, data }`     |
-| `lista_unidades_atualizada`     | `POST/DELETE /unidades-operacionais` | `{ action, data }`     |
-| `lista_naturezas_atualizada`    | `POST/DELETE /naturezas`             | `{ action, data }`    m |
-| `lista_grupos_atualizada`       | `POST/DELETE /grupos`                | `{ action, data }`     |
-| `lista_subgrupos_atualizada`    | `POST/DELETE /subgrupos`             | `{ action, data }`     |
-| `lista_formasacervo_atualizada` | `POST/DELETE /formas-acervo`         | `{ action, data }`     |
-
-```
-```
+| `nova_ocorrencia`               | `POST /ocorrencias`                  | `Ocorrencia`           |
+| `ocorrencia_atualizada`         | `PUT /ocorrencias/:id`               | `Ocorrencia`           |
+| `media_adicionada`              | `POST /ocorrencias/:id/midia`        | `Midia & ocorrenciaId` |
+| `lista_usuarios_atualizada`     | `PUT/DELETE /users/:id`              | `{ action, data }`     |
+| `lista_viaturas_atualizada`     | `POST/PUT/DELETE /viaturas`          | `{ action, data }`     |
+| `lista_bairros_atualizada`      | `POST/PUT/DELETE /bairros`           | `{ action, data }`     |
+| `lista_municipios_atualizada`   | `POST/PUT/DELETE /municipios`        | `{ action, data }`     |
+| `lista_grupamentos_atualizada`  | `POST/DELETE /grupamentos`           | `{ action, data }`     |
+| `lista_unidades_atualizada`     | `POST/DELETE /unidades-operacionais` | `{ action, data }`     |
+| `lista_naturezas_atualizada`    | `POST/DELETE /naturezas`             | `{ action, data }`     |
+| `lista_grupos_atualizada`       | `POST/DELETE /grupos`                | `{ action, data }`     |
+| `lista_subgrupos_atualizada`    | `POST/DELETE /subgrupos`             | `{ action, data }`     |
+| `lista_formasacervo_atualizada` | `POST/DELETE /formas-acervo`         | `{ action, data }`     |
