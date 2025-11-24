@@ -143,7 +143,21 @@ const options: swaggerJsdoc.Options = {
             id_subgrupo_fk: { type: 'string', format: 'uuid' },
             id_bairro_fk: { type: 'string', format: 'uuid' },
             id_forma_acervo_fk: { type: 'string', format: 'uuid' },
-            nr_aviso: { type: 'string', nullable: true }
+            nr_aviso: { type: 'string', nullable: true },
+            // --- NOVOS CAMPOS ADICIONADOS ---
+            observacoes: { type: 'string', description: 'Relato inicial da ocorrência' },
+            localizacao: {
+              type: 'object',
+              description: 'Dados de geolocalização e endereço',
+              properties: {
+                logradouro: { type: 'string' },
+                tipo_logradouro: { type: 'string' },
+                numero_km: { type: 'string' },
+                referencia_logradouro: { type: 'string' },
+                latitude: { type: 'number', format: 'float' },
+                longitude: { type: 'number', format: 'float' }
+              }
+            }
           }
         },
 
