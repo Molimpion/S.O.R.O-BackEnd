@@ -37,7 +37,7 @@ A aplicação segue o padrão **Monólito em Camadas (Layered Monolith)**.
 Essa abordagem foi escolhida para maximizar a agilidade de desenvolvimento, mantendo ao mesmo tempo um design modular interno — com separação entre `serviços`, `controladores` e `rotas` — alinhado aos princípios de uma Arquitetura Orientada a Serviços (SOA).
 
 * **Framework Web:** Express.js
-* **Banco de Dados:** PostgreSQL
+* **Banco de Dados:** PostgreSQL (Neon Serverless)
 * **ORM:** Prisma
 * **Segurança (Autenticação):** Tokens JWT (`jsonwebtoken`) e criptografia com `bcrypt`
 * **Segurança (Headers):** `helmet` para proteção contra vulnerabilidades web (XSS, Clickjacking etc.)
@@ -135,7 +135,7 @@ Este é o serviço principal da aplicação.
   * **Build Command:** `npm run build`
   * **Start Command:** `npm run start`
   * **Variáveis de Ambiente:**
-      * `DATABASE_URL`: (usar o **Internal Connection URL** do serviço PostgreSQL)
+      * `DATABASE_URL`: (Connection String do banco de dados Neon - PostgreSQL)
       * `JWT_SECRET`: (chave secreta forte e única para produção)
       * `SENDGRID_API_KEY`: (chave API do SendGrid)
       * `EMAIL_FROM`: (e-mail de remetente **verificado** no SendGrid)
@@ -171,7 +171,7 @@ O projeto inclui o arquivo `api-tests/requests.http` com uma suíte de testes de
 
 ## 8\. Documentação da API (Endpoints)
 
-> Todos os endpoints estão versionados com o prefixo `/api/v1/`, exceto o Dashboard (`/api/v2/`).
+> **Atualização de Versão:** Os endpoints de Ocorrências, Dashboard e Tabelas Auxiliares foram atualizados para o prefixo **`/api/v2/`**. Autenticação, Usuários e Relatórios permanecem na **`/api/v1/`**.
 
 ### Autenticação (`/api/v1/auth`)
 
@@ -180,14 +180,14 @@ O projeto inclui o arquivo `api-tests/requests.http` com uma suíte de testes de
 | `POST` | `/register` | Registra um novo usuário         | Público |
 | `POST` | `/login`    | Autentica e retorna um token JWT | Público |
 
-### Ocorrências (`/api/v1/ocorrencias`)
+### Ocorrências (`/api/v2/ocorrencias`)
 
 | Método | Endpoint     | Descrição                                 | Acesso             |
 | :----- | :----------- | :---------------------------------------- | :----------------- |
 | `POST` | `/`          | Cria uma nova ocorrência                  | Autenticado        |
 | `GET`  | `/`          | Lista ocorrências com filtros e paginação | Autenticado        |
 | `GET`  | `/:id`       | Obtém os detalhes de uma ocorrência       | Autenticado        |
-| `PUT`  | `/:id`       | Atualiza uma ocorrência existente         | Autenticado (Dono) |
+| `PUT`  | `/:id`       | Atualiza uma ocorrência existente         | Autenticado (Role) |
 | `POST` | `/:id/midia` | Faz upload de mídia (imagem/vídeo)        | Autenticado        |
 
 ### Gestão de Usuários (`/api/v1/users`)
@@ -211,19 +211,20 @@ O projeto inclui o arquivo `api-tests/requests.http` com uma suíte de testes de
 | `GET`  | `/api/v2/dashboard/ocorrencias-por-periodo`    | Evolução temporal das ocorrências (Linha)  | Autenticado |
 | `GET`  | `/api/v2/dashboard/avg-completion-time`        | Tempo médio de conclusão por tipo (Barra)  | Autenticado |
 
-### Endpoints Administrativos (CRUDs de Suporte)
+### Endpoints Administrativos e Auxiliares
 
-A API inclui endpoints `POST`, `GET`, `PUT` e `DELETE` (protegidos por `authenticateAdmin`) para administração das seguintes entidades:
+A API inclui endpoints para as entidades de suporte.
+**Importante:** Os métodos `GET` são liberados para todos os usuários autenticados (para preenchimento de formulários), enquanto `POST`, `PUT` e `DELETE` são restritos a **Admins**.
 
-  * `/api/v1/municipios`
-  * `/api/v1/bairros`
-  * `/api/v1/naturezas`
-  * `/api/v1/grupos`
-  * `/api/v1/subgrupos`
-  * `/api/v1/formas-acervo`
-  * `/api/v1/grupamentos`
-  * `/api/v1/unidades-operacionais`
-  * `/api/v1/viaturas`
+  * `/api/v2/municipios`
+  * `/api/v2/bairros`
+  * `/api/v2/naturezas`
+  * `/api/v2/grupos`
+  * `/api/v2/subgrupos`
+  * `/api/v2/formas-acervo`
+  * `/api/v2/grupamentos`
+  * `/api/v2/unidades-operacionais`
+  * `/api/v2/viaturas`
 
 ## 9\. Eventos em Tempo Real (Socket.io)
 
