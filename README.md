@@ -120,7 +120,35 @@ npm run dev
 O servidor estará disponível em `http://localhost:3000`.
 O servidor do Prometheus estará em `http://localhost:9090`.
 
-## 5\. Deployment (Render)
+## 5\. Populando o Banco de Dados (Seed)
+
+O projeto inclui um script robusto de **Seed** (`src/seed.ts`) que popula o banco de dados com:
+
+  * **20 Usuários de Teste:** 5 para cada perfil (Admin, Analista, Chefe, Operador de Campo).
+  * **Estrutura Operacional:** Todos os Grupamentos, Unidades Operacionais e Viaturas do CBMPE.
+  * **Dados Geográficos:** Municípios e Bairros da Região Metropolitana do Recife.
+  * **Classificações:** Naturezas, Grupos e Subgrupos de ocorrências.
+
+### Como Rodar (Ambiente Local)
+
+Se você estiver rodando localmente com Docker, certifique-se de que seu `.env` tem a `DATABASE_URL` local e rode:
+
+```bash
+npx ts-node src/seed.ts
+```
+
+### Como Rodar (Produção / Neon)
+
+Para popular o banco de produção sem alterar seu arquivo `.env`, passe a URL de conexão direta do Neon antes do comando:
+
+```bash
+DATABASE_URL="postgres://usuario:senha@host.neon.tech/neondb?sslmode=require" npx ts-node src/seed.ts
+```
+
+> **Credenciais Padrão:** Todos os usuários criados pelo seed têm a senha `123456`.
+> Ex: `cel.moura@bombeiros.pe.gov.br` (Admin), `sd.nascimento@bombeiros.pe.gov.br` (Operador).
+
+## 6\. Deployment (Render)
 
 A aplicação está configurada para **deploy contínuo** na plataforma **Render**.
 Cada `push` para a branch `main` aciona automaticamente um novo *build* e *deploy*.
@@ -151,7 +179,7 @@ Este serviço "raspa" (scrape) as métricas da API e as fornece ao Grafana.
   * **Dockerfile Path:** `./Dockerfile.prometheus`
   * **Start Command:** (deixar em branco)
 
-## 6\. Observabilidade (Prometheus + Grafana)
+## 7\. Observabilidade (Prometheus + Grafana)
 
 Além do Sentry (para erros) e Pino (para logs), a aplicação está configurada para monitoramento de métricas em tempo real.
 
@@ -159,7 +187,7 @@ Além do Sentry (para erros) e Pino (para logs), a aplicação está configurada
   * **Coleta:** No Render, um segundo serviço (`s-o-r-o-prometheus`) é responsável por "raspar" (scrape) este endpoint e armazenar os dados.
   * **Visualização:** O **Grafana Cloud** é usado para visualizar esses dados, conectando-se ao serviço `s-o-r-o-prometheus` do Render como fonte de dados.
 
-## 7\. Testando a API
+## 8\. Testando a API
 
 O projeto inclui o arquivo `api-tests/requests.http` com uma suíte de testes de ponta a ponta.
 
@@ -169,7 +197,7 @@ O projeto inclui o arquivo `api-tests/requests.http` com uma suíte de testes de
 2.  Certifique-se de que o servidor está em execução (local ou produção).
 3.  Abra `api-tests/requests.http`, defina `@hostname` e execute as requisições na ordem indicada.
 
-## 8\. Documentação da API (Endpoints)
+## 9\. Documentação da API (Endpoints)
 
 > **Atualização de Versão:** Os endpoints de Ocorrências, Dashboard e Tabelas Auxiliares foram atualizados para o prefixo **`/api/v2/`**. Autenticação, Usuários e Relatórios permanecem na **`/api/v1/`**.
 
@@ -226,7 +254,7 @@ A API inclui endpoints para as entidades de suporte.
   * `/api/v2/unidades-operacionais`
   * `/api/v2/viaturas`
 
-## 9\. Eventos em Tempo Real (Socket.io)
+## 10\. Eventos em Tempo Real (Socket.io)
 
 A API emite eventos via **Socket.io** para que o frontend atualize suas interfaces em tempo real.
 Os clientes devem "ouvir" (`io.on(...)`) os seguintes eventos:
