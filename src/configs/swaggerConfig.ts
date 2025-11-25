@@ -31,7 +31,7 @@ const options: swaggerJsdoc.Options = {
       {
         name: "Ocorrências",
         description:
-          "Endpoints para gerenciamento de ocorrências (acessível por Analistas e Admins).",
+          "Endpoints para gerenciamento de ocorrências (acessível por Analistas, Chefes, Operadores de Campo e Admins).",
       },
       {
         name: "Dashboard",

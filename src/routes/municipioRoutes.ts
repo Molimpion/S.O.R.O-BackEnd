@@ -1,29 +1,17 @@
-import { Router } from "express";
-import {
-  create,
-  getAll,
-  getById,
-  update,
-  remove,
-} from "../controllers/municipioController";
-import { authenticateAdmin } from "../middleware/authMiddleware";
-import { validate } from "../middleware/validate";
-import {
-  createMunicipioSchema,
-  putMunicipioSchema,
-} from "../validators/municipioValidator";
+import { Router } from 'express';
+import { create, getAll, getById, update, remove } from '../controllers/municipioController';
+import { authenticateAdmin, authenticateToken } from '../middleware/authMiddleware';
+import { validate } from '../middleware/validate';
+import { createMunicipioSchema, putMunicipioSchema } from '../validators/municipioValidator';
 
 const router = Router();
-
-// ======================================================
-// ==== ANOTAÇÕES SWAGGER (JSDoc) - MUNICÍPIOS ====
-// ======================================================
 
 /**
  * @swagger
  * tags:
  *   - name: "Admin: Municípios"
  *     description: (Admin) Endpoints para gerenciar os municípios.
+ *
  * /api/v1/municipios:
  *   post:
  *     summary: Cria um novo município (apenas Admin)
@@ -45,6 +33,7 @@ const router = Router();
  *         description: Acesso negado (não é Admin).
  *       409:
  *         description: Conflito (município já existe).
+ *
  *   get:
  *     summary: Lista todos os municípios
  *     tags: ["Admin: Municípios"]
@@ -61,6 +50,7 @@ const router = Router();
  *                 $ref: '#/components/schemas/Municipio'
  *       401:
  *         description: Não autorizado.
+ *
  * /api/v1/municipios/{id}:
  *   get:
  *     summary: Obtém um município pelo ID
@@ -80,6 +70,7 @@ const router = Router();
  *         description: Detalhes do município.
  *       404:
  *         description: Município não encontrado.
+ *
  *   put:
  *     summary: Atualiza um município pelo ID (apenas Admin)
  *     tags: ["Admin: Municípios"]
@@ -108,6 +99,7 @@ const router = Router();
  *         description: Acesso negado (não é Admin).
  *       404:
  *         description: Município não encontrado.
+ *
  *   delete:
  *     summary: Deleta um município pelo ID (apenas Admin)
  *     tags: ["Admin: Municípios"]
@@ -130,12 +122,10 @@ const router = Router();
  *         description: Município não encontrado.
  */
 
-router.use(authenticateAdmin);
-
-router.post("/", validate(createMunicipioSchema), create);
-router.get("/", getAll);
-router.get("/:id", getById);
-router.put("/:id", validate(putMunicipioSchema), update);
-router.delete("/:id", remove);
+router.get('/', authenticateToken, getAll);
+router.get('/:id', authenticateToken, getById);
+router.post('/', authenticateAdmin, validate(createMunicipioSchema), create);
+router.put('/:id', authenticateAdmin, validate(putMunicipioSchema), update);
+router.delete('/:id', authenticateAdmin, remove);
 
 export default router;

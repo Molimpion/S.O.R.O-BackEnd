@@ -1,24 +1,17 @@
-import { Router } from "express";
-import {
-  create,
-  getAll,
-  remove,
-} from "../controllers/unidadeOperacionalController";
-import { authenticateAdmin } from "../middleware/authMiddleware";
-import { validate } from "../middleware/validate";
-import { unidadeSchema } from "../validators/unidadeOperacionalValidator";
+import { Router } from 'express';
+import { create, getAll, remove } from '../controllers/unidadeOperacionalController';
+import { authenticateAdmin, authenticateToken } from '../middleware/authMiddleware';
+import { validate } from '../middleware/validate';
+import { unidadeSchema } from '../validators/unidadeOperacionalValidator';
 
 const router = Router();
-
-// ======================================================
-// ==== ANOTAÇÕES SWAGGER (JSDoc) - UNIDADES OPERACIONAIS ====
-// ======================================================
 
 /**
  * @swagger
  * tags:
  *   - name: "Admin: Unidades Operacionais"
  *     description: (Admin) Endpoints para gerenciar as unidades operacionais.
+ *
  * /api/v1/unidades-operacionais:
  *   post:
  *     summary: Cria uma nova unidade operacional (apenas Admin)
@@ -40,6 +33,7 @@ const router = Router();
  *         description: Acesso negado (não é Admin).
  *       409:
  *         description: Conflito (unidade já existe).
+ *
  *   get:
  *     summary: Lista todas as unidades operacionais
  *     tags: ["Admin: Unidades Operacionais"]
@@ -56,6 +50,7 @@ const router = Router();
  *                 $ref: '#/components/schemas/UnidadeOperacional'
  *       401:
  *         description: Não autorizado.
+ *
  * /api/v1/unidades-operacionais/{id}:
  *   delete:
  *     summary: Deleta uma unidade operacional pelo ID (apenas Admin)
@@ -79,10 +74,8 @@ const router = Router();
  *         description: Unidade operacional não encontrada.
  */
 
-router.use(authenticateAdmin);
-
-router.post("/", validate(unidadeSchema), create);
-router.get("/", getAll);
-router.delete("/:id", remove);
+router.get('/', authenticateToken, getAll);
+router.post('/', authenticateAdmin, validate(unidadeSchema), create);
+router.delete('/:id', authenticateAdmin, remove);
 
 export default router;

@@ -20,7 +20,7 @@ Trata-se de uma **API RESTful** robusta, segura e escalável, projetada para ger
 
 A implementação de todos os requisitos funcionais do backend foi **concluída, validada e implantada em produção**.
 
-* [x] **W-01 | Login & Perfis:** Completo
+* [x] **W-01 | Login & Perfis (Admin, Analista, Chefe, Operador de Campo):** Completo
 * [x] **W-02 | Lista & Filtros de Ocorrências:** Completo
 * [x] **W-03 | Visualização de Detalhes:** Completo
 * [x] **W-04 | Relatórios Básicos & Exportação (CSV/PDF):** Completo

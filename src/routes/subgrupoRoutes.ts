@@ -1,20 +1,17 @@
-import { Router } from "express";
-import { create, getAll, remove } from "../controllers/subgrupoController";
-import { authenticateAdmin } from "../middleware/authMiddleware";
-import { validate } from "../middleware/validate";
-import { subgrupoSchema } from "../validators/subgrupoValidator";
+import { Router } from 'express';
+import { create, getAll, remove } from '../controllers/subgrupoController';
+import { authenticateAdmin, authenticateToken } from '../middleware/authMiddleware';
+import { validate } from '../middleware/validate';
+import { subgrupoSchema } from '../validators/subgrupoValidator';
 
 const router = Router();
-
-// ======================================================
-// ==== ANOTAÇÕES SWAGGER (JSDoc) - SUBGRUPOS ====
-// ======================================================
 
 /**
  * @swagger
  * tags:
  *   - name: "Admin: Subgrupos"
  *     description: (Admin) Endpoints para gerenciar os subgrupos.
+ *
  * /api/v1/subgrupos:
  *   post:
  *     summary: Cria um novo subgrupo (apenas Admin)
@@ -36,6 +33,7 @@ const router = Router();
  *         description: Acesso negado (não é Admin).
  *       409:
  *         description: Conflito (subgrupo já existe).
+ *
  *   get:
  *     summary: Lista todos os subgrupos
  *     tags: ["Admin: Subgrupos"]
@@ -52,6 +50,7 @@ const router = Router();
  *                 $ref: '#/components/schemas/Subgrupo'
  *       401:
  *         description: Não autorizado.
+ *
  * /api/v1/subgrupos/{id}:
  *   delete:
  *     summary: Deleta um subgrupo pelo ID (apenas Admin)
@@ -75,10 +74,8 @@ const router = Router();
  *         description: Subgrupo não encontrado.
  */
 
-router.use(authenticateAdmin);
-
-router.post("/", validate(subgrupoSchema), create);
-router.get("/", getAll);
-router.delete("/:id", remove);
+router.get('/', authenticateToken, getAll);
+router.post('/', authenticateAdmin, validate(subgrupoSchema), create);
+router.delete('/:id', authenticateAdmin, remove);
 
 export default router;

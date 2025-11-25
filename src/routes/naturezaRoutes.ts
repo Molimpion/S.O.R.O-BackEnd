@@ -1,20 +1,17 @@
-import { Router } from "express";
-import { create, getAll, remove } from "../controllers/naturezaController";
-import { authenticateAdmin } from "../middleware/authMiddleware";
-import { validate } from "../middleware/validate";
-import { naturezaSchema } from "../validators/naturezaValidator";
+import { Router } from 'express';
+import { create, getAll, remove } from '../controllers/naturezaController';
+import { authenticateAdmin, authenticateToken } from '../middleware/authMiddleware';
+import { validate } from '../middleware/validate';
+import { naturezaSchema } from '../validators/naturezaValidator';
 
 const router = Router();
-
-// ======================================================
-// ==== ANOTAÇÕES SWAGGER (JSDoc) - NATUREZAS ====
-// ======================================================
 
 /**
  * @swagger
  * tags:
  *   - name: "Admin: Naturezas"
  *     description: (Admin) Endpoints para gerenciar as naturezas de ocorrência.
+ *
  * /api/v1/naturezas:
  *   post:
  *     summary: Cria uma nova natureza (apenas Admin)
@@ -36,6 +33,7 @@ const router = Router();
  *         description: Acesso negado (não é Admin).
  *       409:
  *         description: Conflito (natureza já existe).
+ *
  *   get:
  *     summary: Lista todas as naturezas
  *     tags: ["Admin: Naturezas"]
@@ -52,6 +50,7 @@ const router = Router();
  *                 $ref: '#/components/schemas/Natureza'
  *       401:
  *         description: Não autorizado.
+ *
  * /api/v1/naturezas/{id}:
  *   delete:
  *     summary: Deleta uma natureza pelo ID (apenas Admin)
@@ -75,10 +74,8 @@ const router = Router();
  *         description: Natureza não encontrada.
  */
 
-router.use(authenticateAdmin);
-
-router.post("/", validate(naturezaSchema), create);
-router.get("/", getAll);
-router.delete("/:id", remove);
+router.get('/', authenticateToken, getAll);
+router.post('/', authenticateAdmin, validate(naturezaSchema), create);
+router.delete('/:id', authenticateAdmin, remove);
 
 export default router;

@@ -111,17 +111,17 @@ app.get("/metrics", async (req, res) => {
 app.use(authenticateToken);
 app.use("/api/v2/dashboard", dashboardRoutes);
 app.use("/api/v1/relatorios", relatorioRoutes);
-app.use("/api/v1/ocorrencias", ocorrenciaRoutes);
+app.use("/api/v2/ocorrencias", ocorrenciaRoutes);
 app.use("/api/v1/users", userRoutes);
-app.use("/api/v1/municipios", municipioRoutes);
-app.use("/api/v1/bairros", bairroRoutes);
-app.use("/api/v1/naturezas", naturezaRoutes);
-app.use("/api/v1/grupos", grupoRoutes);
-app.use("/api/v1/subgrupos", subgrupoRoutes);
-app.use("/api/v1/formas-acervo", formaAcervoRoutes);
-app.use("/api/v1/grupamentos", grupamentoRoutes);
-app.use("/api/v1/unidades-operacionais", unidadeOperacionalRoutes);
-app.use("/api/v1/viaturas", viaturaRoutes);
+app.use("/api/v2/municipios", municipioRoutes);
+app.use("/api/v2/bairros", bairroRoutes);
+app.use("/api/v2/naturezas", naturezaRoutes);
+app.use("/api/v2/grupos", grupoRoutes);
+app.use("/api/v2/subgrupos", subgrupoRoutes);
+app.use("/api/v2/formas-acervo", formaAcervoRoutes);
+app.use("/api/v2/grupamentos", grupamentoRoutes);
+app.use("/api/v2/unidades-operacionais", unidadeOperacionalRoutes);
+app.use("/api/v2/viaturas", viaturaRoutes);
 
 app.use(Sentry.Handlers.errorHandler());
 app.use(errorMiddleware);

@@ -1,20 +1,17 @@
-import { Router } from "express";
-import { create, getAll, remove } from "../controllers/grupamentoController";
-import { authenticateAdmin } from "../middleware/authMiddleware";
-import { validate } from "../middleware/validate";
-import { grupamentoSchema } from "../validators/grupamentoValidator";
+import { Router } from 'express';
+import { create, getAll, remove } from '../controllers/grupamentoController';
+import { authenticateAdmin, authenticateToken } from '../middleware/authMiddleware';
+import { validate } from '../middleware/validate';
+import { grupamentoSchema } from '../validators/grupamentoValidator';
 
 const router = Router();
-
-// ======================================================
-// ==== ANOTAÇÕES SWAGGER (JSDoc) - GRUPAMENTOS ====
-// ======================================================
 
 /**
  * @swagger
  * tags:
  *   - name: "Admin: Grupamentos"
  *     description: (Admin) Endpoints para gerenciar os grupamentos.
+ *
  * /api/v1/grupamentos:
  *   post:
  *     summary: Cria um novo grupamento (apenas Admin)
@@ -36,6 +33,7 @@ const router = Router();
  *         description: Acesso negado (não é Admin).
  *       409:
  *         description: Conflito (grupamento já existe).
+ *
  *   get:
  *     summary: Lista todos os grupamentos
  *     tags: ["Admin: Grupamentos"]
@@ -52,6 +50,7 @@ const router = Router();
  *                 $ref: '#/components/schemas/Grupamento'
  *       401:
  *         description: Não autorizado.
+ *
  * /api/v1/grupamentos/{id}:
  *   delete:
  *     summary: Deleta um grupamento pelo ID (apenas Admin)
@@ -75,10 +74,8 @@ const router = Router();
  *         description: Grupamento não encontrado.
  */
 
-router.use(authenticateAdmin);
-
-router.post("/", validate(grupamentoSchema), create);
-router.get("/", getAll);
-router.delete("/:id", remove);
+router.get('/', authenticateToken, getAll);
+router.post('/', authenticateAdmin, validate(grupamentoSchema), create);
+router.delete('/:id', authenticateAdmin, remove);
 
 export default router;

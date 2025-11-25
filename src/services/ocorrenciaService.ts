@@ -176,7 +176,8 @@ export const getOcorrenciaById = async (id: string) => {
 export const updateOcorrencia = async (
   id: string,
   data: UpdateOcorrenciaData,
-  userId: string
+  userId: string,
+  userProfile: string
 ): Promise<Ocorrencia> => {
   const ocorrencia = await prisma.ocorrencia.findUnique({
     where: { id_ocorrencia: id },
@@ -184,11 +185,18 @@ export const updateOcorrencia = async (
   if (!ocorrencia) {
     throw new NotFoundError("Ocorrência não encontrada");
   }
-  if (ocorrencia.id_usuario_abertura_fk !== userId) {
+
+  const isOwner = ocorrencia.id_usuario_abertura_fk === userId;
+  const hasPermission = ["ADMIN", "CHEFE", "OPERADOR_CAMPO"].includes(
+    userProfile
+  );
+
+  if (!isOwner && !hasPermission) {
     throw new UnauthorizedError(
       "Acesso negado: Você não tem permissão para editar esta ocorrência."
     );
   }
+
   const dataToUpdate: any = { ...data };
   if (data.data_execucao_servico) {
     dataToUpdate.data_execucao_servico = new Date(data.data_execucao_servico);

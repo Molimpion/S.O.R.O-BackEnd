@@ -1,20 +1,17 @@
-import { Router } from "express";
-import { create, getAll, remove } from "../controllers/formaAcervoController";
-import { authenticateAdmin } from "../middleware/authMiddleware";
-import { validate } from "../middleware/validate";
-import { formaAcervoSchema } from "../validators/formaAcervoValidator";
+import { Router } from 'express';
+import { create, getAll, remove } from '../controllers/formaAcervoController';
+import { authenticateAdmin, authenticateToken } from '../middleware/authMiddleware';
+import { validate } from '../middleware/validate';
+import { formaAcervoSchema } from '../validators/formaAcervoValidator';
 
 const router = Router();
-
-// ======================================================
-// ==== ANOTAÇÕES SWAGGER (JSDoc) - FORMAS ACERVO ====
-// ======================================================
 
 /**
  * @swagger
  * tags:
  *   - name: "Admin: Formas de Acervo"
  *     description: (Admin) Endpoints para gerenciar as formas de acervo.
+ *
  * /api/v1/formas-acervo:
  *   post:
  *     summary: Cria uma nova forma de acervo (apenas Admin)
@@ -30,16 +27,13 @@ const router = Router();
  *     responses:
  *       201:
  *         description: Forma de acervo criada com sucesso.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/FormaAcervo'
  *       400:
  *         description: Erro de validação.
  *       403:
  *         description: Acesso negado (não é Admin).
  *       409:
  *         description: Conflito (forma já existe).
+ *
  *   get:
  *     summary: Lista todas as formas de acervo
  *     tags: ["Admin: Formas de Acervo"]
@@ -56,6 +50,7 @@ const router = Router();
  *                 $ref: '#/components/schemas/FormaAcervo'
  *       401:
  *         description: Não autorizado.
+ *
  * /api/v1/formas-acervo/{id}:
  *   delete:
  *     summary: Deleta uma forma de acervo pelo ID (apenas Admin)
@@ -79,10 +74,8 @@ const router = Router();
  *         description: Forma de acervo não encontrada.
  */
 
-router.use(authenticateAdmin);
-
-router.post("/", validate(formaAcervoSchema), create);
-router.get("/", getAll);
-router.delete("/:id", remove);
+router.get('/', authenticateToken, getAll);
+router.post('/', authenticateAdmin, validate(formaAcervoSchema), create);
+router.delete('/:id', authenticateAdmin, remove);
 
 export default router;

@@ -35,11 +35,14 @@ export const update = async (req: AuthRequest, res: Response) => {
   const { id } = req.params;
   const data = req.body;
   const userId = req.user!.userId;
+  // 1. Pegamos o perfil do usuário logado (ex: OPERADOR_CAMPO)
+  const userProfile = req.user!.profile;
 
   const ocorrenciaAtualizada = await ocorrenciaService.updateOcorrencia(
     id,
     data,
-    userId
+    userId,
+    userProfile // 2. Passamos o perfil para o serviço autorizar a edição
   );
 
   const io = req.app.get("io");
@@ -52,7 +55,7 @@ export const update = async (req: AuthRequest, res: Response) => {
  * Handler para fazer upload de um arquivo de mídia para uma ocorrência.
  */
 export const uploadMidia = async (req: AuthRequest, res: Response) => {
-  const { id } = req.params; //
+  const { id } = req.params;
   const userId = req.user!.userId;
 
   if (!req.file) {

@@ -1,20 +1,17 @@
-import { Router } from "express";
-import { create, getAll, remove } from "../controllers/viaturaController";
-import { authenticateAdmin } from "../middleware/authMiddleware";
-import { validate } from "../middleware/validate";
-import { createViaturaSchema } from "../validators/viaturaValidator";
+import { Router } from 'express';
+import { create, getAll, remove, update } from '../controllers/viaturaController';
+import { authenticateAdmin, authenticateToken } from '../middleware/authMiddleware';
+import { validate } from '../middleware/validate';
+import { createViaturaSchema, patchViaturaSchema, putViaturaSchema } from '../validators/viaturaValidator';
 
 const router = Router();
-
-// ======================================================
-// ==== ANOTAÇÕES SWAGGER (JSDoc) - VIATURAS ====
-// ======================================================
 
 /**
  * @swagger
  * tags:
  *   - name: "Admin: Viaturas"
  *     description: (Admin) Endpoints para gerenciar as viaturas.
+ *
  * /api/v1/viaturas:
  *   post:
  *     summary: Cria uma nova viatura (apenas Admin)
@@ -36,6 +33,7 @@ const router = Router();
  *         description: Acesso negado (não é Admin).
  *       409:
  *         description: Conflito (viatura já existe).
+ *
  *   get:
  *     summary: Lista todas as viaturas
  *     tags: ["Admin: Viaturas"]
@@ -52,6 +50,7 @@ const router = Router();
  *                 $ref: '#/components/schemas/Viatura'
  *       401:
  *         description: Não autorizado.
+ *
  * /api/v1/viaturas/{id}:
  *   delete:
  *     summary: Deleta uma viatura pelo ID (apenas Admin)
@@ -75,10 +74,10 @@ const router = Router();
  *         description: Viatura não encontrada.
  */
 
-router.use(authenticateAdmin);
-
-router.post("/", validate(createViaturaSchema), create);
-router.get("/", getAll);
-router.delete("/:id", remove);
+router.get('/', authenticateToken, getAll);
+router.post('/', authenticateAdmin, validate(createViaturaSchema), create);
+router.put('/:id', authenticateAdmin, validate(putViaturaSchema), update);
+router.patch('/:id', authenticateAdmin, validate(patchViaturaSchema), update);
+router.delete('/:id', authenticateAdmin, remove);
 
 export default router;

@@ -1,20 +1,17 @@
-import { Router } from "express";
-import { create, getAll, remove } from "../controllers/grupoController";
-import { authenticateAdmin } from "../middleware/authMiddleware";
-import { validate } from "../middleware/validate";
-import { grupoSchema } from "../validators/grupoValidator";
+import { Router } from 'express';
+import { create, getAll, remove } from '../controllers/grupoController';
+import { authenticateAdmin, authenticateToken } from '../middleware/authMiddleware';
+import { validate } from '../middleware/validate';
+import { grupoSchema } from '../validators/grupoValidator';
 
 const router = Router();
-
-// ======================================================
-// ==== ANOTAÇÕES SWAGGER (JSDoc) - GRUPOS ====
-// ======================================================
 
 /**
  * @swagger
  * tags:
  *   - name: "Admin: Grupos"
  *     description: (Admin) Endpoints para gerenciar os grupos.
+ *
  * /api/v1/grupos:
  *   post:
  *     summary: Cria um novo grupo (apenas Admin)
@@ -36,6 +33,7 @@ const router = Router();
  *         description: Acesso negado (não é Admin).
  *       409:
  *         description: Conflito (grupo já existe).
+ *
  *   get:
  *     summary: Lista todos os grupos
  *     tags: ["Admin: Grupos"]
@@ -52,6 +50,7 @@ const router = Router();
  *                 $ref: '#/components/schemas/Grupo'
  *       401:
  *         description: Não autorizado.
+ *
  * /api/v1/grupos/{id}:
  *   delete:
  *     summary: Deleta um grupo pelo ID (apenas Admin)
@@ -75,10 +74,8 @@ const router = Router();
  *         description: Grupo não encontrado.
  */
 
-router.use(authenticateAdmin);
-
-router.post("/", validate(grupoSchema), create);
-router.get("/", getAll);
-router.delete("/:id", remove);
+router.get('/', authenticateToken, getAll);
+router.post('/', authenticateAdmin, validate(grupoSchema), create);
+router.delete('/:id', authenticateAdmin, remove);
 
 export default router;
