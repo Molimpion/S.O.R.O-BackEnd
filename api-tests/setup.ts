@@ -22,6 +22,7 @@ jest.mock("@prisma/client", () => ({
       ADMIN: "ADMIN",
       ANALISTA: "ANALISTA",
       CHEFE: "CHEFE",
+      OPERADOR_CAMPO: "OPERADOR_CAMPO",
     },
   },
 }));

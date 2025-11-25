@@ -55,4 +55,20 @@ export const checkChefe = (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
+export const checkOperador = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const user = (req as CustomRequest).user;
+
+  if (user.profile !== "OPERADOR_CAMPO" && user.profile !== "ADMIN") {
+    throw new ApiError(
+      "Acesso negado. Permissão de Operador de Campo necessária.",
+      403
+    );
+  }
+  next();
+};
+
 export const authenticateAdmin = [authenticateToken, checkAdmin];

@@ -267,6 +267,7 @@ enum Profile {
   ADMIN
   ANALISTA
   CHEFE
+  OPERADOR_CAMPO
 }
 
 enum Status {

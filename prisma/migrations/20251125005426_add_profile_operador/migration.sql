@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "Profile" ADD VALUE 'OPERADOR_CAMPO';
