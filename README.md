@@ -1,6 +1,6 @@
 **Repositório do Backend da Aplicação S.O.R.O.**
 
----
+-----
 
 *Projeto Integrador da Turma 44 da Faculdade Senac Pernambuco.*
 *Professores responsáveis: Danilo Farias, Geraldo Gomes, Marcos Tenorio e Sônia Gomes.*
@@ -12,75 +12,78 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white) ![Neon](https://img.shields.io/badge/Neon-00E599?style=for-the-badge&logo=postgresql&logoColor=white) ![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
 
 ### Infraestrutura e Observabilidade
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white) ![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white) ![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white) [![Deploy to Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://render.com)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white) ![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white) ![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white) [![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://render.com)
 
-### Validação e Ferramentas
-![Zod](https://img.shields.io/badge/Zod-3068B7?style=for-the-badge&logo=zod&logoColor=white) ![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black) ![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=for-the-badge&logo=socket.io&logoColor=white)
+### Validação, Ferramentas e Documentação
+![Zod](https://img.shields.io/badge/Zod-3068B7?style=for-the-badge&logo=zod&logoColor=white) ![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white) ![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black) ![Scalar](https://img.shields.io/badge/Scalar-101827?style=for-the-badge&logo=openapiinitiative&logoColor=white) ![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=for-the-badge&logo=socket.io&logoColor=white)
 
----
+-----
 
-## 1. Visão Geral
+## 1\. Visão Geral
 
 Este repositório contém o código-fonte do backend do Painel Web do Projeto Bombeiros (S.O.R.O.).
 Trata-se de uma **API RESTful** robusta, segura e escalável, projetada para gerenciar usuários, ocorrências, logs de auditoria e todas as entidades de suporte necessárias à operação, com base no Modelo Entidade-Relacionamento (MER) fornecido.
 
 **API ao vivo:** [https://api-bombeiros-s-o-r-o.onrender.com](https://api-bombeiros-s-o-r-o.onrender.com)
 
-**Documentação da API:** [https://api-bombeiros-s-o-r-o.onrender.com/api/docs/](https://api-bombeiros-s-o-r-o.onrender.com/api/docs/)
+**Documentação (Scalar - Moderna):** [https://api-bombeiros-s-o-r-o.onrender.com/api/scalar/](https://www.google.com/search?q=https://api-bombeiros-s-o-r-o.onrender.com/api/scalar/)
+**Documentação (Swagger - Clássica):** [https://api-bombeiros-s-o-r-o.onrender.com/api/docs/](https://api-bombeiros-s-o-r-o.onrender.com/api/docs/)
 
-## 2. Estado do Projeto
+## 2\. Estado do Projeto
 
 A implementação de todos os requisitos funcionais do backend foi **concluída, validada e implantada em produção**.
 
-* [x] **W-01 | Login & Perfis (Admin, Analista, Chefe, Operador de Campo):** Completo
-* [x] **W-02 | Lista & Filtros de Ocorrências:** Completo
-* [x] **W-03 | Visualização de Detalhes:** Completo
-* [x] **W-04 | Relatórios Básicos & Exportação (CSV/PDF):** Completo
-* [x] **W-05 | Gestão de Usuários:** Completo
-* [x] **W-06 | Auditoria & Logs:** Completo
-* [x] **W-07 | Dashboard Operacional (KPI simples):** Completo
-* [x] **(Novo) | Upload de Mídia:** Completo (via Cloudinary)
-* [x] **(Novo) | Notificações em Tempo Real:** Completo (via Socket.io)
-* [x] **(Novo) | Observabilidade (APM):** Completo (via Prometheus + Grafana + Sentry)
+  * [x] **W-01 | Login & Perfis (Admin, Analista, Chefe, Operador de Campo):** Completo
+  * [x] **W-02 | Lista & Filtros de Ocorrências:** Completo
+  * [x] **W-03 | Visualização de Detalhes:** Completo
+  * [x] **W-04 | Relatórios Básicos & Exportação (CSV/PDF):** Completo
+  * [x] **W-05 | Gestão de Usuários:** Completo
+  * [x] **W-06 | Auditoria & Logs:** Completo
+  * [x] **W-07 | Dashboard Operacional (KPI simples):** Completo
+  * [x] **(Novo) | Upload de Mídia:** Completo (via Cloudinary)
+  * [x] **(Novo) | Notificações em Tempo Real:** Completo (via Socket.io)
+  * [x] **(Novo) | Observabilidade (APM):** Completo (via Prometheus + Grafana + Sentry)
 
-## 3. Arquitetura e Decisões de Design
+## 3\. Arquitetura e Decisões de Design
 
 A aplicação segue o padrão **Monólito em Camadas (Layered Monolith)**.
 Essa abordagem foi escolhida para maximizar a agilidade de desenvolvimento, mantendo ao mesmo tempo um design modular interno — com separação entre `serviços`, `controladores` e `rotas` — alinhado aos princípios de uma Arquitetura Orientada a Serviços (SOA).
 
-* **Framework Web:** Express.js
-* **Banco de Dados:** PostgreSQL (Neon Serverless)
-* **ORM:** Prisma
-* **Segurança (Autenticação):** Tokens JWT (`jsonwebtoken`) e criptografia com `bcrypt`
-* **Segurança (Headers):** `helmet` para proteção contra vulnerabilidades web (XSS, Clickjacking etc.)
-* **Comunicação em Tempo Real:** `socket.io` para notificações instantâneas ao frontend
-* **Serviço de E-mail:** **SendGrid** (via API HTTP, evitando bloqueios em plataformas como o Render)
-* **Upload de Mídia:** `cloudinary` e `multer` para gestão de uploads de imagens e vídeos
-* **Validação:** Validação robusta de dados com `zod`
-* **Logging:** Logging estruturado com `pino` e `pino-http`
-* **Monitoramento de Erros:** Rastreamento em produção com `Sentry`
-* **Monitoramento de Métricas (APM):** `Prometheus` (via `prom-client` para coleta) e `Grafana` (para visualização)
-* **Tratamento de Erros:** Sistema centralizado com erros personalizados e middleware global
-* **Configuração:** Variáveis de ambiente centralizadas e validadas em `src/config/environment.ts`
+  * **Framework Web:** Express.js
+  * **Banco de Dados:** PostgreSQL (Neon Serverless)
+  * **ORM:** Prisma
+  * **Segurança (Autenticação):** Tokens JWT (`jsonwebtoken`) e criptografia com `bcrypt`
+  * **Segurança (Headers):** `helmet` para proteção contra vulnerabilidades web (XSS, Clickjacking etc.)
+  * **Comunicação em Tempo Real:** `socket.io` para notificações instantâneas ao frontend
+  * **Serviço de E-mail:** **SendGrid** (via API HTTP, evitando bloqueios em plataformas como o Render)
+  * **Upload de Mídia:** `cloudinary` e `multer` para gestão de uploads de imagens e vídeos
+  * **Validação:** Validação robusta de dados com `zod`
+  * **Qualidade de Código (Linting):** `ESLint` configurado para garantir padrões de código, consistência e evitar erros comuns.
+  * **Documentação:** Suporte híbrido com **Swagger UI** (padrão de mercado) e **Scalar** (interface moderna e interativa).
+  * **Logging:** Logging estruturado com `pino` e `pino-http`
+  * **Monitoramento de Erros:** Rastreamento em produção com `Sentry`
+  * **Monitoramento de Métricas (APM):** `Prometheus` (via `prom-client` para coleta) e `Grafana` (para visualização)
+  * **Tratamento de Erros:** Sistema centralizado com erros personalizados e middleware global
+  * **Configuração:** Variáveis de ambiente centralizadas e validadas em `src/config/environment.ts`
 
 ### Ambiente de Desenvolvimento Padronizado
 
 O projeto utiliza **Dev Containers** (`.devcontainer`) para definir e automatizar o ambiente de desenvolvimento.
 Através do `docker-compose.yml`, são orquestrados **três** contêineres: um para a aplicação Node.js (`app`), um para o banco de dados (`postgres-db`) e um para o coletor de métricas (`prometheus`).
 
-## 4. Como Executar o Projeto Localmente
+## 4\. Como Executar o Projeto Localmente
 
-### 1. Pré-requisitos
+### 1\. Pré-requisitos
 
-* Git
-* Docker e Docker Compose
-* VS Code com a extensão **"Dev Containers"**
+  * Git
+  * Docker e Docker Compose
+  * VS Code com a extensão **"Dev Containers"**
 
-### 2. Inicialização
+### 2\. Inicialização
 
-1. Clone este repositório.
-2. Na raiz do projeto, crie um arquivo `.env` (já listado no `.gitignore`).
-   Use `src/config/environment.ts` como referência para todas as chaves necessárias.
+1.  Clone este repositório.
+2.  Na raiz do projeto, crie um arquivo `.env` (já listado no `.gitignore`).
+    Use `src/config/environment.ts` como referência para todas as chaves necessárias.
 
 **Exemplo de `.env` local:**
 
@@ -102,7 +105,7 @@ CLOUDINARY_API_SECRET=SEU_API_SECRET
 
 # --- Monitoramento (Opcional no dev) ---
 SENTRY_DSN=SUA_DSN_DO_SENTRY
-````
+```
 
 > **Nota sobre E-mail:** Como utilizamos um remetente gratuito verificado (`@gmail.com` ou similar), o e-mail de boas-vindas pode ser classificado como **spam**.
 > Oriente os usuários a verificarem a caixa de spam.
@@ -121,6 +124,13 @@ Aplique as migrações (use `reset` para recriar o banco):
 
 ```bash
 npx prisma migrate reset
+```
+
+Para verificar a qualidade do código com ESLint:
+
+```bash
+npm run lint      # Verifica erros
+npm run lint:fix  # Tenta corrigir erros automaticamente
 ```
 
 Inicie o servidor de desenvolvimento:
@@ -232,7 +242,7 @@ O projeto inclui o arquivo `api-tests/requests.http` com uma suíte de testes de
 
 ### Gestão de Usuários (`/api/v1/users`)
 
-| Método   | Endpoint | Descrição                       | Acesso |
+| Método   | Endpoint | Descrição                        | Acesso |
 | :------- | :------- | :------------------------------ | :----- |
 | `GET`    | `/`      | Lista todos os usuários         | Admin  |
 | `GET`    | `/:id`   | Obtém detalhes de um usuário    | Admin  |
@@ -241,15 +251,15 @@ O projeto inclui o arquivo `api-tests/requests.http` com uma suíte de testes de
 
 ### Relatórios e Dashboard
 
-| Método | Endpoint                                       | Descrição                                  | Acesso      |
-| :----- | :--------------------------------------------- | :----------------------------------------- | :---------- |
-| `GET`  | `/api/v1/relatorios`                           | Gera relatório (CSV/PDF) de ocorrências    | Admin       |
-| `GET`  | `/api/v2/dashboard/ocorrencias-por-status`     | Total de ocorrências por status            | Autenticado |
-| `GET`  | `/api/v2/dashboard/ocorrencias-por-tipo`       | Total de ocorrências por tipo              | Autenticado |
-| `GET`  | `/api/v2/dashboard/ocorrencias-por-bairro`     | Total de ocorrências por bairro            | Autenticado |
-| `GET`  | `/api/v2/dashboard/ocorrencias-por-municipio`  | Total de ocorrências por município (Pizza) | Autenticado |
-| `GET`  | `/api/v2/dashboard/ocorrencias-por-periodo`    | Evolução temporal das ocorrências (Linha)  | Autenticado |
-| `GET`  | `/api/v2/dashboard/avg-completion-time`        | Tempo médio de conclusão por tipo (Barra)  | Autenticado |
+| Método | Endpoint                                    | Descrição                                  | Acesso      |
+| :----- | :------------------------------------------ | :----------------------------------------- | :---------- |
+| `GET`  | `/api/v1/relatorios`                        | Gera relatório (CSV/PDF) de ocorrências    | Admin       |
+| `GET`  | `/api/v2/dashboard/ocorrencias-por-status`  | Total de ocorrências por status            | Autenticado |
+| `GET`  | `/api/v2/dashboard/ocorrencias-por-tipo`    | Total de ocorrências por tipo              | Autenticado |
+| `GET`  | `/api/v2/dashboard/ocorrencias-por-bairro`  | Total de ocorrências por bairro            | Autenticado |
+| `GET`  | `/api/v2/dashboard/ocorrencias-por-municipio` | Total de ocorrências por município (Pizza) | Autenticado |
+| `GET`  | `/api/v2/dashboard/ocorrencias-por-periodo`   | Evolução temporal das ocorrências (Linha)  | Autenticado |
+| `GET`  | `/api/v2/dashboard/avg-completion-time`       | Tempo médio de conclusão por tipo (Barra)  | Autenticado |
 
 ### Endpoints Administrativos e Auxiliares
 
