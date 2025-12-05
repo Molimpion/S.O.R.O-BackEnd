@@ -27,6 +27,7 @@ Trata-se de uma **API RESTful** robusta, segura e escalável, projetada para ger
 **API ao vivo:** [https://api-bombeiros-s-o-r-o.onrender.com](https://api-bombeiros-s-o-r-o.onrender.com)
 
 **Documentação (Scalar - Moderna):** [https://api-bombeiros-s-o-r-o.onrender.com/api/scalar/](https://www.google.com/search?q=https://api-bombeiros-s-o-r-o.onrender.com/api/scalar/)
+
 **Documentação (Swagger - Clássica):** [https://api-bombeiros-s-o-r-o.onrender.com/api/docs/](https://api-bombeiros-s-o-r-o.onrender.com/api/docs/)
 
 ## 2\. Estado do Projeto
@@ -296,3 +297,4 @@ Os clientes devem "ouvir" (`io.on(...)`) os seguintes eventos:
 | `lista_grupos_atualizada`       | `POST/DELETE /grupos`                | `{ action, data }`     |
 | `lista_subgrupos_atualizada`    | `POST/DELETE /subgrupos`             | `{ action, data }`     |
 | `lista_formasacervo_atualizada` | `POST/DELETE /formas-acervo`         | `{ action, data }`     |
+
