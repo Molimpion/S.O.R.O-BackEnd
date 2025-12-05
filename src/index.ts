@@ -72,15 +72,19 @@ io.on("connection", (socket: Socket) => {
   });
 });
 
-app.use(helmet());
 app.use(
-  cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        // Permite scripts do CDN que o Scalar usa e scripts inline necessários
+        "script-src": ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net"],
+        // Permite imagens de data: (base64) e do CDN
+        "img-src": ["'self'", "data:", "cdn.jsdelivr.net"],
+      },
+    },
   })
 );
-
 app.use(bodyParser.json());
 app.use(Sentry.Handlers.requestHandler());
 app.use(Sentry.Handlers.tracingHandler());
@@ -103,7 +107,7 @@ app.get("/api-docs-json", (req, res) => {
 app.use(
   "/api/scalar",
   apiReference({
-    theme: "moon", // Pode testar 'moon', 'purple', 'deepSpace'
+    theme: "deepSpace",
     spec: {
       content: swaggerSpec,
     },

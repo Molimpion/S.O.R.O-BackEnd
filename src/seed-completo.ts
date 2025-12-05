@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { PrismaClient, Profile } from '@prisma/client';
 import bcrypt from 'bcrypt';
 

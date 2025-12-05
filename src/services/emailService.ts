@@ -1,19 +1,11 @@
-import sgMail from "@sendgrid/mail";
-import { env } from "../configs/environment";
+import sgMail from '@sendgrid/mail';
+import { env } from '../configs/environment';
+import { logger } from '../configs/logger';
 
 sgMail.setApiKey(env.sendgrid.apiKey);
 
-/**
- * @param to Email do destinatário
- * @param name Nome do novo usuário
- * @param tempPassword A senha temporária gerada (em texto plano)
- */
-export const sendWelcomeEmail = async (
-  to: string,
-  name: string,
-  tempPassword: string
-) => {
-  const subject = "Bem-vindo ao Sistema S.O.R.O!";
+export const sendWelcomeEmail = async (to: string, name: string, tempPassword: string) => {
+  const subject = 'Bem-vindo ao Sistema S.O.R.O!';
   const htmlBody = `
     <h1>Olá, ${name}!</h1>
     <p>Sua conta no Sistema de Ocorrências S.O.R.O. foi criada com sucesso.</p>
@@ -33,24 +25,21 @@ export const sendWelcomeEmail = async (
       email: to,
       name: name,
     },
-    from: env.emailFrom,
+    from: env.emailFrom, 
     subject: subject,
     html: htmlBody,
   };
 
   try {
     await sgMail.send(msg);
-    console.log(`E-mail de boas-vindas enviado para ${to} via SendGrid.`);
+    logger.info(`E-mail de boas-vindas enviado para ${to} via SendGrid.`);
   } catch (error: any) {
-    console.error(
-      `Erro crítico ao enviar e-mail com SendGrid para ${to}:`,
-      error
-    );
-
+    logger.error(error, `Erro crítico ao enviar e-mail com SendGrid para ${to}:`);
+    
     if (error.response) {
-      console.error(error.response.body);
+      logger.error(error.response.body, "Detalhes do erro SendGrid:");
     }
 
-    throw new Error("Falha ao enviar e-mail de boas-vindas.");
+    throw new Error('Falha ao enviar e-mail de boas-vindas.');
   }
 };

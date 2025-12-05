@@ -1,5 +1,4 @@
-import { PrismaClient, Status } from "@prisma/client";
-import { Prisma } from "@prisma/client";
+import { PrismaClient, Status, Prisma } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -9,23 +8,23 @@ interface DashboardFilters {
   status?: Status;
   bairroId?: string;
   subgrupoId?: string;
-  periodo?: "day" | "month";
+  periodo?: 'day' | 'month'; 
 }
 
 const buildWhereClause = (filters: DashboardFilters) => {
-  const { periodo, ...baseFilters } = filters;
+  const { periodo: _, ...baseFilters } = filters; 
   const where: any = {};
-
+  
   if (baseFilters.dataInicio) {
-    where.carimbo_data_hora_abertura = {
-      ...where.carimbo_data_hora_abertura,
-      gte: new Date(baseFilters.dataInicio),
+    where.carimbo_data_hora_abertura = { 
+      ...where.carimbo_data_hora_abertura, 
+      gte: new Date(baseFilters.dataInicio) 
     };
   }
   if (baseFilters.dataFim) {
-    where.carimbo_data_hora_abertura = {
-      ...where.carimbo_data_hora_abertura,
-      lte: new Date(baseFilters.dataFim),
+    where.carimbo_data_hora_abertura = { 
+      ...where.carimbo_data_hora_abertura, 
+      lte: new Date(baseFilters.dataFim) 
     };
   }
 
@@ -39,13 +38,13 @@ const buildWhereClause = (filters: DashboardFilters) => {
     where.id_subgrupo_fk = baseFilters.subgrupoId;
   }
   return where;
-};
+}
 
 export const getOcorrenciasPorStatus = async (filters: DashboardFilters) => {
-  const where = buildWhereClause(filters);
+  const where = buildWhereClause(filters); 
 
   const groupByStatus = await prisma.ocorrencia.groupBy({
-    by: ["status_situacao"],
+    by: ['status_situacao'],
     where: where,
     _count: { id_ocorrencia: true },
   });
@@ -59,20 +58,20 @@ export const getOcorrenciasPorStatus = async (filters: DashboardFilters) => {
 };
 
 export const getOcorrenciasPorTipo = async (filters: DashboardFilters) => {
-  const where = buildWhereClause(filters);
+  const where = buildWhereClause(filters); 
 
   const groupByType = await prisma.ocorrencia.groupBy({
-    by: ["id_subgrupo_fk"],
+    by: ['id_subgrupo_fk'],
     where: where,
     _count: { id_ocorrencia: true },
     orderBy: {
       _count: {
-        id_ocorrencia: "desc",
+        id_ocorrencia: 'desc',
       },
     },
   });
 
-  const subgrupoIds = groupByType.map((item) => item.id_subgrupo_fk);
+  const subgrupoIds = groupByType.map(item => item.id_subgrupo_fk);
   const subgrupos = await prisma.subgrupo.findMany({
     where: {
       id_subgrupo: { in: subgrupoIds },
@@ -83,12 +82,10 @@ export const getOcorrenciasPorTipo = async (filters: DashboardFilters) => {
     },
   });
 
-  const result = groupByType.map((item) => {
-    const subgrupo = subgrupos.find(
-      (s) => s.id_subgrupo === item.id_subgrupo_fk
-    );
+  const result = groupByType.map(item => {
+    const subgrupo = subgrupos.find(s => s.id_subgrupo === item.id_subgrupo_fk);
     return {
-      nome: subgrupo?.descricao_subgrupo || "Desconhecido",
+      nome: subgrupo?.descricao_subgrupo || 'Desconhecido',
       total: item._count.id_ocorrencia,
     };
   });
@@ -97,20 +94,20 @@ export const getOcorrenciasPorTipo = async (filters: DashboardFilters) => {
 };
 
 export const getOcorrenciasPorBairro = async (filters: DashboardFilters) => {
-  const where = buildWhereClause(filters);
-
+  const where = buildWhereClause(filters); 
+  
   const groupByBairro = await prisma.ocorrencia.groupBy({
-    by: ["id_bairro_fk"],
+    by: ['id_bairro_fk'],
     where: where,
     _count: { id_ocorrencia: true },
     orderBy: {
       _count: {
-        id_ocorrencia: "desc",
+        id_ocorrencia: 'desc',
       },
     },
   });
 
-  const bairroIds = groupByBairro.map((item) => item.id_bairro_fk);
+  const bairroIds = groupByBairro.map(item => item.id_bairro_fk);
   const bairros = await prisma.bairro.findMany({
     where: {
       id_bairro: { in: bairroIds },
@@ -121,10 +118,10 @@ export const getOcorrenciasPorBairro = async (filters: DashboardFilters) => {
     },
   });
 
-  const result = groupByBairro.map((item) => {
-    const bairro = bairros.find((m) => m.id_bairro === item.id_bairro_fk);
+  const result = groupByBairro.map(item => {
+    const bairro = bairros.find(m => m.id_bairro === item.id_bairro_fk);
     return {
-      nome: bairro?.nome_bairro || "Desconhecido",
+      nome: bairro?.nome_bairro || 'Desconhecido',
       total: item._count.id_ocorrencia,
     };
   });
@@ -133,24 +130,22 @@ export const getOcorrenciasPorBairro = async (filters: DashboardFilters) => {
 };
 
 export const getOcorrenciasPorMunicipio = async (filters: DashboardFilters) => {
-  const where = buildWhereClause(filters);
+  const where = buildWhereClause(filters); 
 
   const groupByBairro = await prisma.ocorrencia.groupBy({
-    by: ["id_bairro_fk"],
+    by: ['id_bairro_fk'],
     where: where,
     _count: { id_ocorrencia: true },
   });
 
-  const bairroIds = groupByBairro.map((item) => item.id_bairro_fk);
+  const bairroIds = groupByBairro.map(item => item.id_bairro_fk);
   const bairros = await prisma.bairro.findMany({
     where: { id_bairro: { in: bairroIds } },
     select: { id_bairro: true, id_municipio_fk: true },
   });
 
   const municipioIds = [
-    ...new Set(
-      bairros.map((b) => b.id_municipio_fk).filter((id) => id !== null)
-    ),
+    ...new Set(bairros.map(b => b.id_municipio_fk).filter(id => id !== null)),
   ] as string[];
 
   const municipios = await prisma.municipio.findMany({
@@ -158,12 +153,8 @@ export const getOcorrenciasPorMunicipio = async (filters: DashboardFilters) => {
     select: { id_municipio: true, nome_municipio: true },
   });
 
-  const municipioMap = new Map(
-    municipios.map((m) => [m.id_municipio, m.nome_municipio])
-  );
-  const bairroToMunicipioMap = new Map(
-    bairros.map((b) => [b.id_bairro, b.id_municipio_fk])
-  );
+  const municipioMap = new Map(municipios.map(m => [m.id_municipio, m.nome_municipio]));
+  const bairroToMunicipioMap = new Map(bairros.map(b => [b.id_bairro, b.id_municipio_fk]));
   const municipioCounts: { [key: string]: number } = {};
 
   for (const item of groupByBairro) {
@@ -171,11 +162,11 @@ export const getOcorrenciasPorMunicipio = async (filters: DashboardFilters) => {
     let municipioName: string;
 
     if (municipioId) {
-      municipioName = municipioMap.get(municipioId) || "Município Desconhecido";
+      municipioName = municipioMap.get(municipioId) || 'Município Desconhecido';
     } else {
-      municipioName = "Sem Município Associado";
+      municipioName = 'Sem Município Associado';
     }
-
+    
     if (!municipioCounts[municipioName]) {
       municipioCounts[municipioName] = 0;
     }
@@ -184,26 +175,22 @@ export const getOcorrenciasPorMunicipio = async (filters: DashboardFilters) => {
 
   const result = Object.entries(municipioCounts)
     .map(([nome, total]) => ({ nome, total }))
-    .sort((a, b) => b.total - a.total);
+    .sort((a, b) => b.total - a.total); 
 
   return result;
 };
 
 export const getOcorrenciasPorPeriodo = async (filters: DashboardFilters) => {
-  const { periodo = "day", ...baseFilters } = filters;
+  const { periodo = 'day', ...baseFilters } = filters;
   const whereClauses: string[] = [];
-  const parameters: any[] = [periodo];
+  const parameters: any[] = [periodo]; 
 
   if (baseFilters.dataInicio) {
-    whereClauses.push(
-      `carimbo_data_hora_abertura >= $${parameters.length + 1}`
-    );
+    whereClauses.push(`carimbo_data_hora_abertura >= $${parameters.length + 1}`);
     parameters.push(new Date(baseFilters.dataInicio));
   }
   if (baseFilters.dataFim) {
-    whereClauses.push(
-      `carimbo_data_hora_abertura <= $${parameters.length + 1}`
-    );
+    whereClauses.push(`carimbo_data_hora_abertura <= $${parameters.length + 1}`);
     parameters.push(new Date(baseFilters.dataFim));
   }
   if (baseFilters.status) {
@@ -218,9 +205,8 @@ export const getOcorrenciasPorPeriodo = async (filters: DashboardFilters) => {
     whereClauses.push(`id_subgrupo_fk = $${parameters.length + 1}`);
     parameters.push(baseFilters.subgrupoId);
   }
-
-  const whereQuery =
-    whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
+  
+  const whereQuery = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
 
   const query = Prisma.sql`
     SELECT 
@@ -234,38 +220,32 @@ export const getOcorrenciasPorPeriodo = async (filters: DashboardFilters) => {
 
   type ResultType = {
     periodo: Date;
-    total: BigInt;
+    total: bigint; 
   };
 
   const result = await prisma.$queryRaw<ResultType[]>(query, ...parameters);
 
-  return result.map((item) => ({
-    periodo: item.periodo.toISOString().split("T")[0],
+  return result.map(item => ({
+    periodo: item.periodo.toISOString().split('T')[0], 
     total: Number(item.total),
   }));
 };
 
-export const getAvgCompletionTimePorTipo = async (
-  filters: DashboardFilters
-) => {
-  const { periodo, ...baseFilters } = filters;
-
+export const getAvgCompletionTimePorTipo = async (filters: DashboardFilters) => {
+  const { periodo: _, ...baseFilters } = filters;
+  
   const whereClauses: string[] = [
-    `o.status_situacao = 'CONCLUIDA'`,
-    `o.data_execucao_servico IS NOT NULL`,
+    `o.status_situacao = 'CONCLUIDA'`, 
+    `o.data_execucao_servico IS NOT NULL`
   ];
   const parameters: any[] = [];
 
   if (baseFilters.dataInicio) {
-    whereClauses.push(
-      `o.carimbo_data_hora_abertura >= $${parameters.length + 1}`
-    );
+    whereClauses.push(`o.carimbo_data_hora_abertura >= $${parameters.length + 1}`);
     parameters.push(new Date(baseFilters.dataInicio));
   }
   if (baseFilters.dataFim) {
-    whereClauses.push(
-      `o.carimbo_data_hora_abertura <= $${parameters.length + 1}`
-    );
+    whereClauses.push(`o.carimbo_data_hora_abertura <= $${parameters.length + 1}`);
     parameters.push(new Date(baseFilters.dataFim));
   }
   if (baseFilters.bairroId) {
@@ -276,8 +256,8 @@ export const getAvgCompletionTimePorTipo = async (
     whereClauses.push(`o.id_subgrupo_fk = $${parameters.length + 1}`);
     parameters.push(baseFilters.subgrupoId);
   }
-
-  const whereQuery = `WHERE ${whereClauses.join(" AND ")}`;
+  
+  const whereQuery = `WHERE ${whereClauses.join(' AND ')}`;
 
   const query = Prisma.sql`
     SELECT 
@@ -294,16 +274,15 @@ export const getAvgCompletionTimePorTipo = async (
 
   type ResultType = {
     nome: string;
-    tempo_medio_segundos: number | null;
+    tempo_medio_segundos: number | null; 
   };
 
   const result = await prisma.$queryRaw<ResultType[]>(query, ...parameters);
 
   return result
-    .filter((item) => item.tempo_medio_segundos !== null)
-    .map((item) => ({
+    .filter(item => item.tempo_medio_segundos !== null) 
+    .map(item => ({
       nome: item.nome,
-
-      total: parseFloat((item.tempo_medio_segundos! / 3600).toFixed(2)),
+      total: parseFloat((item.tempo_medio_segundos! / 3600).toFixed(2)), 
     }));
 };

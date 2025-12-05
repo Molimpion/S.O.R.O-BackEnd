@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { registerSchema, loginSchema } from '../../../../src/validators/authValidator';
+import { registerSchema } from '../../../../src/validators/authValidator';
 
 describe('Auth Validators', () => {
   describe('registerSchema', () => {
