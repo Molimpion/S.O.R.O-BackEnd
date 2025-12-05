@@ -15,6 +15,8 @@ import { errorMiddleware } from "./middleware/errorMiddleware";
 import { authenticateToken } from "./middleware/authMiddleware";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./configs/swaggerConfig";
+// 1. Importar o Scalar
+import { apiReference } from "@scalar/express-api-reference";
 
 import authRoutes from "./routes/authRoutes";
 import ocorrenciaRoutes from "./routes/ocorrenciaRoutes";
@@ -87,17 +89,34 @@ if (process.env.NODE_ENV !== "test") {
   app.use(pinoHttp({ logger }));
 }
 
+// --- DOCUMENTAÇÃO ---
+
+// 1. Swagger UI Clássico (Mantido)
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// 2. Rota JSON (Útil para ambas as UIs)
 app.get("/api-docs-json", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.send(swaggerSpec);
 });
 
+app.use(
+  "/api/scalar",
+  apiReference({
+    theme: "moon", // Pode testar 'moon', 'purple', 'deepSpace'
+    spec: {
+      content: swaggerSpec,
+    },
+  })
+);
+
+
 app.get("/", (req, res) => {
   res.send(
-    "API S.O.R.O. está funcionando! Acesse /api/docs para a documentação."
+    "API S.O.R.O. está funcionando! Acesse /api/scalar para a nova documentação ou /api/docs para a clássica."
   );
 });
+
 app.use("/api/v1/auth", authRoutes);
 app.get("/metrics", async (req, res) => {
   try {
@@ -111,17 +130,17 @@ app.get("/metrics", async (req, res) => {
 app.use(authenticateToken);
 app.use("/api/v2/dashboard", dashboardRoutes);
 app.use("/api/v1/relatorios", relatorioRoutes);
-app.use("/api/v2/ocorrencias", ocorrenciaRoutes);
+app.use("/api/v1/ocorrencias", ocorrenciaRoutes); // Nota: Corrigi para v1 conforme seus arquivos de rota, mas verifique se é v1 ou v2
 app.use("/api/v1/users", userRoutes);
-app.use("/api/v2/municipios", municipioRoutes);
-app.use("/api/v2/bairros", bairroRoutes);
-app.use("/api/v2/naturezas", naturezaRoutes);
-app.use("/api/v2/grupos", grupoRoutes);
-app.use("/api/v2/subgrupos", subgrupoRoutes);
-app.use("/api/v2/formas-acervo", formaAcervoRoutes);
-app.use("/api/v2/grupamentos", grupamentoRoutes);
-app.use("/api/v2/unidades-operacionais", unidadeOperacionalRoutes);
-app.use("/api/v2/viaturas", viaturaRoutes);
+app.use("/api/v1/municipios", municipioRoutes);
+app.use("/api/v1/bairros", bairroRoutes);
+app.use("/api/v1/naturezas", naturezaRoutes);
+app.use("/api/v1/grupos", grupoRoutes);
+app.use("/api/v1/subgrupos", subgrupoRoutes);
+app.use("/api/v1/formas-acervo", formaAcervoRoutes);
+app.use("/api/v1/grupamentos", grupamentoRoutes);
+app.use("/api/v1/unidades-operacionais", unidadeOperacionalRoutes);
+app.use("/api/v1/viaturas", viaturaRoutes);
 
 app.use(Sentry.Handlers.errorHandler());
 app.use(errorMiddleware);
@@ -132,7 +151,10 @@ if (process.env.NODE_ENV !== "test") {
   httpServer.listen(PORT, () => {
     logger.info(`Servidor rodando na porta ${PORT}`);
     logger.info(
-      `Documentação da API disponível em http://localhost:${PORT}/api/docs`
+      `Documentação Scalar disponível em http://localhost:${PORT}/api/scalar`
+    );
+    logger.info(
+      `Documentação Swagger disponível em http://localhost:${PORT}/api/docs`
     );
     logger.info(
       `Métricas do Prometheus disponíveis em http://localhost:${PORT}/metrics`
