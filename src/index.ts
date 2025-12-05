@@ -15,7 +15,6 @@ import { errorMiddleware } from "./middleware/errorMiddleware";
 import { authenticateToken } from "./middleware/authMiddleware";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./configs/swaggerConfig";
-// 1. Importar o Scalar
 import { apiReference } from "@scalar/express-api-reference";
 
 import authRoutes from "./routes/authRoutes";
@@ -77,14 +76,19 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-        // Permite scripts do CDN que o Scalar usa e scripts inline necessários
         "script-src": ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net"],
-        // Permite imagens de data: (base64) e do CDN
         "img-src": ["'self'", "data:", "cdn.jsdelivr.net"],
       },
     },
   })
 );
+
+app.use(cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+}));
+
 app.use(bodyParser.json());
 app.use(Sentry.Handlers.requestHandler());
 app.use(Sentry.Handlers.tracingHandler());
@@ -93,12 +97,8 @@ if (process.env.NODE_ENV !== "test") {
   app.use(pinoHttp({ logger }));
 }
 
-// --- DOCUMENTAÇÃO ---
-
-// 1. Swagger UI Clássico (Mantido)
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// 2. Rota JSON (Útil para ambas as UIs)
 app.get("/api-docs-json", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.send(swaggerSpec);
@@ -114,14 +114,16 @@ app.use(
   })
 );
 
-
 app.get("/", (req, res) => {
   res.send(
     "API S.O.R.O. está funcionando! Acesse /api/scalar para a nova documentação ou /api/docs para a clássica."
   );
 });
 
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 app.use("/api/v1/auth", authRoutes);
+
 app.get("/metrics", async (req, res) => {
   try {
     res.set("Content-Type", promClient.register.contentType);
@@ -132,9 +134,10 @@ app.get("/metrics", async (req, res) => {
 });
 
 app.use(authenticateToken);
+
 app.use("/api/v2/dashboard", dashboardRoutes);
 app.use("/api/v1/relatorios", relatorioRoutes);
-app.use("/api/v1/ocorrencias", ocorrenciaRoutes); // Nota: Corrigi para v1 conforme seus arquivos de rota, mas verifique se é v1 ou v2
+app.use("/api/v1/ocorrencias", ocorrenciaRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/municipios", municipioRoutes);
 app.use("/api/v1/bairros", bairroRoutes);
