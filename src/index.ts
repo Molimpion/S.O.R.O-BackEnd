@@ -54,7 +54,7 @@ const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
   cors: {
     origin: "*",
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
   },
 });
@@ -122,7 +122,8 @@ app.get("/", (req, res) => {
 
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 
-app.use("/api/v1/auth", authRoutes);
+// Autenticação (Pública) - Agora v3
+app.use("/api/v3/auth", authRoutes);
 
 app.get("/metrics", async (req, res) => {
   try {
@@ -135,19 +136,20 @@ app.get("/metrics", async (req, res) => {
 
 app.use(authenticateToken);
 
-app.use("/api/v2/dashboard", dashboardRoutes);
-app.use("/api/v1/relatorios", relatorioRoutes);
-app.use("/api/v1/ocorrencias", ocorrenciaRoutes);
-app.use("/api/v1/users", userRoutes);
-app.use("/api/v1/municipios", municipioRoutes);
-app.use("/api/v1/bairros", bairroRoutes);
-app.use("/api/v1/naturezas", naturezaRoutes);
-app.use("/api/v1/grupos", grupoRoutes);
-app.use("/api/v1/subgrupos", subgrupoRoutes);
-app.use("/api/v1/formas-acervo", formaAcervoRoutes);
-app.use("/api/v1/grupamentos", grupamentoRoutes);
-app.use("/api/v1/unidades-operacionais", unidadeOperacionalRoutes);
-app.use("/api/v1/viaturas", viaturaRoutes);
+// Todas as rotas atualizadas para v3
+app.use("/api/v3/dashboard", dashboardRoutes);
+app.use("/api/v3/relatorios", relatorioRoutes);
+app.use("/api/v3/ocorrencias", ocorrenciaRoutes);
+app.use("/api/v3/users", userRoutes);
+app.use("/api/v3/municipios", municipioRoutes);
+app.use("/api/v3/bairros", bairroRoutes);
+app.use("/api/v3/naturezas", naturezaRoutes);
+app.use("/api/v3/grupos", grupoRoutes);
+app.use("/api/v3/subgrupos", subgrupoRoutes);
+app.use("/api/v3/formas-acervo", formaAcervoRoutes);
+app.use("/api/v3/grupamentos", grupamentoRoutes);
+app.use("/api/v3/unidades-operacionais", unidadeOperacionalRoutes);
+app.use("/api/v3/viaturas", viaturaRoutes);
 
 app.use(Sentry.Handlers.errorHandler());
 app.use(errorMiddleware);
