@@ -5,7 +5,7 @@ const options: swaggerJsdoc.Options = {
     openapi: "3.0.0",
     info: {
       title: "API S.O.R.O - Bombeiros",
-      version: "1.0.0",
+      version: "3.0.0",
       description:
         "Documentação da API S.O.R.O. para gerenciamento de ocorrências, usuários, viaturas e recursos.",
       contact: {
@@ -350,3 +350,4 @@ const options: swaggerJsdoc.Options = {
 const swaggerSpec = swaggerJsdoc(options);
 
 export default swaggerSpec;
+
