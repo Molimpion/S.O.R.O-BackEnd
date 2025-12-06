@@ -12,7 +12,7 @@ const router = Router();
  *   - name: "Admin: Naturezas"
  *     description: (Admin) Endpoints para gerenciar as naturezas de ocorrência.
  *
- * /api/v1/naturezas:
+ * /api/v3/naturezas:
  *   post:
  *     summary: Cria uma nova natureza (apenas Admin)
  *     tags: ["Admin: Naturezas"]
@@ -51,7 +51,7 @@ const router = Router();
  *       401:
  *         description: Não autorizado.
  *
- * /api/v1/naturezas/{id}:
+ * /api/v3/naturezas/{id}:
  *   delete:
  *     summary: Deleta uma natureza pelo ID (apenas Admin)
  *     tags: ["Admin: Naturezas"]

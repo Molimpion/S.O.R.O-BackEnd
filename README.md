@@ -222,16 +222,16 @@ O projeto inclui o arquivo `api-tests/requests.http` com uma suíte de testes de
 
 ## 9\. Documentação da API (Endpoints)
 
-> **Atualização de Versão:** Os endpoints de Ocorrências, Dashboard e Tabelas Auxiliares foram atualizados para o prefixo **`/api/v2/`**. Autenticação, Usuários e Relatórios permanecem na **`/api/v1/`**.
+> **Atualização de Versão:** Os endpoints de Ocorrências, Dashboard e Tabelas Auxiliares foram atualizados para o prefixo **`/api/v3/`**. Autenticação, Usuários e Relatórios permanecem na **`/api/v3/`**.
 
-### Autenticação (`/api/v1/auth`)
+### Autenticação (`/api/v3/auth`)
 
 | Método | Endpoint    | Descrição                        | Acesso  |
 | :----- | :---------- | :------------------------------- | :------ |
 | `POST` | `/register` | Registra um novo usuário         | Público |
 | `POST` | `/login`    | Autentica e retorna um token JWT | Público |
 
-### Ocorrências (`/api/v2/ocorrencias`)
+### Ocorrências (`/api/v3/ocorrencias`)
 
 | Método | Endpoint     | Descrição                                 | Acesso             |
 | :----- | :----------- | :---------------------------------------- | :----------------- |
@@ -241,7 +241,7 @@ O projeto inclui o arquivo `api-tests/requests.http` com uma suíte de testes de
 | `PUT`  | `/:id`       | Atualiza uma ocorrência existente         | Autenticado (Role) |
 | `POST` | `/:id/midia` | Faz upload de mídia (imagem/vídeo)        | Autenticado        |
 
-### Gestão de Usuários (`/api/v1/users`)
+### Gestão de Usuários (`/api/v3/users`)
 
 | Método   | Endpoint | Descrição                        | Acesso |
 | :------- | :------- | :------------------------------ | :----- |
@@ -254,28 +254,28 @@ O projeto inclui o arquivo `api-tests/requests.http` com uma suíte de testes de
 
 | Método | Endpoint                                    | Descrição                                  | Acesso      |
 | :----- | :------------------------------------------ | :----------------------------------------- | :---------- |
-| `GET`  | `/api/v1/relatorios`                        | Gera relatório (CSV/PDF) de ocorrências    | Admin       |
-| `GET`  | `/api/v2/dashboard/ocorrencias-por-status`  | Total de ocorrências por status            | Autenticado |
-| `GET`  | `/api/v2/dashboard/ocorrencias-por-tipo`    | Total de ocorrências por tipo              | Autenticado |
-| `GET`  | `/api/v2/dashboard/ocorrencias-por-bairro`  | Total de ocorrências por bairro            | Autenticado |
-| `GET`  | `/api/v2/dashboard/ocorrencias-por-municipio` | Total de ocorrências por município (Pizza) | Autenticado |
-| `GET`  | `/api/v2/dashboard/ocorrencias-por-periodo`   | Evolução temporal das ocorrências (Linha)  | Autenticado |
-| `GET`  | `/api/v2/dashboard/avg-completion-time`       | Tempo médio de conclusão por tipo (Barra)  | Autenticado |
+| `GET`  | `/api/v3/relatorios`                        | Gera relatório (CSV/PDF) de ocorrências    | Admin       |
+| `GET`  | `/api/v3/dashboard/ocorrencias-por-status`  | Total de ocorrências por status            | Autenticado |
+| `GET`  | `/api/v3/dashboard/ocorrencias-por-tipo`    | Total de ocorrências por tipo              | Autenticado |
+| `GET`  | `/api/v3/dashboard/ocorrencias-por-bairro`  | Total de ocorrências por bairro            | Autenticado |
+| `GET`  | `/api/v3/dashboard/ocorrencias-por-municipio` | Total de ocorrências por município (Pizza) | Autenticado |
+| `GET`  | `/api/v3/dashboard/ocorrencias-por-periodo`   | Evolução temporal das ocorrências (Linha)  | Autenticado |
+| `GET`  | `/api/v3/dashboard/avg-completion-time`       | Tempo médio de conclusão por tipo (Barra)  | Autenticado |
 
 ### Endpoints Administrativos e Auxiliares
 
 A API inclui endpoints para as entidades de suporte.
 **Importante:** Os métodos `GET` são liberados para todos os usuários autenticados (para preenchimento de formulários), enquanto `POST`, `PUT` e `DELETE` são restritos a **Admins**.
 
-  * `/api/v2/municipios`
-  * `/api/v2/bairros`
-  * `/api/v2/naturezas`
-  * `/api/v2/grupos`
-  * `/api/v2/subgrupos`
-  * `/api/v2/formas-acervo`
-  * `/api/v2/grupamentos`
-  * `/api/v2/unidades-operacionais`
-  * `/api/v2/viaturas`
+  * `/api/v3/municipios`
+  * `/api/v3/bairros`
+  * `/api/v3/naturezas`
+  * `/api/v3/grupos`
+  * `/api/v3/subgrupos`
+  * `/api/v3/formas-acervo`
+  * `/api/v3/grupamentos`
+  * `/api/v3/unidades-operacionais`
+  * `/api/v3/viaturas`
 
 ## 10\. Eventos em Tempo Real (Socket.io)
 

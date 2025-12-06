@@ -12,7 +12,7 @@ const router = Router();
  *   - name: "Admin: Grupos"
  *     description: (Admin) Endpoints para gerenciar os grupos.
  *
- * /api/v1/grupos:
+ * /api/v3/grupos:
  *   post:
  *     summary: Cria um novo grupo (apenas Admin)
  *     tags: ["Admin: Grupos"]
@@ -51,7 +51,7 @@ const router = Router();
  *       401:
  *         description: Não autorizado.
  *
- * /api/v1/grupos/{id}:
+ * /api/v3/grupos/{id}:
  *   delete:
  *     summary: Deleta um grupo pelo ID (apenas Admin)
  *     tags: ["Admin: Grupos"]

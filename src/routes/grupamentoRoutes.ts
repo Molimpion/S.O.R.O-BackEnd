@@ -12,7 +12,7 @@ const router = Router();
  *   - name: "Admin: Grupamentos"
  *     description: (Admin) Endpoints para gerenciar os grupamentos.
  *
- * /api/v1/grupamentos:
+ * /api/v3/grupamentos:
  *   post:
  *     summary: Cria um novo grupamento (apenas Admin)
  *     tags: ["Admin: Grupamentos"]
@@ -51,7 +51,7 @@ const router = Router();
  *       401:
  *         description: Não autorizado.
  *
- * /api/v1/grupamentos/{id}:
+ * /api/v3/grupamentos/{id}:
  *   delete:
  *     summary: Deleta um grupamento pelo ID (apenas Admin)
  *     tags: ["Admin: Grupamentos"]

@@ -12,7 +12,7 @@ const router = Router();
  *   - name: "Admin: Unidades Operacionais"
  *     description: (Admin) Endpoints para gerenciar as unidades operacionais.
  *
- * /api/v1/unidades-operacionais:
+ * /api/v3/unidades-operacionais:
  *   post:
  *     summary: Cria uma nova unidade operacional (apenas Admin)
  *     tags: ["Admin: Unidades Operacionais"]
@@ -51,7 +51,7 @@ const router = Router();
  *       401:
  *         description: Não autorizado.
  *
- * /api/v1/unidades-operacionais/{id}:
+ * /api/v3/unidades-operacionais/{id}:
  *   delete:
  *     summary: Deleta uma unidade operacional pelo ID (apenas Admin)
  *     tags: ["Admin: Unidades Operacionais"]

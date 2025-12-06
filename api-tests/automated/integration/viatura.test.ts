@@ -33,24 +33,24 @@ describe("Viatura Routes (Integration Tests)", () => {
     id_unidade_operacional_fk: "123e4567-e89b-12d3-a456-426614174000",
   };
 
-  it("GET /api/v1/viaturas - Deve listar viaturas (Status 200)", async () => {
+  it("GET /api/v3/viaturas - Deve listar viaturas (Status 200)", async () => {
     (viaturaService.getAllViaturas as jest.Mock).mockResolvedValue([
       mockViatura,
     ]);
 
     const res = await request(app)
-      .get("/api/v1/viaturas")
+      .get("/api/v3/viaturas")
       .set("Authorization", `Bearer ${ADMIN_TOKEN}`);
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual([mockViatura]);
   });
 
-  it("POST /api/v1/viaturas - Deve criar viatura (Status 201)", async () => {
+  it("POST /api/v3/viaturas - Deve criar viatura (Status 201)", async () => {
     (viaturaService.createViatura as jest.Mock).mockResolvedValue(mockViatura);
 
     const res = await request(app)
-      .post("/api/v1/viaturas")
+      .post("/api/v3/viaturas")
       .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
       .send(createPayload);
 
@@ -58,13 +58,13 @@ describe("Viatura Routes (Integration Tests)", () => {
     expect(res.body.data.id_viatura).toBe(MOCK_VIATURA_ID);
   });
 
-  it("POST /api/v1/viaturas - Falha por Conflito (Status 409)", async () => {
+  it("POST /api/v3/viaturas - Falha por Conflito (Status 409)", async () => {
     (viaturaService.createViatura as jest.Mock).mockRejectedValue(
       new ConflictError("Já existe uma viatura com este número.")
     );
 
     const res = await request(app)
-      .post("/api/v1/viaturas")
+      .post("/api/v3/viaturas")
       .set("Authorization", `Bearer ${ADMIN_TOKEN}`)
       .send(createPayload);
 
@@ -72,24 +72,24 @@ describe("Viatura Routes (Integration Tests)", () => {
     expect(res.body.error).toContain("existe uma viatura");
   });
 
-  it("DELETE /api/v1/viaturas/:id - Deve deletar (Status 200)", async () => {
+  it("DELETE /api/v3/viaturas/:id - Deve deletar (Status 200)", async () => {
     (viaturaService.deleteViatura as jest.Mock).mockResolvedValue(undefined);
 
     const res = await request(app)
-      .delete(`/api/v1/viaturas/${MOCK_VIATURA_ID}`)
+      .delete(`/api/v3/viaturas/${MOCK_VIATURA_ID}`)
       .set("Authorization", `Bearer ${ADMIN_TOKEN}`);
 
     expect(res.status).toBe(200);
     expect(viaturaService.deleteViatura).toHaveBeenCalledWith(MOCK_VIATURA_ID);
   });
 
-  it("DELETE /api/v1/viaturas/:id - Falha por Não Encontrado (Status 404)", async () => {
+  it("DELETE /api/v3/viaturas/:id - Falha por Não Encontrado (Status 404)", async () => {
     (viaturaService.deleteViatura as jest.Mock).mockRejectedValue(
       new NotFoundError("Viatura não encontrada")
     );
 
     const res = await request(app)
-      .delete(`/api/v1/viaturas/${MOCK_VIATURA_ID}`)
+      .delete(`/api/v3/viaturas/${MOCK_VIATURA_ID}`)
       .set("Authorization", `Bearer ${ADMIN_TOKEN}`);
 
     expect(res.status).toBe(404);

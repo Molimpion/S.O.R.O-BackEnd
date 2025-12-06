@@ -22,27 +22,27 @@ describe("Auth Routes (Integration Tests)", () => {
   };
   const mockToken = "mock-jwt-token-valido";
 
-  it("POST /api/v1/auth/login - Sucesso (Status 200)", async () => {
+  it("POST /api/v3/auth/login - Sucesso (Status 200)", async () => {
     (authService.loginUser as jest.Mock).mockResolvedValue({
       user: mockUser,
       token: mockToken,
     });
 
     const res = await request(app)
-      .post("/api/v1/auth/login")
+      .post("/api/v3/auth/login")
       .send(validLoginData);
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("token", mockToken);
   });
 
-  it("POST /api/v1/auth/login - Falha (Credenciais Inválidas) (Status 401)", async () => {
+  it("POST /api/v3/auth/login - Falha (Credenciais Inválidas) (Status 401)", async () => {
     (authService.loginUser as jest.Mock).mockRejectedValue(
       new UnauthorizedError("Email ou senha inválidos")
     );
 
     const res = await request(app)
-      .post("/api/v1/auth/login")
+      .post("/api/v3/auth/login")
       .send(validLoginData);
 
     expect(res.status).toBe(401);
@@ -56,18 +56,18 @@ describe("Auth Routes (Integration Tests)", () => {
     matricula: "M123",
   };
 
-  it("POST /api/v1/auth/register - Sucesso (Status 201)", async () => {
+  it("POST /api/v3/auth/register - Sucesso (Status 201)", async () => {
     (authService.registerUser as jest.Mock).mockResolvedValue(mockUser);
 
     const res = await request(app)
-      .post("/api/v1/auth/register")
+      .post("/api/v3/auth/register")
       .send(validRegisterData);
 
     expect(res.status).toBe(201);
     expect(res.body.message).toBe("Usuário criado com sucesso!");
   });
 
-  it("POST /api/v1/auth/register - Falha (Erro de Serviço/E-mail) (Status 500)", async () => {
+  it("POST /api/v3/auth/register - Falha (Erro de Serviço/E-mail) (Status 500)", async () => {
     (authService.registerUser as jest.Mock).mockRejectedValue(
       new ApiError(
         "Não foi possível criar o usuário: falha ao enviar o e-mail de confirmação.",
@@ -76,7 +76,7 @@ describe("Auth Routes (Integration Tests)", () => {
     );
 
     const res = await request(app)
-      .post("/api/v1/auth/register")
+      .post("/api/v3/auth/register")
       .send(validRegisterData);
 
     expect(res.status).toBe(500);

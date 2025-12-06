@@ -12,7 +12,7 @@ const router = Router();
  *   - name: "Admin: Formas de Acervo"
  *     description: (Admin) Endpoints para gerenciar as formas de acervo.
  *
- * /api/v1/formas-acervo:
+ * /api/v3/formas-acervo:
  *   post:
  *     summary: Cria uma nova forma de acervo (apenas Admin)
  *     tags: ["Admin: Formas de Acervo"]
@@ -51,7 +51,7 @@ const router = Router();
  *       401:
  *         description: Não autorizado.
  *
- * /api/v1/formas-acervo/{id}:
+ * /api/v3/formas-acervo/{id}:
  *   delete:
  *     summary: Deleta uma forma de acervo pelo ID (apenas Admin)
  *     tags: ["Admin: Formas de Acervo"]

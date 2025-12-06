@@ -31,14 +31,14 @@ describe("Ocorrência Routes (Integration Tests)", () => {
     nr_aviso: "AV-TESTE",
   };
 
-  it("POST /api/v1/ocorrencias - Deve criar ocorrencia (Status 201)", async () => {
+  it("POST /api/v3/ocorrencias - Deve criar ocorrencia (Status 201)", async () => {
     const mockOcorrencia = { id_ocorrencia: "nova-ocorrencia-id", ...payload };
     (ocorrenciaService.createOcorrencia as jest.Mock).mockResolvedValue(
       mockOcorrencia
     );
 
     const res = await request(app)
-      .post("/api/v1/ocorrencias")
+      .post("/api/v3/ocorrencias")
       .set("Authorization", `Bearer ${ANALISTA_TOKEN}`)
       .send(payload);
 

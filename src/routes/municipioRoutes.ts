@@ -12,7 +12,7 @@ const router = Router();
  *   - name: "Admin: Municípios"
  *     description: (Admin) Endpoints para gerenciar os municípios.
  *
- * /api/v1/municipios:
+ * /api/v3/municipios:
  *   post:
  *     summary: Cria um novo município (apenas Admin)
  *     tags: ["Admin: Municípios"]
@@ -51,7 +51,7 @@ const router = Router();
  *       401:
  *         description: Não autorizado.
  *
- * /api/v1/municipios/{id}:
+ * /api/v3/municipios/{id}:
  *   get:
  *     summary: Obtém um município pelo ID
  *     tags: ["Admin: Municípios"]

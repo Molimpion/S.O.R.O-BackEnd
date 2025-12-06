@@ -15,7 +15,7 @@ const router = Router();
  *   - name: Auth
  *     description: Autenticação de Usuários
  *
- * /api/v1/auth/register:
+ * /api/v3/auth/register:
  *   post:
  *     summary: Registra um novo usuário (Admin)
  *     tags: [Auth]
@@ -45,7 +45,7 @@ const router = Router();
  *             schema:
  *               $ref: '#/components/schemas/Error409'
  *
- * /api/v1/auth/login:
+ * /api/v3/auth/login:
  *   post:
  *     summary: Login de usuário
  *     tags: [Auth]

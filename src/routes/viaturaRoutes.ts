@@ -12,7 +12,7 @@ const router = Router();
  *   - name: "Admin: Viaturas"
  *     description: (Admin) Endpoints para gerenciar as viaturas.
  *
- * /api/v1/viaturas:
+ * /api/v3/viaturas:
  *   post:
  *     summary: Cria uma nova viatura (apenas Admin)
  *     tags: ["Admin: Viaturas"]
@@ -51,7 +51,7 @@ const router = Router();
  *       401:
  *         description: Não autorizado.
  *
- * /api/v1/viaturas/{id}:
+ * /api/v3/viaturas/{id}:
  *   delete:
  *     summary: Deleta uma viatura pelo ID (apenas Admin)
  *     tags: ["Admin: Viaturas"]

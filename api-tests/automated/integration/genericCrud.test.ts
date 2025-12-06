@@ -17,7 +17,7 @@ jest.mock("jsonwebtoken", () => ({
 const ENTITY_ID = "550e8400-e29b-41d4-a716-446655440003";
 const PAYLOAD = { descricao: "TESTE NATUREZA" };
 const MOCK_NATUREZA = { id_natureza: ENTITY_ID, ...PAYLOAD };
-const ROUTE = "/api/v1/naturezas";
+const ROUTE = "/api/v3/naturezas";
 const ADMIN_TOKEN = "token-falso";
 
 describe(`CRUD Integration: ${ROUTE}`, () => {

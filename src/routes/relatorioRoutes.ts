@@ -15,7 +15,7 @@ const router = Router();
  * tags:
  *   - name: "Admin: Relatórios"
  *     description: (Admin) Endpoints para exportação de relatórios.
- * /api/v1/relatorios:
+ * /api/v3/relatorios:
  *   get:
  *     summary: Exporta um relatório de ocorrências em formato Excel (apenas Admin)
  *     tags: ["Admin: Relatórios"]

@@ -12,7 +12,7 @@ const router = Router();
  *   - name: "Admin: Bairros"
  *     description: (Admin) Endpoints para gerenciar os bairros.
  *
- * /api/v1/bairros:
+ * /api/v3/bairros:
  *   post:
  *     summary: Cria um novo bairro (apenas Admin)
  *     tags: ["Admin: Bairros"]
@@ -51,7 +51,7 @@ const router = Router();
  *       401:
  *         description: Não autorizado.
  *
- * /api/v1/bairros/{id}:
+ * /api/v3/bairros/{id}:
  *   get:
  *     summary: Obtém um bairro pelo ID
  *     tags: ["Admin: Bairros"]

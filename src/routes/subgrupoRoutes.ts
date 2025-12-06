@@ -12,7 +12,7 @@ const router = Router();
  *   - name: "Admin: Subgrupos"
  *     description: (Admin) Endpoints para gerenciar os subgrupos.
  *
- * /api/v1/subgrupos:
+ * /api/v3/subgrupos:
  *   post:
  *     summary: Cria um novo subgrupo (apenas Admin)
  *     tags: ["Admin: Subgrupos"]
@@ -51,7 +51,7 @@ const router = Router();
  *       401:
  *         description: Não autorizado.
  *
- * /api/v1/subgrupos/{id}:
+ * /api/v3/subgrupos/{id}:
  *   delete:
  *     summary: Deleta um subgrupo pelo ID (apenas Admin)
  *     tags: ["Admin: Subgrupos"]

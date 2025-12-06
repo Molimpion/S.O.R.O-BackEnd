@@ -28,7 +28,7 @@ const router = Router();
  *     description: Endpoints para gerenciar as ocorrências.
  *
  * paths:
- *   /api/v1/ocorrencias:
+ *   /api/v3/ocorrencias:
  *     post:
  *       summary: Cria uma nova ocorrência
  *       tags: [Ocorrências]
@@ -88,7 +88,7 @@ const router = Router();
  *         '401':
  *           description: Não autorizado.
  *
- *   /api/v1/ocorrencias/{id}:
+ *   /api/v3/ocorrencias/{id}:
  *     get:
  *       summary: Obtém uma ocorrência pelo ID
  *       tags: [Ocorrências]
@@ -150,7 +150,7 @@ const router = Router();
  *         '404':
  *           description: Ocorrência não encontrada.
  *
- *   /api/v1/ocorrencias/{id}/midia:
+ *   /api/v3/ocorrencias/{id}/midia:
  *     post:
  *       summary: Faz upload de uma nova mídia (imagem/vídeo) para uma ocorrência
  *       tags: [Ocorrências]

@@ -15,7 +15,7 @@ const router = Router();
  * tags:
  *   - name: "Admin: Usuários"
  *     description: (Admin) Endpoints para gerenciar os usuários.
- * /api/v1/users:
+ * /api/v3/users:
  *   get:
  *     summary: Lista todos os usuários (apenas Admin)
  *     tags: ["Admin: Usuários"]
@@ -26,7 +26,7 @@ const router = Router();
  *         description: Lista de usuários.
  *       403:
  *         description: Acesso negado (não é Admin).
- * /api/v1/users/{id}:
+ * /api/v3/users/{id}:
  *   get:
  *     summary: Obtém um usuário pelo ID (apenas Admin)
  *     tags: ["Admin: Usuários"]
