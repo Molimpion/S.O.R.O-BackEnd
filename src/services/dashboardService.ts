@@ -208,12 +208,12 @@ export const getOcorrenciasPorPeriodo = async (filters: DashboardFilters) => {
   
   const whereQuery = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
 
-  const query = Prisma.sql`
+  const query = `
     SELECT 
       DATE_TRUNC($1::text, carimbo_data_hora_abertura) as periodo,
       COUNT(id_ocorrencia) as total
     FROM "ocorrencias"
-    ${Prisma.raw(whereQuery)}
+    ${whereQuery}
     GROUP BY periodo
     ORDER BY periodo ASC
   `;
@@ -223,7 +223,7 @@ export const getOcorrenciasPorPeriodo = async (filters: DashboardFilters) => {
     total: bigint; 
   };
 
-  const result = await prisma.$queryRaw<ResultType[]>(query, ...parameters);
+  const result = await prisma.$queryRawUnsafe<ResultType[]>(query, ...parameters);
 
   return result.map(item => ({
     periodo: item.periodo.toISOString().split('T')[0], 
@@ -259,7 +259,7 @@ export const getAvgCompletionTimePorTipo = async (filters: DashboardFilters) => 
   
   const whereQuery = `WHERE ${whereClauses.join(' AND ')}`;
 
-  const query = Prisma.sql`
+  const query = `
     SELECT 
       s.descricao_subgrupo as nome,
       AVG(
@@ -267,7 +267,7 @@ export const getAvgCompletionTimePorTipo = async (filters: DashboardFilters) => 
       ) as tempo_medio_segundos
     FROM "ocorrencias" o
     JOIN "subgrupos" s ON o.id_subgrupo_fk = s.id_subgrupo
-    ${Prisma.raw(whereQuery)}
+    ${whereQuery}
     GROUP BY s.descricao_subgrupo
     ORDER BY tempo_medio_segundos DESC
   `;
@@ -277,7 +277,7 @@ export const getAvgCompletionTimePorTipo = async (filters: DashboardFilters) => 
     tempo_medio_segundos: number | null; 
   };
 
-  const result = await prisma.$queryRaw<ResultType[]>(query, ...parameters);
+  const result = await prisma.$queryRawUnsafe<ResultType[]>(query, ...parameters);
 
   return result
     .filter(item => item.tempo_medio_segundos !== null) 
